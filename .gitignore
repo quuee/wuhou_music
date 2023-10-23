@@ -42,6 +42,7 @@ analysis_options.yaml
 .pub/
 /build/
 build/
+test/
 
 # Web related
 lib/generated_plugin_registrant.dart
