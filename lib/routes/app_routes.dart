@@ -20,27 +20,25 @@ class Routes {
 
   static final routes = <GetPage>[
     GetPage(
-      name: splash,
-      page: () => const SplashPage(),
+      name: splash, page: () => const SplashPage(),
     ),
     GetPage(
-        name: login, page: () => const LoginPage(), binding: LoginBinding()),
-    GetPage(name: root, page: () => const RootPage(), binding: RootBinding()),
-    GetPage(
-      name: home,
-      page: () => const HomePage(),
+        name: login, page: () => const LoginPage(), binding: LoginBinding()
     ),
     GetPage(
-      name: mine,
-      page: () => const MinePage(),
+        name: root, page: () => const RootPage(), binding: RootBinding()
     ),
     GetPage(
-      name: play,
-      page: () => const PlayPage(),
+      name: home, page: () => const HomePage(),
     ),
     GetPage(
-      name: localMusicPage,
-      page: () => const LocalMusicPage(),
+      name: mine, page: () => const MinePage(),
+    ),
+    GetPage(
+      name: play, page: () => const PlayPage(),
+    ),
+    GetPage(
+      name: localMusicPage, page: () => const LocalMusicPage(),
     ),
   ];
 }

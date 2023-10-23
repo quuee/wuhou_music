@@ -4,7 +4,10 @@ import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/request_client.dart';
 
 class SongList extends StatelessWidget {
-  const SongList({super.key});
+
+  SongList({super.key,this.albumURI});
+
+  String? albumURI;
 
   /// 底部弹窗
   _showModalBottomSheet(BuildContext context){
@@ -43,7 +46,7 @@ class SongList extends StatelessWidget {
       child: Row(
         children: [
           Image.network(
-            '${RequestClient.apiPrefix}/images/wallhaven-wydwyr_2560x1440.png',
+            '${RequestClient.apiPrefix}/$albumURI',
             width: 100,
             height: 100,
             errorBuilder: (BuildContext context,Object error,StackTrace? stackTrace){return Image.asset(R.images.logo,width: 100,height: 100,);},

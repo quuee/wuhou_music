@@ -1,16 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_list.dart';
+import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
-import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
-class MinePage extends GetView<MineController> {
+class MinePage extends StatefulWidget {
   const MinePage({super.key});
 
+  @override
+  State<MinePage> createState() => _MinePageState();
+}
+
+class _MinePageState extends State<MinePage> {
   static final audioPlayHandler = GetIt.I.get<AudioPlayerHandler>();
+
+  List<SongListEntity>? songList;
+
+  @override
+  initState(){
+    super.initState();
+    var box = Hive.box('songList');
+    // todo 从hive获取本地歌单
+  }
+
+  /// 创建歌单的中间弹窗
+  _createSongListInput(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('请输入歌单名称'),
+            content: TextField(
+              onChanged: (value) {},
+            ),
+            actions: [
+              ElevatedButton(
+                child: Text('取消'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              ElevatedButton(
+                child: Text('确认'),
+                onPressed: () {
+                  // 逻辑
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   /// 创建顶部四个功能按钮
   Widget _buildIconButton() {
@@ -34,26 +78,33 @@ class MinePage extends GetView<MineController> {
           children: [
             IconButton(
               icon: Icon(Icons.add_chart),
-              onPressed: () {},
+              onPressed: () {
+                _createSongListInput(context);
+
+              },
             ),
             Text('创建歌单')
           ],
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
-            Text('待定')],
+          children: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {},
+            ),
+            Text('待定')
+          ],
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
-            Text('待定')],
+          children: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {},
+            ),
+            Text('待定')
+          ],
         ),
       ],
     );
@@ -86,9 +137,30 @@ class MinePage extends GetView<MineController> {
 
                         ///歌单
                         children: [
-                          SongList(),
-                          SongList(),
-                          SongList(),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
+                          SongList(
+                            albumURI: 'images/wallhaven-wydwyr_2560x1440.png',
+                          ),
                         ])),
               ],
             ),

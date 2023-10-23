@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:hive/hive.dart';
 
 part 'song_entity.g.dart';
+//dart run build_runner build
 
 List<SongEntity> songEntityFromJson(String str) => List<SongEntity>.from(json.decode(str).map((x) => SongEntity.fromJson(x)));
 String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));

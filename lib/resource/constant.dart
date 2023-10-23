@@ -4,5 +4,5 @@ const hiveBoxes = [
   // 本地音乐
   {'name': 'localMusic', 'limit': false},
   // 歌单
-  {'name': 'SongList', 'limit': false},
+  {'name': 'songList', 'limit': false},
 ];

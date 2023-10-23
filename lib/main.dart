@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
@@ -21,10 +21,17 @@ Future<void> main() async {
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   int sdkInt = androidInfo.version.sdkInt!;
 
-  // var directory = await getApplicationSupportDirectory();
-  var directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
+  // 初始化 Hive
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    // await Hive.initFlutter('wuhou_music/Database');
+  } else if (Platform.isIOS) {
+    // await Hive.initFlutter('Database');
+  } else {
+    var directory = await getApplicationDocumentsDirectory();
+    Hive.init(directory.path);
+  }
   Hive.registerAdapter(SongEntityAdapter());
+  Hive.registerAdapter(SongListEntityAdapter());
   for (final box in hiveBoxes) {
     await openHiveBox(
       box['name'].toString(),
@@ -33,7 +40,7 @@ Future<void> main() async {
   }
   Hive.box('globalParam').put('sdkInt', sdkInt);
 
-
+  // 初始化 audio_service
   await initServices();
 
   runApp(const MyApp());
@@ -82,8 +89,8 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
     File dbFile = File('$dirPath/$boxName.hive');
     File lockFile = File('$dirPath/$boxName.lock');
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      dbFile = File('$dirPath/BlackHole/$boxName.hive');
-      lockFile = File('$dirPath/BlackHole/$boxName.lock');
+      dbFile = File('$dirPath/wuhou_music/$boxName.hive');
+      lockFile = File('$dirPath/wuhou_music/$boxName.lock');
     }
     await dbFile.delete();
     await lockFile.delete();
