@@ -17,7 +17,7 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SongListEntity(
-      id: fields[0] as int,
+      id: fields[0] as String,
       songList: fields[1] as String,
       songListAlbum: fields[2] as String,
       count: fields[3] as int,

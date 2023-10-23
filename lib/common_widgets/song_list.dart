@@ -1,13 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
+import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/resource/r.dart';
-import 'package:wuhoumusic/utils/request_client.dart';
 
 class SongList extends StatelessWidget {
 
-  SongList({super.key,this.albumURI});
+  SongList({super.key,required this.id,required this.songList,this.songListAlbum,required this.count});
 
-  String? albumURI;
+  String id;
+  String songList;
+  String? songListAlbum;
+  int count;
 
   /// 底部弹窗
   _showModalBottomSheet(BuildContext context){
@@ -19,14 +27,21 @@ class SongList extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: Icon(
-                    Icons.photo_camera),
-                title: Text("Camera"),
-                onTap: () async {},
+                    Icons.edit),
+                title: Text("编辑"),
+                onTap: () async {
+
+                  var box = Hive.box(Keys.hiveSongList);
+                  var temp = box.get(Keys.localSongList);
+                  List<SongListEntity> songList = songListFromJson(jsonEncode(temp));
+                  songList.removeWhere((element) => element.id == id);
+                  box.put(Keys.localSongList, songList);
+                },
               ),
               ListTile(
                 leading: Icon(
-                    Icons.photo_library),
-                title: Text("Gallery"),
+                    Icons.delete),
+                title: Text("删除"),
                 onTap: () async {},
               ),
             ],
@@ -45,8 +60,8 @@ class SongList extends StatelessWidget {
           vertical: 0, horizontal: 8),
       child: Row(
         children: [
-          Image.network(
-            '${RequestClient.apiPrefix}/$albumURI',
+          Image.file(
+            File(songListAlbum!),
             width: 100,
             height: 100,
             errorBuilder: (BuildContext context,Object error,StackTrace? stackTrace){return Image.asset(R.images.logo,width: 100,height: 100,);},
@@ -57,8 +72,8 @@ class SongList extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('印象中的那些歌'),
-              Text('共100首'),
+              Text(songList),
+              Text('共$count首'),
             ],
           ),
           Spacer(),

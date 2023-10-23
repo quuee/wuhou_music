@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'dart:developer' as developer;
@@ -31,8 +32,8 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
   /// 扫描本地
   Future<List<SongEntity>> _fetchSongs() async {
     developer.log('_fetchSongs...', name: 'LocalMusicPage');
-    var box = Hive.box('localMusic');
-    var localSongs = box.get('localSongs',defaultValue: <SongEntity>[]);
+    var box = Hive.box(Keys.hiveLocalMusic);
+    var localSongs = box.get(Keys.localSong,defaultValue: <SongEntity>[]);
     List<SongEntity> temp = songEntityFromJson(jsonEncode(localSongs));
     if (localSongs.isNotEmpty) {
       return temp;
@@ -60,7 +61,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
 
-      box.put('localSongs', temp);
+      box.put(Keys.localSong, temp);
       return temp;
     } finally {
       cursor?.close();

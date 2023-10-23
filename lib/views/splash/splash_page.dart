@@ -12,7 +12,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
-
   /// 搞一个动画
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -29,15 +28,16 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         AnimationController(vsync: this, duration: const Duration(seconds: 1))
           ..drive(_tween);
 
-    _animation = CurvedAnimation(parent: _animationController, curve: Curves.easeInQuart);
+    _animation = CurvedAnimation(
+        parent: _animationController, curve: Curves.easeInQuart);
 
-    Future.delayed(const Duration(milliseconds: 300),(){
-      _animationController.forward();//启动动画
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _animationController.forward(); //启动动画
     });
 
     _animationController.addStatusListener((status) {
-      if(status == AnimationStatus.completed){
-        Future.delayed(const Duration(milliseconds: 300),(){
+      if (status == AnimationStatus.completed) {
+        Future.delayed(const Duration(milliseconds: 300), () {
           /// 跳转到首页，不做强制登录
           Get.offAndToNamed(Routes.login);
         });
@@ -46,10 +46,18 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   }
 
   _permission() async {
-    var permissionStatus = await Permission.storage.request();
-    if (permissionStatus == PermissionStatus.granted) {
+    // 有些权限Android ios 不同需要单独申请
+    Map<Permission, PermissionStatus> statuses =
+        await [Permission.storage, Permission.photos].request();
 
-    } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
+    PermissionStatus tempStatus = PermissionStatus.granted;
+    statuses.forEach((key, value) {
+      if (!value.isGranted) {
+        tempStatus = value;
+        return;
+      }
+    });
+    if (tempStatus != PermissionStatus.granted) {
       await openAppSettings();
     }
   }

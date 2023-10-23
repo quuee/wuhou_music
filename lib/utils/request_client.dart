@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 class RequestClient {
   /// default options
   static const String apiPrefix=
-      'http://192.168.2.143:10068/api-v1'; // dio不能解析127.0.0.1
+      'http://192.168.2.170:10068/api-v1'; // dio不能解析127.0.0.1
   //请求时间
   static const int connectTimeout = 60;
   //响应时间

@@ -11,7 +11,7 @@ String songListToJson(List<SongListEntity> data) => json.encode(List<dynamic>.fr
 @HiveType(typeId: 1)
 class SongListEntity {
   @HiveField(0)
-  int id;
+  String id;
   @HiveField(1)
   String songList;
   @HiveField(2)
