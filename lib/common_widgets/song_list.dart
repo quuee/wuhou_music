@@ -1,16 +1,18 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:wuhoumusic/model/song_list_entity.dart';
+import 'package:get/get.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
-import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/resource/r.dart';
+import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
 class SongList extends StatelessWidget {
-
-  SongList({super.key,required this.id,required this.songList,this.songListAlbum,required this.count});
+  SongList({
+    super.key,
+    required this.id,
+    required this.songList,
+    this.songListAlbum,
+    required this.count,
+  });
 
   String id;
   String songList;
@@ -18,35 +20,59 @@ class SongList extends StatelessWidget {
   int count;
 
   /// 底部弹窗
-  _showModalBottomSheet(BuildContext context){
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(
-                    Icons.edit),
-                title: Text("编辑"),
-                onTap: () async {
+  _showModalBottomSheet() {
+    // showModalBottomSheet(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return Column(
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: <Widget>[
+    //           ListTile(
+    //             leading: Icon(
+    //                 Icons.edit),
+    //             title: Text("编辑"),
+    //             onTap: () async {
+    //
+    //             },
+    //           ),
+    //           ListTile(
+    //             leading: Icon(
+    //                 Icons.delete),
+    //             title: Text("删除"),
+    //             onTap: () async {
+    //
+    //               deleteSongList!();
+    //
+    //               Get.back();
+    //             },
+    //           ),
+    //         ],
+    //       );
+    //     });
 
-                  var box = Hive.box(Keys.hiveSongList);
-                  var temp = box.get(Keys.localSongList);
-                  List<SongListEntity> songList = songListFromJson(jsonEncode(temp));
-                  songList.removeWhere((element) => element.id == id);
-                  box.put(Keys.localSongList, songList);
-                },
-              ),
+    Get.bottomSheet(
+        Container(
+          height: 150,
+          child: Column(
+            children: [
               ListTile(
-                leading: Icon(
-                    Icons.delete),
-                title: Text("删除"),
+                leading: Icon(Icons.edit),
+                title: Text("编辑"),
                 onTap: () async {},
               ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text("删除"),
+                onTap: () async {
+                  MineController c = Get.find<MineController>();
+                  c.deleteSongList(id);
+                  Get.back();
+                },
+              ),
             ],
-          );
-        });
+          ),
+        ),
+        backgroundColor: Colors.white70);
   }
 
   @override
@@ -54,17 +80,25 @@ class SongList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
-          color: Colors.white60,
-          borderRadius: BorderRadius.circular(10)),
-      padding: const EdgeInsets.symmetric(
-          vertical: 0, horizontal: 8),
+          color: Colors.white60, borderRadius: BorderRadius.circular(10)),
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: Row(
         children: [
-          Image.file(
-            File(songListAlbum!),
-            width: 100,
-            height: 100,
-            errorBuilder: (BuildContext context,Object error,StackTrace? stackTrace){return Image.asset(R.images.logo,width: 100,height: 100,);},
+          ClipRRect(
+            child: Image.file(
+              File(songListAlbum!),
+              width: 100,
+              height: 100,
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stackTrace) {
+                return Image.asset(
+                  R.images.logo,
+                  width: 100,
+                  height: 100,
+                );
+              },
+            ),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           SizedBox(
             width: 10,
@@ -82,7 +116,7 @@ class SongList extends StatelessWidget {
           // })
           IconButton(
               onPressed: () {
-                _showModalBottomSheet(context);
+                _showModalBottomSheet();
               },
               icon: Icon(AliIcons.more))
         ],

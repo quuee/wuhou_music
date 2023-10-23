@@ -1,71 +1,59 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
 import 'package:images_picker/images_picker.dart';
-import 'package:uuid/uuid.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_list.dart';
-import 'package:wuhoumusic/model/song_list_entity.dart';
-import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
-class MinePage extends StatefulWidget {
-  const MinePage({super.key});
+class MinePage extends StatelessWidget {
+  MinePage({super.key});
 
-  @override
-  State<MinePage> createState() => _MinePageState();
-}
-
-class _MinePageState extends State<MinePage> {
+  MineController controller = Get.find<MineController>();
   static final audioPlayHandler = GetIt.I.get<AudioPlayerHandler>();
 
-  List<SongListEntity>? songList;
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
 
-  String? imagePath;
+  onRefresh() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    controller.loadSongList();
+    _refreshController.refreshCompleted();
+  }
+  onLoading() async{
+    await Future.delayed(Duration(milliseconds: 1000));
 
-  late TextEditingController _textEditingController;
-
-  _loadSongList() {
-    var box = Hive.box('songList');
-    // todo 从hive获取本地歌单
-    var temp = box.get('localSongList', defaultValue: <SongListEntity>[]);
-    songList = songListFromJson(jsonEncode(temp));
-    if (songList == null || songList!.isEmpty) {
-      // 从服务端加载
-    }
+    _refreshController.loadComplete();
   }
 
-  @override
-  initState() {
-    super.initState();
-    _textEditingController = TextEditingController();
-    _loadSongList();
-  }
 
   /// 创建歌单的中间弹窗
-  _createSongListInput(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('请输入歌单名称'),
-            content: Container(
-              height: 150,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: _textEditingController,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
+  _inputDialog() {
+    Get.defaultDialog(
+      title: '请输入歌单名称',
+      content: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: controller.songListNameContro,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            // TODO 选择完 不能立即显示  如何更新ui
+            controller.imagePath != null
+                ? Image.file(
+                    File(controller.imagePath!),
+                    width: 40,
+                    height: 40,
+                  )
+                : ElevatedButton(
                     onPressed: () async {
                       List<Media>? res = await ImagesPicker.pick(
                           count: 1,
@@ -74,48 +62,25 @@ class _MinePageState extends State<MinePage> {
                       res?.forEach((element) {
                         developer.log(element.toString(), name: 'ImagesPicker');
                       });
-                      imagePath = res![0].path;
+                      controller.imagePath = res![0].path;
                     },
                     child: Icon(Icons.add_photo_alternate_outlined),
                   ),
-                  // TODO 选择完 不能立即显示  如何更新ui
-                  imagePath != null
-                      ? Image.file(
-                          File(imagePath!),
-                          width: 40,
-                          height: 40,
-                        )
-                      : Container(),
-                ],
-              ),
-            ),
-            actions: [
-              ElevatedButton(
-                child: Text('取消'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ElevatedButton(
-                child: Text('确认'),
-                onPressed: () {
-                  var box = Hive.box(Keys.hiveSongList);
-                  var s = SongListEntity(
-                      id: Uuid().v1(),
-                      songList: _textEditingController.value.text,
-                      songListAlbum: imagePath ?? '',
-                      count: 0);
-                  songList!.add(s);
-                  box.put(Keys.localSongList, songList);
-                  Navigator.of(context).pop();
-                  _textEditingController.clear();
-                  imagePath = null;
-                  setState(() {});
-                },
-              ),
-            ],
-          );
-        });
+          ],
+        ),
+      ),
+      confirm: ElevatedButton(
+          onPressed: () {
+            controller.addSongList();
+            Get.back();
+          },
+          child: Text('确认')),
+      cancel: ElevatedButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text('取消')),
+    );
   }
 
   /// 创建顶部四个功能按钮
@@ -141,7 +106,7 @@ class _MinePageState extends State<MinePage> {
             IconButton(
               icon: Icon(Icons.add_chart),
               onPressed: () {
-                _createSongListInput(context);
+                _inputDialog();
               },
             ),
             Text('创建歌单')
@@ -183,6 +148,7 @@ class _MinePageState extends State<MinePage> {
             color: Colors.deepPurple[100],
             child: Column(
               children: [
+                /// 功能按钮
                 Expanded(
                     flex: 1,
                     child: Container(
@@ -192,21 +158,39 @@ class _MinePageState extends State<MinePage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: _buildIconButton())),
+
+                /// 歌单
                 Expanded(
                     flex: 6,
-                    child: ListView.builder(
-                        itemCount: songList!.length,
-                        itemBuilder: (context, index) {
-                          return SongList(
-                            id: songList![index].id,
-                            songList: songList![index].songList,
-                            count: songList![index].count,
-                            songListAlbum: songList![index].songListAlbum,
-                          );
-                        })),
+                    child: GetBuilder<MineController>(
+                      builder: (c) {
+                        return SmartRefresher(
+                          enablePullDown: true,
+                          enablePullUp: true,
+                          header: WaterDropHeader(),
+                          footer: ClassicFooter(),
+                          controller: _refreshController,
+                          onRefresh: onRefresh,//下拉刷新
+                          onLoading: onLoading,//上拉加载
+                          child: ListView.builder(
+                              itemCount: c.songList!.length,
+                              itemBuilder: (context, index) {
+                                return SongList(
+                                  id: c.songList![index].id,
+                                  songList: c.songList![index].songList,
+                                  count: c.songList![index].count,
+                                  songListAlbum: c.songList![index].songListAlbum,
+                                );
+                              }),
+                        );
+
+                      },
+                    )),
               ],
             ),
           ),
+
+          /// 浮动的播放栏
           Positioned(
               bottom: 0.5,
               child: SizedBox(

@@ -32,7 +32,7 @@ class Routes {
       name: home, page: () => const HomePage(),
     ),
     GetPage(
-      name: mine, page: () => const MinePage(),
+      name: mine, page: () => MinePage(),
     ),
     GetPage(
       name: play, page: () => const PlayPage(),
