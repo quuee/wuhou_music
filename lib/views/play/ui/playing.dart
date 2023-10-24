@@ -2,9 +2,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 
-
 class PlayingPage extends StatelessWidget {
-  const PlayingPage({super.key,required this.audioHandler});
+  const PlayingPage({super.key, required this.audioHandler});
 
   final AudioPlayerHandler audioHandler;
 
@@ -28,10 +27,7 @@ class PlayingPage extends StatelessWidget {
                 ),
               ),
             Text(mediaItem.album ?? '',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .titleLarge),
+                style: Theme.of(context).textTheme.titleLarge),
             Text(mediaItem.title),
           ],
         );
@@ -39,5 +35,3 @@ class PlayingPage extends StatelessWidget {
     );
   }
 }
-
-

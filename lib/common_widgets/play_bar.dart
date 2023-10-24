@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
@@ -8,10 +9,9 @@ import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 class PlayBar extends StatelessWidget {
   const PlayBar({
     super.key,
-    required this.audioPlayerHandler,
   });
 
-  final AudioPlayerHandler audioPlayerHandler;
+  static final AudioPlayerHandler audioPlayerHandler = GetIt.I.get<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +30,7 @@ class PlayBar extends StatelessWidget {
                 end: Alignment.centerRight,
                 colors: [Colors.deepPurple, Color(0xFFB39DDB)])),
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque, // opaque：空白部分点击也有效果，但是会阻止后面目标接收事件；Translucent：空白部分点击也有效果，也允许其后面的目标接收事件。
           onTap: () {
             Get.toNamed(Routes.play);
           },

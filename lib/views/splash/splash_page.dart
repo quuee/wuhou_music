@@ -12,7 +12,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
-  /// 搞一个动画
+  // 搞一个动画
   late AnimationController _animationController;
   late Animation<double> _animation;
   late Tween<double> _tween;

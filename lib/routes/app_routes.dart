@@ -1,8 +1,7 @@
 import 'package:get/get.dart';
-import 'package:wuhoumusic/views/home/home_page.dart';
 import 'package:wuhoumusic/views/login/login_page.dart';
-import 'package:wuhoumusic/views/mine/mine_page.dart';
 import 'package:wuhoumusic/views/mine/ui/local_music_page.dart';
+import 'package:wuhoumusic/views/mine/ui/song_list_detail_page.dart';
 import 'package:wuhoumusic/views/play/play_page.dart';
 import 'package:wuhoumusic/views/root/root_page.dart';
 import 'package:wuhoumusic/views/login/binding.dart';
@@ -13,10 +12,11 @@ class Routes {
   static const splash = '/';
   static const login = '/login';
   static const root = '/root';
-  static const home = '/home';
-  static const mine = '/mine';
+  // static const home = '/home';
+  // static const mine = '/mine';
   static const play = '/play';
   static const localMusicPage = '/local_music_page';
+  static const songListDetail = '/song_list_detail';
 
   static final routes = <GetPage>[
     GetPage(
@@ -29,16 +29,13 @@ class Routes {
         name: root, page: () => const RootPage(), binding: RootBinding()
     ),
     GetPage(
-      name: home, page: () => const HomePage(),
-    ),
-    GetPage(
-      name: mine, page: () => MinePage(),
-    ),
-    GetPage(
       name: play, page: () => const PlayPage(),
     ),
     GetPage(
       name: localMusicPage, page: () => const LocalMusicPage(),
+    ),
+    GetPage(
+      name: songListDetail, page: () => const SongListDetailPage(),
     ),
   ];
 }

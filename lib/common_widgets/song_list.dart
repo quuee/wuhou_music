@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/r.dart';
+import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
 class SongList extends StatelessWidget {
@@ -61,9 +62,13 @@ class SongList extends StatelessWidget {
                 title: Text("编辑"),
                 onTap: () async {
                   MineController c = Get.find<MineController>();
-                  SongListEntity s = SongListEntity(id: id,listTitle: listTitle,listAlbum: listAlbum!,count: count,);
+                  SongListEntity s = SongListEntity(
+                    id: id,
+                    listTitle: listTitle,
+                    listAlbum: listAlbum!,
+                    count: count,
+                  );
                   c.addOrUpdateSongListDialog(s);
-
                 },
               ),
               ListTile(
@@ -83,50 +88,57 @@ class SongList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 5),
-      decoration: BoxDecoration(
-          color: Colors.white60, borderRadius: BorderRadius.circular(10)),
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-      child: Row(
-        children: [
-          ClipRRect(
-            child: Image.file(
-              File(listAlbum!),
-              width: 100,
-              height: 100,
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                return Image.asset(
-                  R.images.logo,
-                  width: 100,
-                  height: 100,
-                );
-              },
+    final child = GestureDetector(
+      onTap: () {
+        Get.toNamed(Routes.songListDetail, parameters: {'title': listTitle});
+      },
+      behavior: HitTestBehavior.translucent,
+      child: Container(
+        margin: const EdgeInsets.only(top: 5),
+        decoration: BoxDecoration(
+            color: Colors.white60, borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+        child: Row(
+          children: [
+            ClipRRect(
+              child: Image.file(
+                File(listAlbum!),
+                width: 100,
+                height: 100,
+                errorBuilder: (BuildContext context, Object error,
+                    StackTrace? stackTrace) {
+                  return Image.asset(
+                    R.images.logo,
+                    width: 100,
+                    height: 100,
+                  );
+                },
+              ),
+              borderRadius: BorderRadius.circular(5.0),
             ),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(listTitle),
-              Text('共$count首'),
-            ],
-          ),
-          Spacer(),
-          // PopupMenuButton(itemBuilder: (context){
-          //   return [PopupMenuItem(child: Text('menu1'),value: 'menu1',)];
-          // })
-          IconButton(
-              onPressed: () {
-                _showModalBottomSheet();
-              },
-              icon: Icon(AliIcons.more))
-        ],
+            SizedBox(
+              width: 10,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(listTitle),
+                Text('共$count首'),
+              ],
+            ),
+            Spacer(),
+            // PopupMenuButton(itemBuilder: (context){
+            //   return [PopupMenuItem(child: Text('menu1'),value: 'menu1',)];
+            // })
+            IconButton(
+                onPressed: () {
+                  _showModalBottomSheet();
+                },
+                icon: Icon(AliIcons.more))
+          ],
+        ),
       ),
     );
+    return child;
   }
 }

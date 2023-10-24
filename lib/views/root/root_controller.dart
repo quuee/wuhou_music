@@ -21,7 +21,6 @@ class RootController extends GetxController{
   ];
 
   changeBottomBarIndex(int index){
-    // print('changeBottomBarIndex:$index');
     developer.log('changeBottomBarIndex:$index',name: 'RootController');
     bottomBarIndex.value = index;
   }

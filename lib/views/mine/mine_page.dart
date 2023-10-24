@@ -143,9 +143,7 @@ class MinePage extends StatelessWidget {
               child: SizedBox(
                 /// Positioned不能自适应宽度
                 width: MediaQuery.of(context).size.width,
-                child: PlayBar(
-                  audioPlayerHandler: audioPlayHandler,
-                ),
+                child: PlayBar(),
               ))
         ],
       ),

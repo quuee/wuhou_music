@@ -95,6 +95,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
                     ),
                   ),
                   onDismissed: (dismissDirection) {
+                    // TODO hive中也需要删除
                     _audioHandler.removeQueueItemAt(i);
                   },
                   child: Material(
@@ -115,7 +116,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
       appBar: AppBar(
         title: const Text('本地音乐'),
       ),
-      bottomNavigationBar: PlayBar(audioPlayerHandler: _audioHandler),
+      bottomNavigationBar: PlayBar(),
       body: child,
     );
   }

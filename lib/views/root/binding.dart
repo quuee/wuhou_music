@@ -16,7 +16,6 @@ class RootBinding implements Bindings{
 
 
     Get.lazyPut<MineController>(() => MineController());
-    // Get.lazyPut<LocalMusicController>(() => LocalMusicController());
 
 
   }
