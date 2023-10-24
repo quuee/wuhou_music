@@ -13,7 +13,7 @@ String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from
 @HiveType(typeId: 0)
 class SongEntity {
   @HiveField(0)
-  late int id;
+  late String id;
   @HiveField(1)
   String? album;
   @HiveField(2)
@@ -46,11 +46,11 @@ class SongEntity {
 
   /// Converts the song info to [AudioService] media item.
   MediaItem toMediaItem() => MediaItem(
-    id: id.toString(),
+    id: uri,
     album: album,
     artist: artist,
     title: title,
-    duration: Duration(seconds: duration),
+    duration: Duration(milliseconds: duration),
     artUri: Uri.parse(artUri),
     extras: <String, dynamic>{
       'loadThumbnailUri': uri,
@@ -68,7 +68,7 @@ class SongEntity {
 
   /// Creates a song from data retrieved from the MediaStore.
   factory SongEntity.fromMediaStore(List<Object?> data) => SongEntity(
-    id: data[0] as int,
+    id: data[0] as String,
     album: data[1] as String?,
     albumId: data[2] as int,
     artist: data[3] as String,
@@ -79,7 +79,7 @@ class SongEntity {
   /// Returns a markup of what data to get from the cursor.
   static NativeCursorGetBatch createBatch(NativeCursor cursor) =>
       cursor.batchedGet()
-        ..getInt(0)
+        ..getString(0)
         ..getString(1)
         ..getInt(2)
         ..getString(3)

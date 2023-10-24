@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'package:android_content_provider/android_content_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'dart:developer' as developer;
@@ -31,17 +28,12 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
 
   /// 扫描本地
   Future<List<SongEntity>> _fetchSongs() async {
-    developer.log('_fetchSongs...', name: 'LocalMusicPage');
-    var box = Hive.box(Keys.hiveLocalMusic);
-    var localSongs = box.get(Keys.localSong,defaultValue: <SongEntity>[]);
-    List<SongEntity> temp = songEntityFromJson(jsonEncode(localSongs));
-    if (localSongs.isNotEmpty) {
-      return temp;
-    }
+    developer.log('_fetchSongs...', name: 'LocalMusicPage _fetchSongs');
 
     final cursor = await AndroidContentResolver.instance.query(
       // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
       uri: 'content://media/external/audio/media',
+      // uri: 'content://media/internal/audio/media',
       projection: SongEntity.mediaStoreProjection,
       selection: '(mime_type = ? or mime_type = ?) and duration > ?',
       selectionArgs: <String>['audio/mpeg','audio/ogg','60000'],
@@ -52,7 +44,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
           (await cursor!.batchedGet().getCount().commit()).first as int;
       final batch = SongEntity.createBatch(cursor);
       final songsData = await batch.commitRange(0, songCount);
-      temp = songsData
+      List<SongEntity> localSongs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
       //     .where((element) {
       //   developer.log(
@@ -61,9 +53,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
       //   return element.duration / 1000 > 60; // 大于60秒的音频
       // })
           .toList();
-
-      box.put(Keys.localSong, temp);
-      return temp;
+      return localSongs;
     } finally {
       cursor?.close();
     }
@@ -95,7 +85,7 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
                     ),
                   ),
                   onDismissed: (dismissDirection) {
-                    // TODO hive中也需要删除
+
                     _audioHandler.removeQueueItemAt(i);
                   },
                   child: Material(

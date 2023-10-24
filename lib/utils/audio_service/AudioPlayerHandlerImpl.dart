@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
 
 import 'dart:developer' as developer;
+
+import 'package:wuhoumusic/resource/constant.dart';
 
 class QueueState {
   static const QueueState empty =
@@ -47,7 +53,6 @@ abstract class AudioPlayerHandler implements AudioHandler {
 class AudioPlayerHandlerImpl extends BaseAudioHandler
     with SeekHandler
     implements AudioPlayerHandler {
-
   // final BehaviorSubject<List<MediaItem>> _recentSubject =
   //     BehaviorSubject.seeded(<MediaItem>[]);
 
@@ -167,8 +172,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
           ? queue[queueIndex]
           : null;
     }).whereType<MediaItem>().distinct().listen(mediaItem.add);
+
     // Propagate all events from the audio player to AudioService clients.
-    _player.playbackEventStream.listen(_broadcastState,onError: _playbackError);
+    _player.playbackEventStream
+        .listen(_broadcastState, onError: _playbackError);
 
     _player.shuffleModeEnabledStream
         .listen((enabled) => _broadcastState(_player.playbackEvent));
@@ -190,19 +197,42 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         .pipe(queue);
 
     // Load the playlist.
-    bool isE = queue.value.isEmpty;
-    if(isE){
-      // todo 从hive恢复最近一次的队列
-      await _player.setAudioSource(_playlist,preload: false);
-    }else{
+    if (queue.value.isEmpty) {
+      // 从hive恢复最近一次的队列
+      final List lastSongEntityList = await Hive.box(Keys.hiveCache)
+          .get(Keys.lastQueue, defaultValue: [])?.toList() as List;
+      final int lastIndex = await Hive.box(Keys.hiveCache)
+          .get(Keys.lastIndex, defaultValue: 0) as int;
+      final int lastPos = await Hive.box(Keys.hiveCache)
+          .get(Keys.lastPos, defaultValue: 0) as int;
+
+      if (lastSongEntityList.isNotEmpty) {
+        List<SongEntity> temp =
+            songEntityFromJson(jsonEncode(lastSongEntityList));
+        final List<MediaItem> lastQueue =
+            temp.map((e) => e.toMediaItem()).toList();
+        if (lastQueue.isNotEmpty) {
+          _playlist.addAll(_itemsToSources(lastQueue));
+          await _player.setAudioSource(_playlist);
+
+          if (lastIndex != 0 || lastPos > 0) {
+            await _player.seek(Duration(seconds: lastPos), index: lastIndex);
+          }
+        }
+      } else {
+        await _player
+            .setAudioSource(_playlist, preload: false)
+            .onError((error, stackTrace) {});
+      }
+    } else {
       _playlist.addAll(queue.value.map(_itemToSource).toList());
       await _player.setAudioSource(_playlist);
     }
-
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
     final audioSource = AudioSource.uri(Uri.parse(mediaItem.id));
+    developer.log('${audioSource.uri}',name: '_itemToSource');
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -238,6 +268,21 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   //           .shareValue();
   //   }
   // }
+
+  Future<void> addLastQueue(List<MediaItem> queue) async {
+    if (queue.isNotEmpty) {
+      // 将queue mediaItem 转成 map 或 songEntity
+      final lastSongEntityList = queue
+          .map((item) => SongEntity(
+              id: item.id,
+              album: item.album,
+              artist: item.artist ?? '',
+              title: item.title,
+              duration: item.duration!.inMilliseconds))
+          .toList();
+      Hive.box(Keys.hiveCache).put(Keys.lastQueue, lastSongEntityList);
+    }
+  }
 
   @override
   Future<void> addQueueItem(MediaItem mediaItem) async {
@@ -298,7 +343,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> play() => _player.play();
 
   @override
-  Future<void> pause() => _player.pause();
+  Future<void> pause() async {
+    _player.pause();
+    await Hive.box(Keys.hiveCache)
+        .put(Keys.lastIndex, _player.currentIndex);
+    await Hive.box(Keys.hiveCache)
+        .put(Keys.lastPos, _player.position.inSeconds);
+    await addLastQueue(queue.value);
+  }
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);
@@ -308,6 +360,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await _player.stop();
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
+
+    await Hive.box(Keys.hiveCache)
+        .put(Keys.lastIndex, _player.currentIndex);
+    await Hive.box(Keys.hiveCache)
+        .put(Keys.lastPos, _player.position.inSeconds);
+    await addLastQueue(queue.value);
   }
 
   /// Broadcasts the current state to all clients.
@@ -344,10 +402,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   void _playbackError(err) {
-    developer.log('Error from audio_service:${err.hashCode}',name: '_playbackError');
+    developer.log('Error from audio_service:${err.hashCode}',
+        name: '_playbackError');
     if (err is PlatformException &&
         err.code == 'abort' &&
         err.message == 'Connection aborted') return;
-    developer.log('Error from audio_service:$err',name: '_playbackError');
+    developer.log('Error from audio_service:$err', name: '_playbackError');
   }
 }

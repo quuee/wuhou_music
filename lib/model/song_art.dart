@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/resource/constant.dart';
 
 
 class SongArt extends StatefulWidget {
@@ -29,8 +30,8 @@ class _SongArtState extends State<SongArt> {
   @override
   void initState() {
     super.initState();
-    var box = Hive.box('globalParam');
-    sdkInt = int.parse(box.get('sdkInt'));
+    var box = Hive.box(Keys.hiveGlobalParam);
+    sdkInt = int.parse(box.get(Keys.sdkInt));
   }
 
   @override

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 
 class PlayingPage extends StatelessWidget {
@@ -22,7 +25,15 @@ class PlayingPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-                    child: Image.network('${mediaItem.artUri!}'),
+                    child: Image.file(
+                      File(mediaItem.artUri!.path),
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return Image.asset(
+                          R.images.logo,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

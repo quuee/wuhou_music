@@ -22,5 +22,5 @@ class _Images {
 
 class _Music {
   static const path = 'assets/music';
-  final fallInTheDark = '$path/Fall in the Dark.mp3';
+
 }

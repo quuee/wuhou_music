@@ -38,7 +38,7 @@ Future<void> main() async {
       limit: box['limit'] as bool? ?? false,
     );
   }
-  Hive.box('globalParam').put('sdkInt', sdkInt);
+  Hive.box(Keys.hiveGlobalParam).put(Keys.sdkInt, sdkInt);
 
   // 初始化 audio_service
   await initServices();
