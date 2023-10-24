@@ -18,8 +18,8 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
     };
     return SongListEntity(
       id: fields[0] as String,
-      songList: fields[1] as String,
-      songListAlbum: fields[2] as String,
+      listTitle: fields[1] as String,
+      listAlbum: fields[2] as String,
       count: fields[3] as int,
     );
   }
@@ -31,9 +31,9 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.songList)
+      ..write(obj.listTitle)
       ..writeByte(2)
-      ..write(obj.songListAlbum)
+      ..write(obj.listAlbum)
       ..writeByte(3)
       ..write(obj.count);
   }

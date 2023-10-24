@@ -13,30 +13,30 @@ class SongListEntity {
   @HiveField(0)
   String id;
   @HiveField(1)
-  String songList;
+  String listTitle;
   @HiveField(2)
-  String songListAlbum;
+  String listAlbum;
   @HiveField(3)
   int count;
 
   SongListEntity({
     required this.id,
-    required this.songList,
-    required this.songListAlbum,
+    required this.listTitle,
+    required this.listAlbum,
     required this.count,
   });
 
   factory SongListEntity.fromJson(Map<String, dynamic> json) => SongListEntity(
     id: json["id"],
-    songList: json["songList"],
-    songListAlbum: json["songListAlbum"],
+    listTitle: json["listTitle"],
+    listAlbum: json["listAlbum"],
     count: json["count"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "songList": songList,
-    "songListAlbum": songListAlbum,
+    "listTitle": listTitle,
+    "listAlbum": listAlbum,
     "count": count,
   };
 }

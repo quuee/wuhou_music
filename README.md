@@ -1,2 +1,56 @@
 
-## 先完成本地音乐
+## android 查询媒体文件 类ContentResolver
+MediaStore.Audio.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的音频文件Uri路径。
+MediaStore.Audio.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的音频文件Uri路径。
+MediaStore.Images.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的图片文件Uri路径。
+MediaStore.Images.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的图片文件Uri路径。
+MediaStore.Video.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的视频文件Uri路径。
+MediaStore.Video.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的视频文件Uri路径。
+
+Image(图片)	content://media/external/images/media	MediaStore.Images.Media.EXTERNAL_CONTENT_URI	Pictures	DCIM、Pictures
+Audio(音频)	content://media/external/audio/media	MediaStore.Audio.Media.EXTERNAL_CONTENT_URI	Music	Alarms、Music、Notifications、Podcasts、Ringtones
+Video(视频)	content://media/external/video/media	MediaStore.Video.Media.EXTERNAL_CONTENT_URI	Movies	DCIM 、Movies
+Download(下载文件)	content://media/external/downloads	MediaStore.Downloads.EXTERNAL_CONTENT_URI	Download	Download
+
+查询方法：query
+Uri：这个Uri代表要查询的内容提供者的Uri。上文说到多媒体类型的Uri一般都直接从MediaStore里取得，例如我要取所有图片的信息，就必须利用MediaStore.Images.Media.EXTERNAL_CONTENT_URI这个Uri。
+projection： 代表告诉Provider要返回的字段内容（列Column），用一个String数组来表示。用null表示返回Provider的所有字段内容（列Column）。
+selection：相当于SQL语句中的where子句，就是代表查询条件。null表示不进行添加筛选查询。
+selectArgs：如果selection里有？这个符号时，这里可以以实际值代替这个问号。如果Selections这个没有？的话，那么这个String数组可以为null。
+sortOrder：说明查询结果按什么来排序。相当于SQL语句中的Order by，升序 asc /降序 desc，null为默认排序
+
+类型：MimeType 
+Image(图片)	content://media/external/images/media	MediaStore.Images.Media.EXTERNAL_CONTENT_URI	image/*	Pictures	DCIM、Pictures
+Audio(音频)	content://media/external/audio/media	MediaStore.Audio.Media.EXTERNAL_CONTENT_URI	audio/*	Music	Alarms、Music、Notifications、Podcasts、Ringtones
+Video(视频)	content://media/external/video/media	MediaStore.Video.Media.EXTERNAL_CONTENT_URI	video/*	Movies	DCIM 、Movies
+Files(下载)	content://media/external/downloads	MediaStore.Downloads.EXTERNAL_CONTENT_URI	file/*	Download	Download
+
+
+音频文件比较常见的列名有:
+MediaStore.Audio.Media.TITLE：歌名
+MediaStore.Audio.Media.ARTIST：歌手
+MediaStore.Audio.Media.DURATION：总时长
+MediaStore.Audio.Media.DATA：地址
+MediaStore.Audio.Media.SIZE：大小
+
+视频文件比较常见的列名有:
+MediaStore.Video.Media.TITLE 名称
+MediaStore.Video.Media.DURATION 总时长
+MediaStore.Video.Media.DATA 地址
+MediaStore.Video.Media.SIZE 大小
+MediaStore.Video.Media.WIDTH：视频的宽度，以像素为单位。
+MediaStore.Video.Media.HEIGHT：视频的高度，以像素为单位
+
+
+图片文件比较常见的列名有:
+MediaStore.Images.Media._ID：磁盘上文件的路径
+MediaStore.Images.Media.DATA：磁盘上文件的路径
+MediaStore.Images.Media.DATE_ADDED：文件添加到media provider的时间（单位秒）
+MediaStore.Images.Media.DATE_MODIFIED：文件最后一次修改单元的时间
+MediaStore.Images.Media.DISPLAY_NAME：文件的显示名称
+MediaStore.Images.Media.HEIGHT：图像/视频的高度，以像素为单位
+MediaStore.Images.Media.MIME_TYPE：文件的MIME类型
+MediaStore.Images.Media.SIZE：文件的字节大小
+MediaStore.Images.Media.TITLE：标题
+MediaStore.Images.Media.WIDTH：图像/视频的宽度，以像素为单位。
+

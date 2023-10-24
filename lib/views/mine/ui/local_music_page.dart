@@ -43,8 +43,8 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
       // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
       uri: 'content://media/external/audio/media',
       projection: SongEntity.mediaStoreProjection,
-      selection: 'is_music != 0',
-      selectionArgs: null,
+      selection: '(mime_type = ? or mime_type = ?) and duration > ?',
+      selectionArgs: <String>['audio/mpeg','audio/ogg','60000'],
       sortOrder: null,
     );
     try {
@@ -54,12 +54,13 @@ class _LocalMusicPageState extends State<LocalMusicPage> {
       final songsData = await batch.commitRange(0, songCount);
       temp = songsData
           .map((data) => SongEntity.fromMediaStore(data))
-          .where((element) {
-        // developer.log(
-        //     'id:${element.id},album:${element.album},albumId:${element.albumId},artist:${element.artist},title${element.title},duration:${element.duration}',
-        //     name: '_fetchSongs');
-        return element.duration / 1000 > 60; // 大于60秒的音频
-      }).toList();
+      //     .where((element) {
+      //   developer.log(
+      //       'id:${element.id},album:${element.album},albumId:${element.albumId},artist:${element.artist},title${element.title},duration:${element.duration}',
+      //       name: '_fetchSongs');
+      //   return element.duration / 1000 > 60; // 大于60秒的音频
+      // })
+          .toList();
 
       box.put(Keys.localSong, temp);
       return temp;

@@ -1,9 +1,7 @@
 import 'dart:developer' as developer;
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:images_picker/images_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_list.dart';
@@ -17,8 +15,7 @@ class MinePage extends StatelessWidget {
   MineController controller = Get.find<MineController>();
   static final audioPlayHandler = GetIt.I.get<AudioPlayerHandler>();
 
-  RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   onRefresh() async {
     await Future.delayed(Duration(milliseconds: 1000));
@@ -27,61 +24,11 @@ class MinePage extends StatelessWidget {
   }
   onLoading() async{
     await Future.delayed(Duration(milliseconds: 1000));
-
     _refreshController.loadComplete();
   }
 
 
-  /// 创建歌单的中间弹窗
-  _inputDialog() {
-    Get.defaultDialog(
-      title: '请输入歌单名称',
-      content: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: controller.songListNameContro,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            // TODO 选择完 不能立即显示  如何更新ui
-            controller.imagePath != null
-                ? Image.file(
-                    File(controller.imagePath!),
-                    width: 40,
-                    height: 40,
-                  )
-                : ElevatedButton(
-                    onPressed: () async {
-                      List<Media>? res = await ImagesPicker.pick(
-                          count: 1,
-                          pickType: PickType.image,
-                          language: Language.System);
-                      res?.forEach((element) {
-                        developer.log(element.toString(), name: 'ImagesPicker');
-                      });
-                      controller.imagePath = res![0].path;
-                    },
-                    child: Icon(Icons.add_photo_alternate_outlined),
-                  ),
-          ],
-        ),
-      ),
-      confirm: ElevatedButton(
-          onPressed: () {
-            controller.addSongList();
-            Get.back();
-          },
-          child: Text('确认')),
-      cancel: ElevatedButton(
-          onPressed: () {
-            Get.back();
-          },
-          child: Text('取消')),
-    );
-  }
+
 
   /// 创建顶部四个功能按钮
   Widget _buildIconButton() {
@@ -106,7 +53,7 @@ class MinePage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add_chart),
               onPressed: () {
-                _inputDialog();
+                controller.addOrUpdateSongListDialog(null);
               },
             ),
             Text('创建歌单')
@@ -177,9 +124,9 @@ class MinePage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 return SongList(
                                   id: c.songList![index].id,
-                                  songList: c.songList![index].songList,
+                                  listTitle: c.songList![index].listTitle,
                                   count: c.songList![index].count,
-                                  songListAlbum: c.songList![index].songListAlbum,
+                                  listAlbum: c.songList![index].listAlbum,
                                 );
                               }),
                         );

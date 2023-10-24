@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
@@ -9,14 +10,14 @@ class SongList extends StatelessWidget {
   SongList({
     super.key,
     required this.id,
-    required this.songList,
-    this.songListAlbum,
+    required this.listTitle,
+    this.listAlbum,
     required this.count,
   });
 
   String id;
-  String songList;
-  String? songListAlbum;
+  String listTitle;
+  String? listAlbum;
   int count;
 
   /// 底部弹窗
@@ -58,7 +59,12 @@ class SongList extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.edit),
                 title: Text("编辑"),
-                onTap: () async {},
+                onTap: () async {
+                  MineController c = Get.find<MineController>();
+                  SongListEntity s = SongListEntity(id: id,listTitle: listTitle,listAlbum: listAlbum!,count: count,);
+                  c.addOrUpdateSongListDialog(s);
+
+                },
               ),
               ListTile(
                 leading: Icon(Icons.delete),
@@ -78,7 +84,7 @@ class SongList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2),
+      margin: const EdgeInsets.only(top: 5),
       decoration: BoxDecoration(
           color: Colors.white60, borderRadius: BorderRadius.circular(10)),
       padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
@@ -86,7 +92,7 @@ class SongList extends StatelessWidget {
         children: [
           ClipRRect(
             child: Image.file(
-              File(songListAlbum!),
+              File(listAlbum!),
               width: 100,
               height: 100,
               errorBuilder:
@@ -106,7 +112,7 @@ class SongList extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(songList),
+              Text(listTitle),
               Text('共$count首'),
             ],
           ),
