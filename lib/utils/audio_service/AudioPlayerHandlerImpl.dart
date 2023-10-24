@@ -274,7 +274,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       // 将queue mediaItem 转成 map 或 songEntity
       final lastSongEntityList = queue
           .map((item) => SongEntity(
-              id: item.id,
+              id: item.extras!['id'],//因为id会拼成uri给MediaItem，MediaItem在转songEntity需要转回来
               album: item.album,
               artist: item.artist ?? '',
               title: item.title,

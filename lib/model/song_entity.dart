@@ -44,6 +44,7 @@ class SongEntity {
     required this.duration,
   });
 
+  /// id:uri 这里必须换uri，不然找不到文件
   /// Converts the song info to [AudioService] media item.
   MediaItem toMediaItem() => MediaItem(
     id: uri,
@@ -54,6 +55,7 @@ class SongEntity {
     artUri: Uri.parse(artUri),
     extras: <String, dynamic>{
       'loadThumbnailUri': uri,
+      'id':id,
     },
   );
 
