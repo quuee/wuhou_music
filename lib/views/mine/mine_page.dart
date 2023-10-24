@@ -15,69 +15,76 @@ class MinePage extends StatelessWidget {
   MineController controller = Get.find<MineController>();
   static final audioPlayHandler = GetIt.I.get<AudioPlayerHandler>();
 
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   onRefresh() async {
     await Future.delayed(Duration(milliseconds: 1000));
     controller.loadSongList();
     _refreshController.refreshCompleted();
   }
-  onLoading() async{
+
+  onLoading() async {
     await Future.delayed(Duration(milliseconds: 1000));
     _refreshController.loadComplete();
   }
-
-
-
 
   /// 创建顶部四个功能按钮
   Widget _buildIconButton() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.scanner),
-              onPressed: () {
-                Get.toNamed(Routes.localMusicPage);
-              },
-            ),
-            const Text('本地歌曲')
-          ],
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(Routes.localMusicPage);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Icon(Icons.scanner), SizedBox(height: 8,),const Text('本地歌曲')],
+          ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.add_chart),
-              onPressed: () {
-                controller.addOrUpdateSongListDialog(null);
-              },
-            ),
-            Text('创建歌单')
-          ],
+        GestureDetector(
+          onTap: () {
+            controller.addOrUpdateSongListDialog(null);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_chart),
+              SizedBox(height: 8,),
+              Text('创建歌单'),
+            ],
+          ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {},
-            ),
-            Text('待定')
-          ],
+        GestureDetector(
+          onTap: () {
+
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add),
+              SizedBox(height: 8,),
+              Text('待定'),
+            ],
+          ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {},
-            ),
-            Text('待定')
-          ],
+        GestureDetector(
+          onTap: () {
+
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add),
+              SizedBox(height: 8,),
+              Text('待定'),
+            ],
+          ),
         ),
       ],
     );
@@ -117,8 +124,8 @@ class MinePage extends StatelessWidget {
                           header: WaterDropHeader(),
                           footer: ClassicFooter(),
                           controller: _refreshController,
-                          onRefresh: onRefresh,//下拉刷新
-                          onLoading: onLoading,//上拉加载
+                          onRefresh: onRefresh, //下拉刷新
+                          onLoading: onLoading, //上拉加载
                           child: ListView.builder(
                               itemCount: c.songList!.length,
                               itemBuilder: (context, index) {
@@ -130,7 +137,6 @@ class MinePage extends StatelessWidget {
                                 );
                               }),
                         );
-
                       },
                     )),
               ],
