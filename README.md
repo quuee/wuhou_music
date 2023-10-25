@@ -54,3 +54,7 @@ MediaStore.Images.Media.SIZE：文件的字节大小
 MediaStore.Images.Media.TITLE：标题
 MediaStore.Images.Media.WIDTH：图像/视频的宽度，以像素为单位。
 
+## 下拉上拉库 
+pull_to_refresh_flutter3 子组件有图片刷新就会ui变形，而且不维护了
+easy_refresh 完美
+

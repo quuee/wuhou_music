@@ -21,13 +21,14 @@ class MineController extends GetxController {
 
   /// 加载本地歌单
   loadSongList() {
-    var box = Hive.box(Keys.hiveSongList);
+
     //  从hive获取本地歌单
     var temp = box.get(Keys.localSongList, defaultValue: <SongListEntity>[]);
     songList = songListFromJson(jsonEncode(temp));
     if (songList == null || songList!.isEmpty) {
       // todo 从服务端加载
     }
+
   }
 
   @override

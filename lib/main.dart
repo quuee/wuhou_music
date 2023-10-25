@@ -14,7 +14,6 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'dart:developer' as developer;
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -53,7 +52,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    final child = GetMaterialApp(
       title: 'Wuhou music',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -62,6 +61,8 @@ class MyApp extends StatelessWidget {
       initialRoute: Routes.splash,
       getPages: Routes.routes,
     );
+
+    return child;
   }
 }
 
@@ -78,12 +79,10 @@ Future<void> initServices() async {
   // Map<int, String> albumArtPaths = <int, String>{};
 
   GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
-
 }
 
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
   final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
-
     final Directory dir = await getApplicationDocumentsDirectory();
     final String dirPath = dir.path;
     File dbFile = File('$dirPath/$boxName.hive');

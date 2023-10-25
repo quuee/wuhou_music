@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+
 
 class PositionData {
   final Duration position;

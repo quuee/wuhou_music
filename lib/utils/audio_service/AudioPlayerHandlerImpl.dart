@@ -222,7 +222,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       } else {
         await _player
             .setAudioSource(_playlist, preload: false)
-            .onError((error, stackTrace) {});
+            .onError((error, stackTrace) {
+              return null;
+            });
       }
     } else {
       _playlist.addAll(queue.value.map(_itemToSource).toList());
@@ -271,10 +273,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   Future<void> addLastQueue(List<MediaItem> queue) async {
     if (queue.isNotEmpty) {
-      // 将queue mediaItem 转成 map 或 songEntity
+      // 将queue的mediaItem 转成 map 或 songEntity，存入hive
       final lastSongEntityList = queue
           .map((item) => SongEntity(
-              id: item.extras!['id'],//因为id会拼成uri给MediaItem，MediaItem在转songEntity需要转回来
+              id: item.extras!['id'],//因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
               album: item.album,
               artist: item.artist ?? '',
               title: item.title,

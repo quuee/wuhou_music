@@ -100,21 +100,20 @@ class SongList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         child: Row(
           children: [
-            ClipRRect(
-              child: Image.file(
-                File(listAlbum!),
-                width: 100,
-                height: 100,
-                errorBuilder: (BuildContext context, Object error,
-                    StackTrace? stackTrace) {
-                  return Image.asset(
-                    R.images.logo,
-                    width: 100,
-                    height: 100,
-                  );
-                },
-              ),
-              borderRadius: BorderRadius.circular(5.0),
+            Image.file(
+              File(listAlbum!),
+              width: 100,
+              height: 100,
+              fit: BoxFit.none,
+              errorBuilder: (BuildContext context, Object error,
+                  StackTrace? stackTrace) {
+                return Image.asset(
+                  R.images.logo,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.none,
+                );
+              },
             ),
             SizedBox(
               width: 10,
