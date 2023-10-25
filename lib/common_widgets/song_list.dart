@@ -23,35 +23,6 @@ class SongList extends StatelessWidget {
 
   /// 底部弹窗
   _showModalBottomSheet() {
-    // showModalBottomSheet(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return Column(
-    //         mainAxisSize: MainAxisSize.min,
-    //         children: <Widget>[
-    //           ListTile(
-    //             leading: Icon(
-    //                 Icons.edit),
-    //             title: Text("编辑"),
-    //             onTap: () async {
-    //
-    //             },
-    //           ),
-    //           ListTile(
-    //             leading: Icon(
-    //                 Icons.delete),
-    //             title: Text("删除"),
-    //             onTap: () async {
-    //
-    //               deleteSongList!();
-    //
-    //               Get.back();
-    //             },
-    //           ),
-    //         ],
-    //       );
-    //     });
-
     Get.bottomSheet(
         Container(
           height: 150,
@@ -100,20 +71,23 @@ class SongList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         child: Row(
           children: [
-            Image.file(
-              File(listAlbum!),
-              width: 100,
-              height: 100,
-              fit: BoxFit.none,
-              errorBuilder: (BuildContext context, Object error,
-                  StackTrace? stackTrace) {
-                return Image.asset(
-                  R.images.logo,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.none,
-                );
-              },
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child: Image.file(
+                File(listAlbum!),
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+                errorBuilder: (BuildContext context, Object error,
+                    StackTrace? stackTrace) {
+                  return Image.asset(
+                    R.images.logo,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.fill,
+                  );
+                },
+              ),
             ),
             SizedBox(
               width: 10,

@@ -5,7 +5,9 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/jcenter/'}
         maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+//        maven { url 'https://jitpack.io' }
 //        maven { url 'http://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
         maven { url 'https://mirrors.cernet.edu.cn/flutter/download.flutter.io' }
         mavenCentral()
@@ -22,10 +24,11 @@ allprojects {
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/jcenter/'}
         maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+//        maven { url 'https://jitpack.io' }
 //        maven { url 'http://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
         maven { url 'https://mirrors.cernet.edu.cn/flutter/download.flutter.io' }
-
         mavenCentral()
     }
 }

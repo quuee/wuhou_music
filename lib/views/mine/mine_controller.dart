@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:developer' as developer;
 
@@ -19,16 +19,16 @@ class MineController extends GetxController {
 
   TextEditingController songListNameContro = TextEditingController();
 
+  final ImagePicker _picker = ImagePicker();
+
   /// 加载本地歌单
   loadSongList() {
-
     //  从hive获取本地歌单
     var temp = box.get(Keys.localSongList, defaultValue: <SongListEntity>[]);
     songList = songListFromJson(jsonEncode(temp));
     if (songList == null || songList!.isEmpty) {
       // todo 从服务端加载
     }
-
   }
 
   @override
@@ -38,7 +38,6 @@ class MineController extends GetxController {
   }
 
   addSongList(String? imageLocalPath) {
-
     var s = SongListEntity(
         id: Uuid().v1(),
         listTitle: songListNameContro.text.trim(),
@@ -63,7 +62,6 @@ class MineController extends GetxController {
   addOrUpdateSongListDialog(SongListEntity? songListEntity) {
     String? imageLocalPath;
     if (songListEntity == null) {
-
     } else {
       songListNameContro.text = songListEntity.listTitle;
       imageLocalPath = songListEntity.listAlbum;
@@ -90,14 +88,9 @@ class MineController extends GetxController {
                   )
                 : ElevatedButton(
                     onPressed: () async {
-                      List<Media>? res = await ImagesPicker.pick(
-                          count: 1,
-                          pickType: PickType.image,
-                          language: Language.System);
-                      res?.forEach((element) {
-                        developer.log(element.toString(), name: 'ImagesPicker');
-                      });
-                      imageLocalPath = res![0].path;
+                      XFile? image =
+                          await _picker.pickImage(source: ImageSource.gallery);
+                      imageLocalPath = image != null ? image.path : null;
                     },
                     child: Icon(Icons.add_photo_alternate_outlined),
                   ),
