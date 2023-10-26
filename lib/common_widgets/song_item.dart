@@ -95,24 +95,24 @@ bottomSheet() {
               onTap: null,
             ),
             ListTile(
-              leading: Icon(Icons.ring_volume),
+              leading: Icon(Icons.add_card_outlined),
               title: Text('添加到歌单'),
               onTap: null,
             ),
             ListTile(
-              leading: Icon(Icons.ring_volume),
+              leading: Icon(Icons.delete),
               title: Text('从歌单删除'),
               onTap: null,
             ),
             ListTile(
-              leading: Icon(Icons.ring_volume),
+              leading: Icon(Icons.delete_forever),
               title: Text('本地删除'),
               onTap: null,
             ),
           ],
         ),
       ),
-
-      backgroundColor: Colors.white,
-      barrierColor: Colors.white30);
+      backgroundColor: Colors.white, // bottomsheet背景色
+      barrierColor: Colors.white60 // 后面挡住的颜色
+  );
 }

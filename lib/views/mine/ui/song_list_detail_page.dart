@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'dart:developer' as developer;
 
@@ -12,7 +11,6 @@ class SongListDetailPage extends StatefulWidget {
 }
 
 class _SongListDetailPageState extends State<SongListDetailPage> {
-  int _selectedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
