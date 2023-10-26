@@ -41,9 +41,7 @@ class _MinePageState extends State<MinePage> {
     if (!mounted) {
       return;
     }
-    setState(() {
-
-    });
+    setState(() {});
     _controller.finishRefresh();
     _controller.resetFooter();
   }
@@ -143,7 +141,6 @@ class _MinePageState extends State<MinePage> {
             }),
       );
     });
-
   }
 
   @override
@@ -166,7 +163,7 @@ class _MinePageState extends State<MinePage> {
                             decoration: BoxDecoration(
                               color: Colors.white70,
                               border:
-                              Border.all(width: 0.5, color: Colors.white70),
+                                  Border.all(width: 0.5, color: Colors.white70),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: _buildIconButton())),
