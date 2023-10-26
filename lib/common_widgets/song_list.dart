@@ -25,8 +25,7 @@ class SongList extends StatelessWidget {
   _showModalBottomSheet() {
     Get.bottomSheet(
         Container(
-          height: 150,
-          child: Column(
+          child: Wrap(
             children: [
               ListTile(
                 leading: Icon(Icons.edit),

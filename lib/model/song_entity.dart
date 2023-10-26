@@ -13,17 +13,17 @@ String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from
 @HiveType(typeId: 0)
 class SongEntity {
   @HiveField(0)
-  late String id;
+  late String id; // 媒体库id
   @HiveField(1)
-  String? album;
+  String? album; //专辑
   @HiveField(2)
   int? albumId;
   @HiveField(3)
-  String artist;
+  String artist; // 艺术家
   @HiveField(4)
-  late String title;
+  late String title; // 歌名
   @HiveField(5)
-  late int duration;
+  late int duration; // 时长
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];

@@ -18,13 +18,13 @@ class _SongListDetailPageState extends State<SongListDetailPage> {
   Widget build(BuildContext context) {
     // Map<String, dynamic> param = Get.arguments as Map<String, dynamic>;
     developer.log('${Get.parameters}', name: 'SongListDetailPage');
-    String title = Get.parameters['title'] ?? '未知';
+    String songTitle = Get.parameters['title'] ?? '未知';
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text('歌单'),
         ),
-        bottomNavigationBar: PlayBar(),
+        // bottomNavigationBar: PlayBar(),
         body: ListView.builder(
             itemCount: 30,
             itemBuilder: (context, index) {
