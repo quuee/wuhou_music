@@ -7,7 +7,8 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 
 class PlayBar extends StatelessWidget {
-  const PlayBar({
+  // 不能加const 不然页面动不了
+  PlayBar({
     super.key,
   });
 
