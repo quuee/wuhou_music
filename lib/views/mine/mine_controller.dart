@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +19,29 @@ class MineController extends GetxController {
 
   TextEditingController songListNameContro = TextEditingController();
 
+  late EasyRefreshController easyRefreshController;
+
   final ImagePicker _picker = ImagePicker();
+
+
+
+  @override
+  void onInit() {
+
+    loadSongList();
+    easyRefreshController = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
+
+    super.onInit();
+  }
+
+  @override
+  onClose(){
+    easyRefreshController.dispose();
+    super.onClose();
+  }
 
   /// 加载本地歌单
   loadSongList() {
@@ -28,14 +52,28 @@ class MineController extends GetxController {
     if (songList.isEmpty) {
       // todo 从服务端加载
     }
-    update(['songList']);
+
   }
 
-  @override
-  void onInit() {
+  /// 下拉刷新
+  pullDownRefresh() async {
+    developer.log('onRefresh', name: 'MineController');
+    await Future.delayed(Duration(milliseconds: 500));
     loadSongList();
-    super.onInit();
+    update(['songListBuilder']);
+    easyRefreshController.finishRefresh();
+    easyRefreshController.resetFooter();
   }
+
+  /// 上拉加载
+  pullUponLoading() async {
+    developer.log('onLoading', name: 'MineController');
+    await Future.delayed(Duration(milliseconds: 500));
+    loadSongList();
+    update(['songListBuilder']);
+    easyRefreshController.finishLoad(IndicatorResult.success);
+  }
+
 
   /// 创建一个歌单
   createSongList(String? imageLocalPath) {
@@ -43,7 +81,15 @@ class MineController extends GetxController {
     int index = songList.indexWhere((element) =>
         element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
     if (index > 0) {
-      // TODO 给个消息提示 已存在同名
+      Fluttertoast.showToast(
+          msg: "已存在同名歌单",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
       return;
     }
 
@@ -66,7 +112,7 @@ class MineController extends GetxController {
         .indexWhere((element) => element.id.compareTo(songListUUID) == 0);
     songList.removeAt(index);
     box.put(Keys.localSongList, songList);
-    update();
+    update(['songListBuilder']);
   }
 
   /// 创建歌单的中间弹窗

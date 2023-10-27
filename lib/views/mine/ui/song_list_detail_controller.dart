@@ -57,7 +57,8 @@ class SongListDetailController extends GetxController{
     developer.log('更新歌单$songEntityToJson(mineController.songList)',name: 'SongListDetailController addSongToSongList');
     songListBox.put(Keys.localSongList, mineController.songList);
 
-    update(['songList']);// TODO 更新不了UI
+    mineController.pullDownRefresh();//可以更新UI
+    // update(['songListBuilder']);//更新不了UI
   }
 
 /// 从歌单删除歌曲

@@ -121,7 +121,8 @@ class SongItem extends StatelessWidget {
               child: Text(
                 (songEntity.artist) + ' - ' + (songEntity.album ?? ''),
                 style: TextStyle(fontSize: secondSize),
-                overflow: TextOverflow.ellipsis, // row 里面多个text 需要放在Expanded 才有效
+                overflow:
+                    TextOverflow.ellipsis, // row 里面多个text 需要放在Expanded 才有效
                 maxLines: 1,
               ),
             )

@@ -59,10 +59,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   // final _mediaLibrary = MediaLibrary();
   final _player = AudioPlayer();
   final _playlist = ConcatenatingAudioSource(children: []);
+
   @override
+  // ignore: close_sinks
   final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
+
   @override
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
+
   final _mediaItemExpando = Expando<MediaItem>();
 
   /// A stream of the current effective sequence from just_audio.

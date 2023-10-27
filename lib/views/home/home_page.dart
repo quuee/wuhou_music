@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/views/home/home_app_bar.dart';
-import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/views/home/home_controller.dart';
 

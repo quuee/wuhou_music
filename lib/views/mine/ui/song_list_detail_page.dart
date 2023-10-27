@@ -1,46 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
+import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'package:wuhoumusic/views/mine/ui/song_list_detail_controller.dart';
 
 class SongListDetailPage extends GetView<SongListDetailController> {
   SongListDetailPage({super.key});
-
-  _bottomSheet() {
-    Get.bottomSheet(
-        Container(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: Icon(Icons.ring_volume),
-                title: Text('设为铃声'),
-                onTap: null,
-              ),
-              ListTile(
-                leading: Icon(Icons.add_card_outlined),
-                title: Text('添加到歌单'),
-                onTap: null,
-              ),
-              ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('从歌单删除'),
-                onTap: null,
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_forever),
-                title: Text('本地删除'),
-                onTap: null,
-              ),
-            ],
-          ),
-        ),
-        backgroundColor: Colors.white, // bottomsheet背景色
-        barrierColor: Colors.white60 // 后面挡住的颜色
-        );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,22 +29,40 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           );
         }
         if (c.loadingStatus == LoadingStatus.success) {
-          if(c.songList.isEmpty) return Center(child: Text('空空如也'),);
+          if (c.songList.isEmpty)
+            return Center(
+              child: Text('空空如也'),
+            );
           return ListView.builder(
               itemCount: c.songList.length,
               itemBuilder: (context, index) {
-                return InkWell(
-                    onTap: () {},
-                    child: Container(
-                      child: SongItem(
-                        index: index,
-                        songEntity: controller.songList[index],
-                      ),
-                    ));
+                return Dismissible(
+                  key: Key(c.songList[index].id),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    child: Icon(Icons.delete),
+                    color: Colors.redAccent,
+                    alignment: Alignment.centerRight,
+                  ),
+                  onDismissed: (direction) {
+                    // TODO 从hive中删除
+                  },
+                  child: InkWell(
+                      onTap: () {
+                        PlayInvoke.init(songList: c.songList, index: index);
+                      },
+                      child: Container(
+                        child: SongItem(
+                          index: index,
+                          songEntity: controller.songList[index],
+                        ),
+                      )),
+                );
               });
         }
         return SizedBox.shrink();
       }),
+      bottomNavigationBar: PlayBar(),
     );
   }
 }

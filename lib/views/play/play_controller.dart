@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
-import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 

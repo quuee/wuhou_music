@@ -17,38 +17,6 @@ class MinePage extends StatefulWidget {
 class _MinePageState extends State<MinePage> {
   MineController controller = Get.find<MineController>();
 
-  late EasyRefreshController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = EasyRefreshController(
-      controlFinishRefresh: true,
-      controlFinishLoad: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  onRefresh() async {
-    developer.log('onRefresh', name: 'MineController');
-    await Future.delayed(Duration(milliseconds: 500));
-    controller.loadSongList();
-    _controller.finishRefresh();
-    _controller.resetFooter();
-  }
-
-  onLoading() async {
-    developer.log('onLoading', name: 'MineController');
-    await Future.delayed(Duration(milliseconds: 500));
-    controller.loadSongList();
-    _controller.finishLoad(IndicatorResult.success);
-  }
-
   /// 创建顶部四个功能按钮
   Widget _buildIconButton() {
     return Row(
@@ -61,11 +29,7 @@ class _MinePageState extends State<MinePage> {
           behavior: HitTestBehavior.opaque,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.scanner),
-
-              const Text('本地歌曲')
-            ],
+            children: [Icon(Icons.scanner), const Text('本地歌曲')],
           ),
         ),
         GestureDetector(
@@ -77,7 +41,6 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add_chart),
-
               Text('创建歌单'),
             ],
           ),
@@ -89,7 +52,6 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add),
-
               Text('待定'),
             ],
           ),
@@ -101,7 +63,6 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add),
-
               Text('待定'),
             ],
           ),
@@ -112,24 +73,26 @@ class _MinePageState extends State<MinePage> {
 
   /// 歌单列表
   Widget _buildSongListWidget() {
-    return GetBuilder<MineController>(id: 'songList',builder: (c) {
-      return EasyRefresh(
-        header: ClassicHeader(),
-        footer: ClassicFooter(),
-        onRefresh: onRefresh,
-        onLoad: onLoading,
-        child: ListView.builder(
-            itemCount: c.songList.length,
-            itemBuilder: (context, index) {
-              return SongList(
-                id: c.songList[index].id,
-                listTitle: c.songList[index].listTitle,
-                count: c.songList[index].count,
-                listAlbum: c.songList[index].listAlbum,
-              );
-            }),
-      );
-    });
+    return GetBuilder<MineController>(
+        id: 'songListBuilder',
+        builder: (c) {
+          return EasyRefresh(
+            header: ClassicHeader(),
+            footer: ClassicFooter(),
+            onRefresh: () => c.pullDownRefresh(),
+            onLoad: () => c.pullUponLoading(),
+            child: ListView.builder(
+                itemCount: c.songList.length,
+                itemBuilder: (context, index) {
+                  return SongList(
+                    id: c.songList[index].id,
+                    listTitle: c.songList[index].listTitle,
+                    count: c.songList[index].count,
+                    listAlbum: c.songList[index].listAlbum,
+                  );
+                }),
+          );
+        });
   }
 
   @override
