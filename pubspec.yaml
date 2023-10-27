@@ -30,6 +30,7 @@ dependencies:
   easy_refresh: ^3.3.2+1
   image_picker: ^1.0.3
   fluttertoast: ^8.2.2
+#  on_audio_query: ^2.9.0
   uuid: ^3.0.5
 #  json_serializable: ^6.7.1
 

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,13 +50,16 @@ class PlayBar extends StatelessWidget {
                     if (queueState.queue.isEmpty) {
                       return SizedBox.shrink();
                     }
-                    var artUri =
-                        queueState.queue[queueState.queueIndex!].artUri;
-                    developer.log(artUri!.path, name: 'PlayBar');
-                    return Image.network(
-                      'content://media' + artUri.path,
-                      width: 70,
-                      height: 70,
+                    var artAlbum = queueState.queue[queueState.queueIndex!]
+                            .extras!['artAlbum'] ??
+                        '';
+                    developer.log(artAlbum, name: 'PlayBar');
+                    return Image.file(
+                      File(artAlbum),
+                      cacheHeight: 70,
+                      cacheWidth: 70,
+                      // width: 70,
+                      // height: 70,
                       fit: BoxFit.fill,
                       errorBuilder: (BuildContext context, Object error,
                           StackTrace? stackTrace) {
@@ -68,7 +72,10 @@ class PlayBar extends StatelessWidget {
                       },
                     );
                   }),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
+
               /// 歌名
               StreamBuilder<QueueState>(
                   stream: audioPlayerHandler.queueState,

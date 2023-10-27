@@ -9,6 +9,7 @@ class LocalMusicController extends GetxController {
   List<SongEntity> songs = [];
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   get loadingStatus => _loadingStatus;
+
   @override
   void onInit() {
     super.onInit();
@@ -19,9 +20,10 @@ class LocalMusicController extends GetxController {
     super.onReady();
 
     _fetchSongs();
+    _fetchArts();
   }
 
-  /// 扫描本地
+  /// 扫描本地歌曲
   Future<void> _fetchSongs() async {
     developer.log('_fetchSongs...', name: 'LocalMusicPage _fetchSongs');
 
@@ -49,7 +51,6 @@ class LocalMusicController extends GetxController {
       }).toList();
 
       _loadingStatus = LoadingStatus.success;
-
     } on Exception catch (e) {
       //使用on 来指定异常类型， 使用 catch 来 捕获异常
       // catch (e, s) 可以多个参数
@@ -59,6 +60,36 @@ class LocalMusicController extends GetxController {
     } finally {
       cursor?.close();
       update();
+    }
+  }
+
+  /// 扫描本地歌曲 封面
+  Future<void> _fetchArts() async {
+    final cursor = await AndroidContentResolver.instance.query(
+      // MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
+      uri: 'content://media/external/audio/albums',
+      projection: const ['_id', 'album_art'],
+      selection: 'album_art != 0',
+      selectionArgs: null,
+      sortOrder: null,
+    );
+    try {
+      final albumCount =
+          (await cursor!.batchedGet().getCount().commit()).first as int;
+      final batch = cursor.batchedGet()
+        ..getInt(0)
+        ..getString(1);
+      final albumsData = await batch.commitRange(0, albumCount);
+
+      for (final data in albumsData) {
+        for (SongEntity song in songs) {
+          if (song.albumId!.compareTo((data.first as int)) == 0) {
+            song.artAlbum = data.last as String;
+          }
+        }
+      }
+    } finally {
+      cursor?.close();
     }
   }
 }

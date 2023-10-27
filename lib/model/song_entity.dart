@@ -20,20 +20,22 @@ class SongEntity {
   @HiveField(0)
   late String id; // 媒体库id
   @HiveField(1)
-  String? album; //专辑
+  String? album; // 专辑
   @HiveField(2)
-  int? albumId;
+  int? albumId; // 专辑
   @HiveField(3)
   String artist; // 艺术家
   @HiveField(4)
   late String title; // 歌名
   @HiveField(5)
   late int duration; // 时长
+  @HiveField(6)
   String? quality; // 音频质量
+  @HiveField(7)
+  String? artAlbum; //专辑封面 artPath
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];
-  // int? get albumId => this.albumId;
 
   /// The content URI of the song for playback.
   String get uri => 'content://media/external/audio/media/$id';
@@ -49,6 +51,7 @@ class SongEntity {
     required this.title,
     required this.duration,
     this.quality,
+    this.artAlbum,
   });
 
   /// id:uri 这里必须换uri，不然找不到文件
@@ -63,6 +66,7 @@ class SongEntity {
     extras: <String, dynamic>{
       'loadThumbnailUri': uri,
       'id':id,
+      'artAlbum':artAlbum,
     },
   );
 
@@ -103,6 +107,7 @@ class SongEntity {
     title: json["title"],
     duration: json["duration"],
     quality: json["quality"],
+    artAlbum: json["artAlbum"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,5 +118,6 @@ class SongEntity {
     "title": title,
     "duration": duration,
     "quality": quality,
+    "artAlbum": artAlbum,
   };
 }

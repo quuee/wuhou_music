@@ -17,15 +17,7 @@ class PlayInvoke {
     if (shuffle) finalList.shuffle();
 
     final List<MediaItem> queue = [];
-    // queue.addAll(
-    //     finalList.map(
-    //           (song) => MediaItem(
-    //             id: song.uri,
-    //             title: song.title,
-    //             duration: Duration(milliseconds: song.duration),
-    //
-    //       ),
-    //     ));
+
     queue.addAll(finalList.map((e) => e.toMediaItem()));
 
     updateNplay(queue,globalIndex);
