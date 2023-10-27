@@ -144,6 +144,9 @@ class _PlayPageState extends State<PlayPage> {
                         });
                   },
                   icon: const Icon(Icons.menu)),
+              IconButton(onPressed: () {
+                // 定时
+              }, icon: Icon(Icons.access_alarms)),
               StreamBuilder<bool>(
                 stream: _audioHandler.playbackState
                     .map((state) =>

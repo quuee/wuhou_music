@@ -1,0 +1,66 @@
+import 'package:android_content_provider/android_content_provider.dart';
+import 'package:get/get.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
+import 'dart:developer' as developer;
+
+import 'package:wuhoumusic/resource/loading_status.dart';
+
+class LocalMusicController extends GetxController {
+  List<SongEntity>? songs;
+  LoadingStatus _loadingStatus = LoadingStatus.loading;
+  get loadingStatus => _loadingStatus;
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+
+    _fetchSongs();
+  }
+
+  /// 扫描本地
+  Future<void> _fetchSongs() async {
+    developer.log('_fetchSongs...', name: 'LocalMusicPage _fetchSongs');
+
+    final cursor = await AndroidContentResolver.instance.query(
+      // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+      uri: 'content://media/external/audio/media',
+      // uri: 'content://media/internal/audio/media',
+      projection: SongEntity.mediaStoreProjection,
+      selection: '(mime_type = ? or mime_type = ?) and duration > ?',
+      selectionArgs: <String>['audio/mpeg', 'audio/ogg', '60000'],
+      sortOrder: null,
+    );
+    try {
+      final songCount =
+          (await cursor!.batchedGet().getCount().commit()).first as int;
+      final batch = SongEntity.createBatch(cursor);
+      final songsData = await batch.commitRange(0, songCount);
+      songs = songsData
+          .map((data) => SongEntity.fromMediaStore(data))
+          .where((element) {
+        developer.log(
+            'id:${element.id},album:${element.album},albumId:${element.albumId},artist:${element.artist},title${element.title},duration:${element.duration}',
+            name: '_fetchSongs');
+        return element.duration / 1000 > 60; // 大于60秒的音频
+      }).toList();
+
+      if (songs != null) {
+        _loadingStatus = LoadingStatus.success;
+      }
+
+    } on Exception catch (e) {
+      //使用on 来指定异常类型， 使用 catch 来 捕获异常
+      // catch (e, s) 可以多个参数
+      // 可以多个catch
+      _loadingStatus = LoadingStatus.failed;
+      developer.log(e.toString(), name: '_fetchSongs exception');
+    } finally {
+      cursor?.close();
+      update();
+    }
+  }
+}

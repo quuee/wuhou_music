@@ -12,6 +12,39 @@ class SongListDetailPage extends StatefulWidget {
 
 class _SongListDetailPageState extends State<SongListDetailPage> {
 
+  bottomSheet() {
+    Get.bottomSheet(
+        Container(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.ring_volume),
+                title: Text('设为铃声'),
+                onTap: null,
+              ),
+              ListTile(
+                leading: Icon(Icons.add_card_outlined),
+                title: Text('添加到歌单'),
+                onTap: null,
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('从歌单删除'),
+                onTap: null,
+              ),
+              ListTile(
+                leading: Icon(Icons.delete_forever),
+                title: Text('本地删除'),
+                onTap: null,
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white, // bottomsheet背景色
+        barrierColor: Colors.white60 // 后面挡住的颜色
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Map<String, dynamic> param = Get.arguments as Map<String, dynamic>;
@@ -34,7 +67,8 @@ class _SongListDetailPageState extends State<SongListDetailPage> {
                         songTitle: 'item' + index.toString(),
                         quality: '超清母带',
                         singer: '阿悄',
-                        album: '人来人往'),
+                        album: '人来人往',
+                    moreFunction: bottomSheet),
                   ));
             }));
   }

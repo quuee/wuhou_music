@@ -37,6 +37,7 @@ class SongList extends StatelessWidget {
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
+                    songEntityList: []
                   );
                   c.addOrUpdateSongListDialog(s);
                 },

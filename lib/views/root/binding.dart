@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:wuhoumusic/views/home/home_controller.dart';
 import 'package:wuhoumusic/views/home/tabs/hot_tab_controller.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/mine/ui/Local_music_controller.dart';
 import 'package:wuhoumusic/views/root/root_controller.dart';
 
 class RootBinding implements Bindings{
@@ -18,6 +19,7 @@ class RootBinding implements Bindings{
 
 
     Get.lazyPut<HotTabController>(() => HotTabController());
+
   }
 
 

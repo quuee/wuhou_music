@@ -7,8 +7,13 @@ import 'package:hive/hive.dart';
 part 'song_entity.g.dart';
 //dart run build_runner build
 
-List<SongEntity> songEntityFromJson(String str) => List<SongEntity>.from(json.decode(str).map((x) => SongEntity.fromJson(x)));
-String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+List<SongEntity> songEntityFromJson(String str) {
+  print(str);
+  return List<SongEntity>.from(json.decode(str).map((x) => SongEntity.fromJson(x)));
+}
+
+// String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String songEntityToJson(List<dynamic> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 @HiveType(typeId: 0)
 class SongEntity {

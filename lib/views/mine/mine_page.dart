@@ -122,6 +122,7 @@ class _MinePageState extends State<MinePage> {
     );
   }
 
+  /// 歌单列表
   Widget _buildSongListWidget() {
     return GetBuilder<MineController>(builder: (c) {
       return EasyRefresh(

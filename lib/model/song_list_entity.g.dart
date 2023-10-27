@@ -21,13 +21,15 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
       listTitle: fields[1] as String,
       listAlbum: fields[2] as String,
       count: fields[3] as int,
+      songEntityList:
+          fields[4] == null ? [] : (fields[4] as List).cast<SongEntity>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, SongListEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +37,9 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
       ..writeByte(2)
       ..write(obj.listAlbum)
       ..writeByte(3)
-      ..write(obj.count);
+      ..write(obj.count)
+      ..writeByte(4)
+      ..write(obj.songEntityList);
   }
 
   @override

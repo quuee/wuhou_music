@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
 part 'song_list_entity.g.dart';
 //dart run build_runner build
 
@@ -18,12 +19,15 @@ class SongListEntity {
   String listAlbum;
   @HiveField(3)
   int count;
+  @HiveField(4,defaultValue: <SongEntity>[])
+  List<SongEntity> songEntityList;
 
   SongListEntity({
     required this.id,
     required this.listTitle,
     required this.listAlbum,
     required this.count,
+    required this.songEntityList,
   });
 
   factory SongListEntity.fromJson(Map<String, dynamic> json) => SongListEntity(
@@ -31,6 +35,7 @@ class SongListEntity {
     listTitle: json["listTitle"],
     listAlbum: json["listAlbum"],
     count: json["count"],
+    songEntityList: songEntityFromJson(songEntityToJson(json["songEntityList"])),
   );
 
   Map<String, dynamic> toJson() => {
@@ -38,5 +43,6 @@ class SongListEntity {
     "listTitle": listTitle,
     "listAlbum": listAlbum,
     "count": count,
+    "songEntityList": songEntityList,
   };
 }

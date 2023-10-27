@@ -11,8 +11,8 @@ class Keys {
   static final String hiveGlobalParam = 'globalParam';
   static final String sdkInt = 'sdkInt';
 
-  static final String hiveSongList = 'songList';
-  static final String localSongList = 'localSongList';
+  static final String hiveSongList = 'songList'; // 相当于数据库或者表
+  static final String localSongList = 'localSongList'; // key
 
   static final String hiveCache = 'cache';
   static final String lastQueue = 'lastQueue';

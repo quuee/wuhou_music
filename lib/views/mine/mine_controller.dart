@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/model/song_list_entity.dart';
@@ -37,12 +38,22 @@ class MineController extends GetxController {
     super.onInit();
   }
 
-  addSongList(String? imageLocalPath) {
+  /// 创建一个歌单
+  createSongList(String? imageLocalPath) {
+    //如果两个字符串相等，返回0 ，否则返回非零数
+    int index = songList!.indexWhere((element) =>
+        element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
+    if (index > 0) {
+      // TODO 给个消息提示 已存在同名
+      return;
+    }
+
     var s = SongListEntity(
         id: Uuid().v1(),
         listTitle: songListNameContro.text.trim(),
         listAlbum: imageLocalPath ?? '',
-        count: 0);
+        count: 0,
+        songEntityList: <SongEntity>[]);
     songList!.add(s);
     box.put(Keys.localSongList, songList);
     songListNameContro.clear();
@@ -50,6 +61,7 @@ class MineController extends GetxController {
     update();
   }
 
+  /// 删除一个歌单
   deleteSongList(String songListUUID) {
     int index = songList!
         .indexWhere((element) => element.id.compareTo(songListUUID) == 0);
@@ -99,7 +111,7 @@ class MineController extends GetxController {
       ),
       confirm: ElevatedButton(
           onPressed: () {
-            addSongList(imageLocalPath);
+            createSongList(imageLocalPath);
             Get.back();
           },
           child: Text('确认')),
@@ -110,4 +122,18 @@ class MineController extends GetxController {
           child: Text('取消')),
     );
   }
+
+  /// 将歌曲加到歌单
+  addSongToSongList(String songListUUID, List<SongEntity> songs) {
+    int index = songList!.indexWhere((element) =>
+        element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
+    SongListEntity gedan = songList![index];
+
+    gedan.songEntityList.addAll(songs);
+    gedan.count = gedan.songEntityList.length;
+
+    box.put(Keys.localSongList, songList);
+  }
+
+  /// 从歌单删除歌曲
 }

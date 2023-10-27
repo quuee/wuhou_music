@@ -1,113 +1,117 @@
-import 'package:android_content_provider/android_content_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
-import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'dart:developer' as developer;
+import 'package:wuhoumusic/common_widgets/song_item.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 
+import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/mine/ui/Local_music_controller.dart';
 
-
-class LocalMusicPage extends StatefulWidget {
+class LocalMusicPage extends GetView<LocalMusicController> {
   const LocalMusicPage({super.key});
 
-  @override
-  State<LocalMusicPage> createState() => _LocalMusicPageState();
-}
+  /// 底部弹窗
+  bottomSheet() {
+    Get.bottomSheet(
+        Container(
+          // 加点样式
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.ring_volume),
+                title: Text('设为铃声'),
+                onTap: null,
+              ),
+              ListTile(
+                leading: Icon(Icons.add_card_outlined),
+                title: Text('添加到歌单'),
+                onTap: () {
+                  Get.back();
 
-class _LocalMusicPageState extends State<LocalMusicPage> {
-  late AudioPlayerHandler _audioHandler;
-
-  @override
-  void initState() {
-    _audioHandler = GetIt.I.get<AudioPlayerHandler>();
-
-    super.initState();
+                  collectBottomSheet();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete_forever),
+                title: Text('本地删除'),
+                onTap: null,
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white, // bottomsheet背景色
+        barrierColor: Colors.white60 // 后面挡住的颜色
+        );
   }
 
-  /// 扫描本地
-  Future<List<SongEntity>> _fetchSongs() async {
-    developer.log('_fetchSongs...', name: 'LocalMusicPage _fetchSongs');
-
-    final cursor = await AndroidContentResolver.instance.query(
-      // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-      uri: 'content://media/external/audio/media',
-      // uri: 'content://media/internal/audio/media',
-      projection: SongEntity.mediaStoreProjection,
-      selection: '(mime_type = ? or mime_type = ?) and duration > ?',
-      selectionArgs: <String>['audio/mpeg','audio/ogg','60000'],
-      sortOrder: null,
-    );
-    try {
-      final songCount =
-          (await cursor!.batchedGet().getCount().commit()).first as int;
-      final batch = SongEntity.createBatch(cursor);
-      final songsData = await batch.commitRange(0, songCount);
-      List<SongEntity> localSongs = songsData
-          .map((data) => SongEntity.fromMediaStore(data))
-      //     .where((element) {
-      //   developer.log(
-      //       'id:${element.id},album:${element.album},albumId:${element.albumId},artist:${element.artist},title${element.title},duration:${element.duration}',
-      //       name: '_fetchSongs');
-      //   return element.duration / 1000 > 60; // 大于60秒的音频
-      // })
-          .toList();
-      return localSongs;
-    } finally {
-      cursor?.close();
-    }
+  /// 收藏到歌单
+  collectBottomSheet() {
+    MineController controller = Get.find<MineController>();
+    List<Widget> list = controller.songList!
+        .map((e) => ListTile(
+              leading: Icon(Icons.ac_unit),
+              title: Text(e.listTitle),
+              onTap: () {
+                // controller.addSongToSongList(e.id, );
+              },
+            ))
+        .toList();
+    list.insert(
+        0,
+        ListTile(
+          leading: Icon(Icons.add),
+          title: Text('新建歌单'),
+        ));
+    Get.bottomSheet(
+        Container(
+          child: Wrap(
+            children: list,
+          ),
+        ),
+        backgroundColor: Colors.white, // bottomsheet背景色
+        barrierColor: Colors.white60 // 后面挡住的颜色
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Widget child;
-
-    child = FutureBuilder(
-        future: _fetchSongs(),
-        builder: (context, snapshot) {
-          List<SongEntity> list = snapshot.data ?? [];
-          return ReorderableListView(
-            onReorder: (int oldIndex, int newIndex) {
-              if (oldIndex < newIndex) newIndex--;
-              _audioHandler.moveQueueItem(oldIndex, newIndex);
-            },
-            children: [
-              for (var i = 0; i < list.length; i++)
-                Dismissible(
-                  key: ValueKey(list[i].id),
-                  background: Container(
-                    color: Colors.redAccent,
-                    alignment: Alignment.centerRight,
-                    child: const Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.delete, color: Colors.white),
-                    ),
-                  ),
-                  onDismissed: (dismissDirection) {
-
-                    _audioHandler.removeQueueItemAt(i);
-                  },
-                  child: Material(
-
-                    child: ListTile(
-                      title: Text(list[i].title),
-                      onTap: () {
-                        PlayInvoke.init(songList: list, index: i);
-                      },
-                    ),
-                  ),
-                )
-            ],
-          );
-        });
+    Widget widget;
+    widget = GetBuilder<LocalMusicController>(builder: (c) {
+      if (controller.loadingStatus == LoadingStatus.loading) {
+        return Center(
+          child: Text('加载中。。。'),
+        );
+      }
+      if (controller.loadingStatus == LoadingStatus.success) {
+        return ListView.builder(
+            itemCount: c.songs?.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () {},
+                child: buildSongItem(
+                  index: index,
+                  songTitle: c.songs![index].title,
+                  singer: c.songs![index].artist,
+                  album: c.songs![index].album,
+                  moreFunction: bottomSheet
+                ),
+              );
+            });
+      }
+      if (controller.loadingStatus == LoadingStatus.failed) {
+        return Center(
+          child: Text('加载失败。。。'),
+        );
+      }
+      return SizedBox.shrink();
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('本地音乐'),
       ),
       bottomNavigationBar: PlayBar(),
-      body: child,
+      body: widget,
     );
   }
 }

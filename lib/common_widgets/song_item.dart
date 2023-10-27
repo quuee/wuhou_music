@@ -6,7 +6,8 @@ Widget buildSongItem(
     required String songTitle,
     String? quality,
     String? singer,
-    String? album}) {
+    String? album,
+    VoidCallback? moreFunction}) {
   double songTitleSize = 22;
   double secondSize = 11;
 
@@ -23,10 +24,11 @@ Widget buildSongItem(
       Row(
         children: [
           Container(
-            child: Text(
-              quality ?? '',
-              style: TextStyle(color: Colors.amber, fontSize: secondSize),
-            ), //超清母带、黑椒唱片、沉浸声
+            child: quality != null? Text(
+                    quality,
+                    style: TextStyle(color: Colors.amber, fontSize: secondSize),
+                  )
+                : SizedBox.shrink(), //超清母带、黑椒唱片、沉浸声
             decoration: BoxDecoration(
               border: Border.all(color: Colors.amber, width: 0.4),
               borderRadius: BorderRadius.circular(3.0),
@@ -70,7 +72,10 @@ Widget buildSongItem(
               color: Colors.grey,
             ),
             onPressed: () {
-              bottomSheet();
+              if(moreFunction!=null){
+                moreFunction();
+              }
+
             },
           ))
 
@@ -84,35 +89,4 @@ Widget buildSongItem(
   );
 }
 
-bottomSheet() {
-  Get.bottomSheet(
-      Container(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: Icon(Icons.ring_volume),
-              title: Text('设为铃声'),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.add_card_outlined),
-              title: Text('添加到歌单'),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('从歌单删除'),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_forever),
-              title: Text('本地删除'),
-              onTap: null,
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.white, // bottomsheet背景色
-      barrierColor: Colors.white60 // 后面挡住的颜色
-  );
-}
+
