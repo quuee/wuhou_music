@@ -2,12 +2,11 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
 part 'song_list_entity.g.dart';
 //dart run build_runner build
 
-List<SongListEntity> songListFromJson(String str) => List<SongListEntity>.from(json.decode(str).map((x) => SongListEntity.fromJson(x)));
-String songListToJson(List<SongListEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+List<SongListEntity> songListEntityFromJson(String str) => List<SongListEntity>.from(json.decode(str).map((x) => SongListEntity.fromJson(x)));
+String songListEntityToJson(List<SongListEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 @HiveType(typeId: 1)
 class SongListEntity {
@@ -19,15 +18,15 @@ class SongListEntity {
   String listAlbum;
   @HiveField(3)
   int count;
-  @HiveField(4,defaultValue: <SongEntity>[])
-  List<SongEntity> songEntityList;
+  // @HiveField(4,defaultValue: <SongEntity>[])
+  // List<SongEntity> songEntityList;
 
   SongListEntity({
     required this.id,
     required this.listTitle,
     required this.listAlbum,
     required this.count,
-    required this.songEntityList,
+    // required this.songEntityList,
   });
 
   factory SongListEntity.fromJson(Map<String, dynamic> json) => SongListEntity(
@@ -35,7 +34,7 @@ class SongListEntity {
     listTitle: json["listTitle"],
     listAlbum: json["listAlbum"],
     count: json["count"],
-    songEntityList: songEntityFromJson(songEntityToJson(json["songEntityList"])),
+    // songEntityList: songEntityFromJson(songEntityToJson(json["songEntityList"])),
   );
 
   Map<String, dynamic> toJson() => {
@@ -43,6 +42,6 @@ class SongListEntity {
     "listTitle": listTitle,
     "listAlbum": listAlbum,
     "count": count,
-    "songEntityList": songEntityList,
+    // "songEntityList": songEntityList,
   };
 }

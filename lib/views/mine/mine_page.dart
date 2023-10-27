@@ -38,10 +38,6 @@ class _MinePageState extends State<MinePage> {
     developer.log('onRefresh', name: 'MineController');
     await Future.delayed(Duration(milliseconds: 500));
     controller.loadSongList();
-    if (!mounted) {
-      return;
-    }
-    setState(() {});
     _controller.finishRefresh();
     _controller.resetFooter();
   }
@@ -67,9 +63,7 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.scanner),
-              SizedBox(
-                height: 8,
-              ),
+
               const Text('本地歌曲')
             ],
           ),
@@ -83,9 +77,7 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add_chart),
-              SizedBox(
-                height: 8,
-              ),
+
               Text('创建歌单'),
             ],
           ),
@@ -97,9 +89,7 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add),
-              SizedBox(
-                height: 8,
-              ),
+
               Text('待定'),
             ],
           ),
@@ -111,9 +101,7 @@ class _MinePageState extends State<MinePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add),
-              SizedBox(
-                height: 8,
-              ),
+
               Text('待定'),
             ],
           ),
@@ -124,20 +112,20 @@ class _MinePageState extends State<MinePage> {
 
   /// 歌单列表
   Widget _buildSongListWidget() {
-    return GetBuilder<MineController>(builder: (c) {
+    return GetBuilder<MineController>(id: 'songList',builder: (c) {
       return EasyRefresh(
         header: ClassicHeader(),
         footer: ClassicFooter(),
         onRefresh: onRefresh,
         onLoad: onLoading,
         child: ListView.builder(
-            itemCount: c.songList!.length,
+            itemCount: c.songList.length,
             itemBuilder: (context, index) {
               return SongList(
-                id: c.songList![index].id,
-                listTitle: c.songList![index].listTitle,
-                count: c.songList![index].count,
-                listAlbum: c.songList![index].listAlbum,
+                id: c.songList[index].id,
+                listTitle: c.songList[index].listTitle,
+                count: c.songList[index].count,
+                listAlbum: c.songList[index].listAlbum,
               );
             }),
       );

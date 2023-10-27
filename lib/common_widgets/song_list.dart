@@ -8,7 +8,7 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
 class SongList extends StatelessWidget {
-  SongList({
+  const SongList({
     super.key,
     required this.id,
     required this.listTitle,
@@ -16,10 +16,10 @@ class SongList extends StatelessWidget {
     required this.count,
   });
 
-  String id;
-  String listTitle;
-  String? listAlbum;
-  int count;
+  final String id;
+  final String listTitle;
+  final String? listAlbum;
+  final int count;
 
   /// 底部弹窗
   _showModalBottomSheet() {
@@ -37,7 +37,6 @@ class SongList extends StatelessWidget {
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
-                    songEntityList: []
                   );
                   c.addOrUpdateSongListDialog(s);
                 },
@@ -61,14 +60,15 @@ class SongList extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = GestureDetector(
       onTap: () {
-        Get.toNamed(Routes.songListDetail, parameters: {'title': listTitle});
+        Get.toNamed(Routes.songListDetail,
+            parameters: {'title': listTitle, 'songListUUID': id});
       },
       behavior: HitTestBehavior.translucent,
       child: Container(
         margin: const EdgeInsets.only(top: 5),
         decoration: BoxDecoration(
             color: Colors.white60, borderRadius: BorderRadius.circular(10)),
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+        // padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         child: Row(
           children: [
             ClipRRect(

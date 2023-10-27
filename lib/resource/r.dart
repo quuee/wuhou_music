@@ -21,6 +21,5 @@ class _Images {
 }
 
 class _Music {
-  static const path = 'assets/music';
 
 }

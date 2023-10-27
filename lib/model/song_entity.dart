@@ -29,6 +29,7 @@ class SongEntity {
   late String title; // 歌名
   @HiveField(5)
   late int duration; // 时长
+  String? quality; // 音频质量
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];
@@ -47,6 +48,7 @@ class SongEntity {
     required this.artist,
     required this.title,
     required this.duration,
+    this.quality,
   });
 
   /// id:uri 这里必须换uri，不然找不到文件
@@ -100,6 +102,7 @@ class SongEntity {
     artist: json["artist"],
     title: json["title"],
     duration: json["duration"],
+    quality: json["quality"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -109,5 +112,6 @@ class SongEntity {
     "artist": artist,
     "title": title,
     "duration": duration,
+    "quality": quality,
   };
 }

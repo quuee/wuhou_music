@@ -6,7 +6,7 @@ import 'dart:developer' as developer;
 import 'package:wuhoumusic/resource/loading_status.dart';
 
 class LocalMusicController extends GetxController {
-  List<SongEntity>? songs;
+  List<SongEntity> songs = [];
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   get loadingStatus => _loadingStatus;
   @override
@@ -48,9 +48,7 @@ class LocalMusicController extends GetxController {
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
 
-      if (songs != null) {
-        _loadingStatus = LoadingStatus.success;
-      }
+      _loadingStatus = LoadingStatus.success;
 
     } on Exception catch (e) {
       //使用on 来指定异常类型， 使用 catch 来 捕获异常

@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'dart:developer' as developer;
 
-class SongListDetailPage extends StatefulWidget {
-  const SongListDetailPage({super.key});
+import 'package:wuhoumusic/common_widgets/song_item.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
+import 'package:wuhoumusic/views/mine/ui/song_list_detail_controller.dart';
 
-  @override
-  State<SongListDetailPage> createState() => _SongListDetailPageState();
-}
+class SongListDetailPage extends GetView<SongListDetailController> {
+  SongListDetailPage({super.key});
 
-class _SongListDetailPageState extends State<SongListDetailPage> {
-
-  bottomSheet() {
+  _bottomSheet() {
     Get.bottomSheet(
         Container(
           child: Wrap(
@@ -42,7 +39,7 @@ class _SongListDetailPageState extends State<SongListDetailPage> {
         ),
         backgroundColor: Colors.white, // bottomsheet背景色
         barrierColor: Colors.white60 // 后面挡住的颜色
-    );
+        );
   }
 
   @override
@@ -52,24 +49,33 @@ class _SongListDetailPageState extends State<SongListDetailPage> {
     String songTitle = Get.parameters['title'] ?? '未知';
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('歌单'),
-        ),
-        // bottomNavigationBar: PlayBar(),
-        body: ListView.builder(
-            itemCount: 30,
-            itemBuilder: (context, index) {
-              return InkWell(
-                  onTap: () {},
-                  child: Container(
-                    child: buildSongItem(
+      appBar: AppBar(
+        title: Text('歌单'),
+      ),
+      // bottomNavigationBar: PlayBar(),
+      body: GetBuilder<SongListDetailController>(builder: (c) {
+        if (c.loadingStatus == LoadingStatus.loading) {
+          return Center(
+            child: Text('加载中。。。'),
+          );
+        }
+        if (c.loadingStatus == LoadingStatus.success) {
+          if(c.songList.isEmpty) return Center(child: Text('空空如也'),);
+          return ListView.builder(
+              itemCount: c.songList.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {},
+                    child: Container(
+                      child: SongItem(
                         index: index,
-                        songTitle: 'item' + index.toString(),
-                        quality: '超清母带',
-                        singer: '阿悄',
-                        album: '人来人往',
-                    moreFunction: bottomSheet),
-                  ));
-            }));
+                        songEntity: controller.songList[index],
+                      ),
+                    ));
+              });
+        }
+        return SizedBox.shrink();
+      }),
+    );
   }
 }

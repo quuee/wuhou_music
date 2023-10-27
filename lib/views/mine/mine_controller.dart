@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/model/song_list_entity.dart';
@@ -14,9 +13,7 @@ import 'package:wuhoumusic/resource/constant.dart';
 class MineController extends GetxController {
   final box = Hive.box(Keys.hiveSongList);
 
-  List<SongListEntity>? songList;
-
-  // String? imagePath;
+  List<SongListEntity> songList = [];
 
   TextEditingController songListNameContro = TextEditingController();
 
@@ -26,10 +23,12 @@ class MineController extends GetxController {
   loadSongList() {
     //  从hive获取本地歌单
     var temp = box.get(Keys.localSongList, defaultValue: <SongListEntity>[]);
-    songList = songListFromJson(jsonEncode(temp));
-    if (songList == null || songList!.isEmpty) {
+    songList = songListEntityFromJson(jsonEncode(temp));
+    developer.log('加载本地歌单$songListEntityToJson(songList)',name: 'MineController loadSongList ');
+    if (songList.isEmpty) {
       // todo 从服务端加载
     }
+    update(['songList']);
   }
 
   @override
@@ -41,7 +40,7 @@ class MineController extends GetxController {
   /// 创建一个歌单
   createSongList(String? imageLocalPath) {
     //如果两个字符串相等，返回0 ，否则返回非零数
-    int index = songList!.indexWhere((element) =>
+    int index = songList.indexWhere((element) =>
         element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
     if (index > 0) {
       // TODO 给个消息提示 已存在同名
@@ -53,19 +52,19 @@ class MineController extends GetxController {
         listTitle: songListNameContro.text.trim(),
         listAlbum: imageLocalPath ?? '',
         count: 0,
-        songEntityList: <SongEntity>[]);
-    songList!.add(s);
+        );
+    songList.add(s);
     box.put(Keys.localSongList, songList);
     songListNameContro.clear();
     imageLocalPath = null;
-    update();
+    update(['songList']);
   }
 
   /// 删除一个歌单
   deleteSongList(String songListUUID) {
-    int index = songList!
+    int index = songList
         .indexWhere((element) => element.id.compareTo(songListUUID) == 0);
-    songList!.removeAt(index);
+    songList.removeAt(index);
     box.put(Keys.localSongList, songList);
     update();
   }
@@ -123,17 +122,5 @@ class MineController extends GetxController {
     );
   }
 
-  /// 将歌曲加到歌单
-  addSongToSongList(String songListUUID, List<SongEntity> songs) {
-    int index = songList!.indexWhere((element) =>
-        element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
-    SongListEntity gedan = songList![index];
 
-    gedan.songEntityList.addAll(songs);
-    gedan.count = gedan.songEntityList.length;
-
-    box.put(Keys.localSongList, songList);
-  }
-
-  /// 从歌单删除歌曲
 }
