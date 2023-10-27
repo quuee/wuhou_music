@@ -23,7 +23,7 @@ class MineController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
 
-
+  final String songListBuilder = 'songListBuilder';
 
   @override
   void onInit() {
@@ -60,7 +60,7 @@ class MineController extends GetxController {
     developer.log('onRefresh', name: 'MineController');
     await Future.delayed(Duration(milliseconds: 500));
     loadSongList();
-    update(['songListBuilder']);
+    update([songListBuilder]);
     easyRefreshController.finishRefresh();
     easyRefreshController.resetFooter();
   }
@@ -70,7 +70,7 @@ class MineController extends GetxController {
     developer.log('onLoading', name: 'MineController');
     await Future.delayed(Duration(milliseconds: 500));
     loadSongList();
-    update(['songListBuilder']);
+    update([songListBuilder]);
     easyRefreshController.finishLoad(IndicatorResult.success);
   }
 
@@ -103,7 +103,7 @@ class MineController extends GetxController {
     box.put(Keys.localSongList, songList);
     songListNameContro.clear();
     imageLocalPath = null;
-    update(['songList']);
+    update([songListBuilder]);
   }
 
   /// 删除一个歌单
@@ -112,7 +112,7 @@ class MineController extends GetxController {
         .indexWhere((element) => element.id.compareTo(songListUUID) == 0);
     songList.removeAt(index);
     box.put(Keys.localSongList, songList);
-    update(['songListBuilder']);
+    update([songListBuilder]);
   }
 
   /// 创建歌单的中间弹窗

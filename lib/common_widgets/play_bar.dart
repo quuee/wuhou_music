@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,8 +8,7 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 
 class PlayBar extends StatelessWidget {
-  // 不能加const 不然页面动不了
-  PlayBar({
+  const PlayBar({
     super.key,
   });
 
@@ -40,11 +40,29 @@ class PlayBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// 封面
-              Image.asset(
-                R.images.logo,
-                width: 60,
-                height: 60,
-              ),
+              StreamBuilder(stream: audioPlayerHandler.queueState, builder: (context,snapshot){
+                QueueState queueState = snapshot.data ?? QueueState.empty;
+                if (queueState.queue.isEmpty) {
+                  return SizedBox.shrink();
+                }
+                var artUri = queueState.queue[queueState.queueIndex!].artUri;
+                developer.log(artUri!.path,name: 'PlayBar');
+                return Image.network(
+                  'content://media'+artUri.path,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.fill,
+                  errorBuilder: (BuildContext context, Object error,
+                      StackTrace? stackTrace) {
+                    return Image.asset(
+                      R.images.logo,
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.fill,
+                    );
+                  },
+                );
+              }),
 
               /// 歌名
               StreamBuilder<QueueState>(

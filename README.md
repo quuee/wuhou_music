@@ -1,7 +1,7 @@
 
  
 ## 待完成（想到的）
-侧滑删除
+侧滑删除  
 歌单列表 不存在的歌曲 灰色显示
 
 ## 下拉上拉库 
@@ -34,7 +34,6 @@ Audio(音频)	content://media/external/audio/media	MediaStore.Audio.Media.EXTERN
 Video(视频)	content://media/external/video/media	MediaStore.Video.Media.EXTERNAL_CONTENT_URI	video/*	Movies	DCIM 、Movies  
 Files(下载)	content://media/external/downloads	MediaStore.Downloads.EXTERNAL_CONTENT_URI	file/*	Download	Download
 
-
 音频文件比较常见的列名有:  
 MediaStore.Audio.Media.TITLE：歌名  
 MediaStore.Audio.Media.ARTIST：歌手  
@@ -49,7 +48,6 @@ MediaStore.Video.Media.DATA 地址
 MediaStore.Video.Media.SIZE 大小  
 MediaStore.Video.Media.WIDTH：视频的宽度，以像素为单位。  
 MediaStore.Video.Media.HEIGHT：视频的高度，以像素为单位
-
 
 图片文件比较常见的列名有:  
 MediaStore.Images.Media._ID：磁盘上文件的路径  

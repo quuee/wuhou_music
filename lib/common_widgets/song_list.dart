@@ -8,7 +8,7 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
 class SongList extends StatelessWidget {
-  SongList({
+  const SongList({
     super.key,
     required this.id,
     required this.listTitle,
