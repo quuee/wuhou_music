@@ -12,7 +12,8 @@ class PlayBar extends StatelessWidget {
     super.key,
   });
 
-  static final AudioPlayerHandler audioPlayerHandler = GetIt.I.get<AudioPlayerHandler>();
+  static final AudioPlayerHandler audioPlayerHandler =
+      GetIt.I.get<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,8 @@ class PlayBar extends StatelessWidget {
                 end: Alignment.centerRight,
                 colors: [Colors.deepPurple, Color(0xFFB39DDB)])),
         child: GestureDetector(
-          behavior: HitTestBehavior.opaque, // opaque：空白部分点击也有效果，但是会阻止后面目标接收事件；Translucent：空白部分点击也有效果，也允许其后面的目标接收事件。
+          behavior: HitTestBehavior
+              .opaque, // opaque：空白部分点击也有效果，但是会阻止后面目标接收事件；Translucent：空白部分点击也有效果，也允许其后面的目标接收事件。
           onTap: () {
             Get.toNamed(Routes.play);
           },
@@ -40,30 +42,33 @@ class PlayBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// 封面
-              StreamBuilder(stream: audioPlayerHandler.queueState, builder: (context,snapshot){
-                QueueState queueState = snapshot.data ?? QueueState.empty;
-                if (queueState.queue.isEmpty) {
-                  return SizedBox.shrink();
-                }
-                var artUri = queueState.queue[queueState.queueIndex!].artUri;
-                developer.log(artUri!.path,name: 'PlayBar');
-                return Image.network(
-                  'content://media'+artUri.path,
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.fill,
-                  errorBuilder: (BuildContext context, Object error,
-                      StackTrace? stackTrace) {
-                    return Image.asset(
-                      R.images.logo,
+              StreamBuilder(
+                  stream: audioPlayerHandler.queueState,
+                  builder: (context, snapshot) {
+                    QueueState queueState = snapshot.data ?? QueueState.empty;
+                    if (queueState.queue.isEmpty) {
+                      return SizedBox.shrink();
+                    }
+                    var artUri =
+                        queueState.queue[queueState.queueIndex!].artUri;
+                    developer.log(artUri!.path, name: 'PlayBar');
+                    return Image.network(
+                      'content://media' + artUri.path,
                       width: 70,
                       height: 70,
                       fit: BoxFit.fill,
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return Image.asset(
+                          R.images.logo,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.fill,
+                        );
+                      },
                     );
-                  },
-                );
-              }),
-
+                  }),
+              SizedBox(width: 10,),
               /// 歌名
               StreamBuilder<QueueState>(
                   stream: audioPlayerHandler.queueState,

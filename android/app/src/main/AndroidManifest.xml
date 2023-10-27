@@ -17,7 +17,7 @@
         android:label="wuhou music"
         android:usesCleartextTraffic="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/logo">
         <activity
 
             android:name="com.ryanheise.audioservice.AudioServiceActivity"
