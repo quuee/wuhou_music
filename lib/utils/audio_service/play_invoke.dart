@@ -4,7 +4,8 @@ import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 
 class PlayInvoke {
-  static final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
+  static final AudioPlayerHandler audioHandler = GetIt.I.get<AudioPlayerHandler>();
+
 
   static Future<void> init({
     required List<SongEntity> songList,

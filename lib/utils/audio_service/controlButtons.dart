@@ -5,9 +5,10 @@ import 'AudioPlayerHandlerImpl.dart';
 import 'common.dart';
 
 class ControlButtons extends StatelessWidget {
-  final AudioPlayerHandler audioHandler;
 
   const ControlButtons(this.audioHandler, {Key? key}) : super(key: key);
+
+  final AudioPlayerHandler audioHandler;
 
   @override
   Widget build(BuildContext context) {
