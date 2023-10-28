@@ -9,7 +9,30 @@
 
 ## BUG
 每次点击不同的歌单，后台会在通知栏创建很多个播放通知界面
-写一个工厂方法类
+写一个工厂方法类 貌似解决。
+```dart
+//原先没有工厂类 多个歌单切歌就会创建多个通知栏，难道init方法在插件中调用多次。但是插件中代码onMethodCall在收到configure才初始化
+//或者时因为每次从GetIt取audioHandler，都在重新初始化audioHandler
+final audioHandler = await AudioService.init(
+    builder: () => AudioPlayerHandlerImpl(),
+    config: AudioServiceConfig(
+    androidNotificationChannelId: 'wuhou.music.channel.audio',
+    androidNotificationChannelName: 'wuhou music',
+    // androidNotificationIcon: 'drawable/ic_stat_music_note',
+    androidShowNotificationBadge: true,
+    androidStopForegroundOnPause: false,
+  ),
+);
+GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
+static final AudioPlayerHandler audioPlayerHandler = GetIt.I<AudioPlayerHandler>();
+
+// 查看get_it文档，并不是传实例进去。
+GetIt.instance.registerSingleton<AppModel>(AppModelImplementation());
+GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
+
+//应该注册完之后 测试是否是单例
+```
+
 
 
 ## 下拉上拉库 
