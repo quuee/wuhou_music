@@ -18,8 +18,7 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-  static final AudioPlayerHandler _audioHandler =
-      GetIt.I.get<AudioPlayerHandler>();
+  static final AudioPlayerHandler _audioHandler = GetIt.I<AudioPlayerHandler>();
   late PageController _pageController;
   Stream<Duration> get _bufferedPositionStream => _audioHandler.playbackState
       .map((state) => state.bufferedPosition)

@@ -54,7 +54,6 @@ abstract class AudioPlayerHandler implements AudioHandler {
 class AudioPlayerHandlerImpl extends BaseAudioHandler
     with SeekHandler
     implements AudioPlayerHandler {
-
   // final BehaviorSubject<List<MediaItem>> _recentSubject =
   //     BehaviorSubject.seeded(<MediaItem>[]);
 
@@ -180,8 +179,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }).whereType<MediaItem>().distinct().listen(mediaItem.add);
 
     // Propagate all events from the audio player to AudioService clients.
-    _player.playbackEventStream
-        .listen(_broadcastState, onError: _playbackError);
+    // _player.playbackEventStream
+    //     .listen(_broadcastState, onError: _playbackError);
+    _player.playbackEventStream.listen((event) {
+      developer.log('_broadcastState $event',name: '_player.playbackEventStream.listen');
+      _broadcastState(_player.playbackEvent);
+    }, onError: _playbackError);
 
     _player.shuffleModeEnabledStream
         .listen((enabled) => _broadcastState(_player.playbackEvent));
@@ -229,8 +232,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         await _player
             .setAudioSource(_playlist, preload: false)
             .onError((error, stackTrace) {
-              return null;
-            });
+          return null;
+        });
       }
     } else {
       _playlist.addAll(queue.value.map(_itemToSource).toList());
@@ -240,7 +243,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   AudioSource _itemToSource(MediaItem mediaItem) {
     final audioSource = AudioSource.uri(Uri.parse(mediaItem.id));
-    developer.log('${audioSource.uri}',name: '_itemToSource');
+    developer.log('${audioSource.uri}', name: '_itemToSource');
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -282,7 +285,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       // 将queue的mediaItem 转成 map 或 songEntity，存入hive
       final lastSongEntityList = queue
           .map((item) => SongEntity(
-              id: item.extras!['id'],//因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
+              id: item.extras![
+                  'id'], //因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
               album: item.album,
               artist: item.artist ?? '',
               title: item.title,
@@ -311,6 +315,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> updateQueue(List<MediaItem> queue) async {
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
+
   }
 
   @override
@@ -353,8 +358,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> pause() async {
     _player.pause();
-    await Hive.box(Keys.hiveCache)
-        .put(Keys.lastIndex, _player.currentIndex);
+    await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
     await Hive.box(Keys.hiveCache)
         .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
@@ -369,8 +373,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
 
-    await Hive.box(Keys.hiveCache)
-        .put(Keys.lastIndex, _player.currentIndex);
+    await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
     await Hive.box(Keys.hiveCache)
         .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
@@ -381,6 +384,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     final playing = _player.playing;
     final queueIndex = getQueueIndex(
         event.currentIndex, _player.shuffleModeEnabled, _player.shuffleIndices);
+    developer.log('_broadcastState playbackState.add $event',name: '_broadcastState');
+
     playbackState.add(playbackState.value.copyWith(
       controls: [
         MediaControl.skipToPrevious,

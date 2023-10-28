@@ -14,7 +14,7 @@ class PlayBar extends StatelessWidget {
   });
 
   static final AudioPlayerHandler audioPlayerHandler =
-      GetIt.I.get<AudioPlayerHandler>();
+      GetIt.I<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {

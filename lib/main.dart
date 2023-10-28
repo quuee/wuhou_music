@@ -77,7 +77,6 @@ Future<void> initServices() async {
     ),
   );
   // Map<int, String> albumArtPaths = <int, String>{};
-
   GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
 }
 
