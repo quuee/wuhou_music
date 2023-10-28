@@ -13,8 +13,7 @@ class PlayBar extends StatelessWidget {
     super.key,
   });
 
-  static final AudioPlayerHandler audioPlayerHandler =
-      GetIt.I<AudioPlayerHandler>();
+  static final AudioPlayerHandler audioPlayerHandler = GetIt.I<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {

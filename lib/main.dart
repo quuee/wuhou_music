@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:audio_service/audio_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'dart:developer' as developer;
 
@@ -68,15 +68,8 @@ class MyApp extends StatelessWidget {
 
 Future<void> initServices() async {
   developer.log('初始化服务', name: 'main initServices');
-  AudioPlayerHandler audioHandler = await AudioService.init(
-    builder: () => AudioPlayerHandlerImpl(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'wuhou.music.channel.audio',
-      androidNotificationChannelName: 'Audio playback',
-      androidNotificationOngoing: true,
-    ),
-  );
-  // Map<int, String> albumArtPaths = <int, String>{};
+  final audioHandlerFactory = AudioHandlerFactory();
+  final AudioPlayerHandler audioHandler = await audioHandlerFactory.getAudioHandler();
   GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
 }
 
