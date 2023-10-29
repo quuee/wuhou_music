@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +10,7 @@ import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
+import 'package:wuhoumusic/views/mine/create_song_list_dialog.dart';
 
 class MineController extends GetxController {
   final box = Hive.box(Keys.hiveSongList);
@@ -21,13 +21,10 @@ class MineController extends GetxController {
 
   late EasyRefreshController easyRefreshController;
 
-  final ImagePicker _picker = ImagePicker();
-
   final String songListBuilder = 'songListBuilder';
 
   @override
   void onInit() {
-
     loadSongList();
     easyRefreshController = EasyRefreshController(
       controlFinishRefresh: true,
@@ -38,7 +35,7 @@ class MineController extends GetxController {
   }
 
   @override
-  onClose(){
+  onClose() {
     easyRefreshController.dispose();
     super.onClose();
   }
@@ -48,11 +45,11 @@ class MineController extends GetxController {
     //  从hive获取本地歌单
     var temp = box.get(Keys.localSongList, defaultValue: <SongListEntity>[]);
     songList = songListEntityFromJson(jsonEncode(temp));
-    developer.log('加载本地歌单$songListEntityToJson(songList)',name: 'MineController loadSongList ');
+    developer.log('加载本地歌单$songListEntityToJson(songList)',
+        name: 'MineController loadSongList ');
     if (songList.isEmpty) {
       // todo 从服务端加载
     }
-
   }
 
   /// 下拉刷新
@@ -74,7 +71,6 @@ class MineController extends GetxController {
     easyRefreshController.finishLoad(IndicatorResult.success);
   }
 
-
   /// 创建一个歌单
   createSongList(String? imageLocalPath) {
     //如果两个字符串相等，返回0 ，否则返回非零数
@@ -88,17 +84,16 @@ class MineController extends GetxController {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
       return;
     }
 
     var s = SongListEntity(
-        id: Uuid().v1(),
-        listTitle: songListNameContro.text.trim(),
-        listAlbum: imageLocalPath ?? '',
-        count: 0,
-        );
+      id: Uuid().v1(),
+      listTitle: songListNameContro.text.trim(),
+      listAlbum: imageLocalPath ?? '',
+      count: 0,
+    );
     songList.add(s);
     box.put(Keys.localSongList, songList);
     songListNameContro.clear();
@@ -123,36 +118,10 @@ class MineController extends GetxController {
       songListNameContro.text = songListEntity.listTitle;
       imageLocalPath = songListEntity.listAlbum;
     }
-
     Get.defaultDialog(
       title: '请编辑歌单名称',
-      content: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: songListNameContro,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            // TODO 选择完 不能立即显示  如何更新ui
-            imageLocalPath != null
-                ? Image.file(
-                    File(imageLocalPath),
-                    width: 50,
-                    height: 50,
-                  )
-                : ElevatedButton(
-                    onPressed: () async {
-                      XFile? image =
-                          await _picker.pickImage(source: ImageSource.gallery);
-                      imageLocalPath = image != null ? image.path : null;
-                    },
-                    child: Icon(Icons.add_photo_alternate_outlined),
-                  ),
-          ],
-        ),
+      content: CreateSongListDialog(
+        imagePath: imageLocalPath,
       ),
       confirm: ElevatedButton(
           onPressed: () {
@@ -162,11 +131,10 @@ class MineController extends GetxController {
           child: Text('确认')),
       cancel: ElevatedButton(
           onPressed: () {
+            songListNameContro.clear();
             Get.back();
           },
           child: Text('取消')),
     );
   }
-
-
 }
