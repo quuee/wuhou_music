@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:developer' as developer;
 
@@ -22,6 +20,8 @@ class MineController extends GetxController {
   late EasyRefreshController easyRefreshController;
 
   final String songListBuilder = 'songListBuilder';
+
+  String? songListImagePath;
 
   @override
   void onInit() {
@@ -71,33 +71,32 @@ class MineController extends GetxController {
     easyRefreshController.finishLoad(IndicatorResult.success);
   }
 
-  /// 创建一个歌单
-  createSongList(String? imageLocalPath) {
-    //如果两个字符串相等，返回0 ，否则返回非零数
-    int index = songList.indexWhere((element) =>
-        element.listTitle.compareTo(songListNameContro.text.trim()) == 0);
-    if (index > 0) {
-      Fluttertoast.showToast(
-          msg: "已存在同名歌单",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      return;
-    }
+  /// 创建 更新一个歌单
+  createOrUpdateSongList(String? songListUUID) {
 
-    var s = SongListEntity(
-      id: Uuid().v1(),
-      listTitle: songListNameContro.text.trim(),
-      listAlbum: imageLocalPath ?? '',
-      count: 0,
-    );
-    songList.add(s);
+    if(songListUUID!=null){
+      // 更新
+      var s = SongListEntity(
+        id: songListUUID,
+        listTitle: songListNameContro.text.trim(),
+        listAlbum: songListImagePath ?? '',
+        count: 0,
+      );
+      int index = songList.indexWhere((element) => element.id.compareTo(songListUUID) == 0);
+      songList[index] = s;
+    }else{
+      // 新增
+      var s = SongListEntity(
+        id: Uuid().v1(),
+        listTitle: songListNameContro.text.trim(),
+        listAlbum: songListImagePath ?? '',
+        count: 0,
+      );
+      songList.add(s);
+    }
     box.put(Keys.localSongList, songList);
     songListNameContro.clear();
-    imageLocalPath = null;
+    songListImagePath = null;
     update([songListBuilder]);
   }
 
@@ -111,21 +110,21 @@ class MineController extends GetxController {
   }
 
   /// 创建歌单的中间弹窗
-  addOrUpdateSongListDialog(SongListEntity? songListEntity) {
-    String? imageLocalPath;
+  createOrUpdateSongListDialog(SongListEntity? songListEntity) {
+
     if (songListEntity == null) {
+      // songListNameContro.clear();
+      // songListImagePath = null;
     } else {
       songListNameContro.text = songListEntity.listTitle;
-      imageLocalPath = songListEntity.listAlbum;
+      songListImagePath = songListEntity.listAlbum;
     }
     Get.defaultDialog(
       title: '请编辑歌单名称',
-      content: CreateSongListDialog(
-        imagePath: imageLocalPath,
-      ),
+      content: CreateSongListDialog(),
       confirm: ElevatedButton(
           onPressed: () {
-            createSongList(imageLocalPath);
+            createOrUpdateSongList(songListEntity?.id);
             Get.back();
           },
           child: Text('确认')),

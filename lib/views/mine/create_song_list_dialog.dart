@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 
 class CreateSongListDialog extends StatefulWidget {
-  CreateSongListDialog({super.key, this.imagePath});
-  String? imagePath;
+  CreateSongListDialog({super.key});
+
   @override
   State<CreateSongListDialog> createState() => _CreateSongListDialogState();
 }
@@ -16,10 +16,11 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
   final ImagePicker _picker = ImagePicker();
 
   _chooseImage() async {
+    MineController mineController = Get.find<MineController>();
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      if(widget.imagePath == null || widget.imagePath?.trim().compareTo('') == 0){
-        widget.imagePath = (image != null ? image.path : null);
+      if(mineController.songListImagePath == null || mineController.songListImagePath?.trim().compareTo('') == 0){
+        mineController.songListImagePath = (image != null ? image.path : null);
       }
     });
   }
@@ -29,8 +30,8 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
     MineController mineController = Get.find<MineController>();
 
     final imageChild;
-    if (widget.imagePath == null ||
-        widget.imagePath?.trim().compareTo('') == 0) {
+    if (mineController.songListImagePath == null ||
+        mineController.songListImagePath?.trim().compareTo('') == 0) {
       imageChild = Container(
         width: 150,
         height: 150,
@@ -45,7 +46,7 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
     } else {
       // 判断 网络 本地
       imageChild = Image.file(
-        File(widget.imagePath!),
+        File(mineController.songListImagePath!),
         width: 150,
         height: 150,
       );

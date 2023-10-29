@@ -34,7 +34,7 @@ class _MinePageState extends State<MinePage> {
         ),
         GestureDetector(
           onTap: () {
-            controller.addOrUpdateSongListDialog(null);
+            controller.createOrUpdateSongListDialog(null);
           },
           behavior: HitTestBehavior.opaque,
           child: Column(

@@ -38,7 +38,7 @@ class SongList extends StatelessWidget {
                     listAlbum: listAlbum!,
                     count: count,
                   );
-                  c.addOrUpdateSongListDialog(s);
+                  c.createOrUpdateSongListDialog(s);
                 },
               ),
               ListTile(
