@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
@@ -15,7 +17,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
   Widget build(BuildContext context) {
     // Map<String, dynamic> param = Get.arguments as Map<String, dynamic>;
     developer.log('${Get.parameters}', name: 'SongListDetailPage');
-    String songTitle = Get.parameters['title'] ?? '未知';
+    // String songTitle = Get.parameters['title'] ?? '未知';
 
     return Scaffold(
       appBar: AppBar(
@@ -36,6 +38,8 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           return ListView.builder(
               itemCount: c.songs.length,
               itemBuilder: (context, index) {
+                File song = File(c.songs[index].data!);
+                bool fileExit = song.existsSync();
                 return Dismissible(
                   key: Key(c.songs[index].id),
                   direction: DismissDirection.endToStart,
@@ -49,9 +53,10 @@ class SongListDetailPage extends GetView<SongListDetailController> {
                   },
                   child: InkWell(
                       onTap: () {
-                        PlayInvoke.init(songList: c.songs, index: index);
+                        if(fileExit) PlayInvoke.init(songList: c.songs, index: index);
                       },
                       child: Container(
+                        color: fileExit ? Colors.white : Colors.grey[400],
                         child: SongItem(
                           index: index,
                           songEntity: controller.songs[index],

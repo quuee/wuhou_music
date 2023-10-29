@@ -23,13 +23,16 @@ class SongEntityAdapter extends TypeAdapter<SongEntity> {
       artist: fields[3] as String,
       title: fields[4] as String,
       duration: fields[5] as int,
+      quality: fields[6] as String?,
+      artAlbum: fields[7] as String?,
+      data: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SongEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +44,13 @@ class SongEntityAdapter extends TypeAdapter<SongEntity> {
       ..writeByte(4)
       ..write(obj.title)
       ..writeByte(5)
-      ..write(obj.duration);
+      ..write(obj.duration)
+      ..writeByte(6)
+      ..write(obj.quality)
+      ..writeByte(7)
+      ..write(obj.artAlbum)
+      ..writeByte(8)
+      ..write(obj.data);
   }
 
   @override

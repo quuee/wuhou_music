@@ -33,6 +33,8 @@ class SongEntity {
   String? quality; // 音频质量
   @HiveField(7)
   String? artAlbum; //专辑封面 artPath
+  @HiveField(8)
+  String? data; //真是路径
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];
@@ -52,6 +54,7 @@ class SongEntity {
     required this.duration,
     this.quality,
     this.artAlbum,
+    this.data,
   });
 
   /// id:uri 这里必须换uri，不然找不到文件
@@ -77,6 +80,7 @@ class SongEntity {
     'artist',
     'title',
     'duration',
+    '_data',
   ];
 
   /// Creates a song from data retrieved from the MediaStore.
@@ -87,6 +91,7 @@ class SongEntity {
     artist: data[3] as String,
     title: data[4] as String,
     duration: data[5] as int,
+    data: data[6] as String,
   );
 
   /// Returns a markup of what data to get from the cursor.
@@ -97,7 +102,8 @@ class SongEntity {
         ..getInt(2)
         ..getString(3)
         ..getString(4)
-        ..getInt(5);
+        ..getInt(5)
+        ..getString(6);
 
   factory SongEntity.fromJson(Map<String, dynamic> json) => SongEntity(
     id: json["id"],
@@ -108,6 +114,7 @@ class SongEntity {
     duration: json["duration"],
     quality: json["quality"],
     artAlbum: json["artAlbum"],
+    data: json["data"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -119,5 +126,6 @@ class SongEntity {
     "duration": duration,
     "quality": quality,
     "artAlbum": artAlbum,
+    "data": data,
   };
 }

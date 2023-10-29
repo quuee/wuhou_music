@@ -11,7 +11,6 @@ import 'package:wuhoumusic/model/song_entity.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/resource/constant.dart';
-import 'package:wuhoumusic/utils/audio_service/media_library.dart';
 
 class QueueState {
   static const QueueState empty =
