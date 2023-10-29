@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/model/song_list_entity.dart';
@@ -135,5 +136,14 @@ class MineController extends GetxController {
           },
           child: Text('取消')),
     );
+  }
+
+  computedCount(String songListUUID,List<SongEntity> tempList){
+    // 拿到songListBox
+    int index = songList.indexWhere((element) => element.id.compareTo(songListUUID) == 0);
+    SongListEntity gedan = songList[index];
+    gedan.count = tempList.length;
+    developer.log('更新歌单$songEntityToJson(mineController.songList)',name: 'SongListDetailController addSongToSongList');
+    box.put(Keys.localSongList, songList);
   }
 }

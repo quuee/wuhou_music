@@ -29,15 +29,15 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           );
         }
         if (c.loadingStatus == LoadingStatus.success) {
-          if (c.songList.isEmpty)
+          if (c.songs.isEmpty)
             return Center(
               child: Text('空空如也'),
             );
           return ListView.builder(
-              itemCount: c.songList.length,
+              itemCount: c.songs.length,
               itemBuilder: (context, index) {
                 return Dismissible(
-                  key: Key(c.songList[index].id),
+                  key: Key(c.songs[index].id),
                   direction: DismissDirection.endToStart,
                   background: Container(
                     child: Icon(Icons.delete),
@@ -45,16 +45,16 @@ class SongListDetailPage extends GetView<SongListDetailController> {
                     alignment: Alignment.centerRight,
                   ),
                   onDismissed: (direction) {
-                    // TODO 从hive中删除
+                    c.deleteSongInSongList(c.songs[index].id);
                   },
                   child: InkWell(
                       onTap: () {
-                        PlayInvoke.init(songList: c.songList, index: index);
+                        PlayInvoke.init(songList: c.songs, index: index);
                       },
                       child: Container(
                         child: SongItem(
                           index: index,
-                          songEntity: controller.songList[index],
+                          songEntity: controller.songs[index],
                         ),
                       )),
                 );

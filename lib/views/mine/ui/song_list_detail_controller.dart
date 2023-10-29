@@ -15,22 +15,25 @@ class SongListDetailController extends GetxController{
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   get loadingStatus => _loadingStatus;
 
-  List<SongEntity> songList = [];
+  List<SongEntity> songs = [];
+
   final box = Hive.box(Keys.hiveSongList);
+
+  String? songListUUID;
 
   /// 加载歌单歌曲
   loadSongs(){
 
-    String? songListUUID = Get.parameters['songListUUID'];
-    if(songListUUID == null || songListUUID.isEmpty){
+    songListUUID = Get.parameters['songListUUID'];
+    if(songListUUID == null || songListUUID!.isEmpty){
       return ;
     }
 
     List<dynamic> temp = box.get(songListUUID,defaultValue: []);
-    songList = songEntityFromJson(jsonEncode(temp));
+    songs = songEntityFromJson(jsonEncode(temp));
 
     _loadingStatus = LoadingStatus.success;
-    developer.log('加载歌单歌曲$songEntityToJson(songList)',name: 'SongListDetailController loadSongs');
+    developer.log('加载歌单歌曲$songEntityToJson(songs)',name: 'SongListDetailController loadSongs');
     update();
   }
 
@@ -50,17 +53,21 @@ class SongListDetailController extends GetxController{
 
     // 拿到songListBox
     MineController mineController = Get.find<MineController>();
-    final songListBox = mineController.box;
-    int index = mineController.songList.indexWhere((element) => element.id.compareTo(songListUUID) == 0);
-    SongListEntity gedan = mineController.songList[index];
-    gedan.count = tempList.length;
-    developer.log('更新歌单$songEntityToJson(mineController.songList)',name: 'SongListDetailController addSongToSongList');
-    songListBox.put(Keys.localSongList, mineController.songList);
-
+    mineController.computedCount(songListUUID, tempList);
     mineController.pullDownRefresh();//可以更新UI
     // update(['songListBuilder']);//更新不了UI
   }
 
-/// 从歌单删除歌曲
+  /// 从歌单删除歌曲
+  deleteSongInSongList(String songId){
 
+    songs.removeWhere((element) => element.id.compareTo(songId)==0);
+    box.put(songListUUID, songs);
+
+    // 拿到songListBox
+    MineController mineController = Get.find<MineController>();
+    mineController.computedCount(songListUUID!, songs);
+    mineController.pullDownRefresh();//可以更新UI
+
+  }
 }
