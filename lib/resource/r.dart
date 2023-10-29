@@ -16,8 +16,7 @@ class _Images {
   final logo = '$path/logo.png';
   final bg1 = '$path/bg1.jpg';
   final tom = '$path/tom.jpeg';
-  final musicGrey = '$path/music-grey.jpg';
-  final musicWhite = '$path/music-white.jpg';
+
 }
 
 class _Music {

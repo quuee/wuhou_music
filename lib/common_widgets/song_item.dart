@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 import 'package:wuhoumusic/views/mine/ui/song_list_detail_controller.dart';
 
@@ -144,6 +146,24 @@ class SongItem extends StatelessWidget {
                     TextStyle(fontSize: songTitleSize, color: Colors.black45),
               ),
             )),
+        // Expanded(
+        //     flex: 2,
+        //     child: QueryArtworkWidget(
+        //       id: int.parse(songEntity.id),
+        //       type: ArtworkType.ALBUM,
+        //       keepOldArtwork: true,
+        //       artworkBorder: BorderRadius.circular(7.0),
+        //       nullArtworkWidget: ClipRRect(
+        //         borderRadius: BorderRadius.circular(7.0),
+        //         child: Image(
+        //           fit: BoxFit.cover,
+        //           height: 50.0,
+        //           width: 50.0,
+        //           image: AssetImage(R.images.logo),
+        //         ),
+        //       ),
+        //     )
+        // ),
         Expanded(flex: 7, child: content),
         Expanded(
             flex: 1,

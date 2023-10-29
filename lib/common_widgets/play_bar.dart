@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
@@ -13,7 +14,8 @@ class PlayBar extends StatelessWidget {
     super.key,
   });
 
-  static final AudioPlayerHandler audioPlayerHandler = GetIt.I<AudioPlayerHandler>();
+  static final AudioPlayerHandler audioPlayerHandler =
+      GetIt.I<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,26 +51,49 @@ class PlayBar extends StatelessWidget {
                     if (queueState.queue.isEmpty) {
                       return SizedBox.shrink();
                     }
-                    var artAlbum = queueState.queue[queueState.queueIndex!]
-                            .extras!['artAlbum'] ??
-                        '';
-                    developer.log(artAlbum, name: 'PlayBar');
-                    return Image.file(
-                      File(artAlbum),
-                      cacheHeight: 70,
-                      cacheWidth: 70,
-                      // width: 70,
-                      // height: 70,
-                      fit: BoxFit.fill,
-                      errorBuilder: (BuildContext context, Object error,
-                          StackTrace? stackTrace) {
-                        return Image.asset(
-                          R.images.logo,
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.fill,
-                        );
-                      },
+
+                    int lastIndex = queueState.queue[queueState.queueIndex!].id
+                        .lastIndexOf('/');
+                    String id = queueState.queue[queueState.queueIndex!].id
+                        .substring(lastIndex + 1);
+                    developer.log(
+                        '${queueState.queue[queueState.queueIndex!].id} + $id',
+                        name: 'PlayBar');
+                    // var artAlbum = queueState.queue[queueState.queueIndex!]
+                    //         .extras!['artAlbum'] ??
+                    //     '';
+
+                    // return Image.file(
+                    //   File(artAlbum),
+                    //   cacheHeight: 70,
+                    //   cacheWidth: 70,
+                    //   // width: 70,
+                    //   // height: 70,
+                    //   fit: BoxFit.fill,
+                    //   errorBuilder: (BuildContext context, Object error,
+                    //       StackTrace? stackTrace) {
+                    //     return Image.asset(
+                    //       R.images.logo,
+                    //       width: 70,
+                    //       height: 70,
+                    //       fit: BoxFit.fill,
+                    //     );
+                    //   },
+                    // );
+                    return QueryArtworkWidget(
+                      id: int.parse(id),
+                      type: ArtworkType.PLAYLIST,
+                      keepOldArtwork: true,
+                      artworkBorder: BorderRadius.circular(7.0),
+                      nullArtworkWidget: ClipRRect(
+                        borderRadius: BorderRadius.circular(7.0),
+                        child: Image(
+                          fit: BoxFit.cover,
+                          height: 60.0,
+                          width: 60.0,
+                          image: AssetImage(R.images.logo),
+                        ),
+                      ),
                     );
                   }),
               SizedBox(

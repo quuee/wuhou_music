@@ -20,7 +20,7 @@ class LocalMusicController extends GetxController {
     super.onReady();
 
     _fetchSongs();
-    _fetchArts();
+    // _fetchArts();
   }
 
   /// 扫描本地歌曲
@@ -63,7 +63,7 @@ class LocalMusicController extends GetxController {
     }
   }
 
-  /// 扫描本地歌曲 封面
+  /// 扫描本地歌曲 封面 不好用
   Future<void> _fetchArts() async {
     final cursor = await AndroidContentResolver.instance.query(
       // MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI

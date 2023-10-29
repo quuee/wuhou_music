@@ -48,6 +48,10 @@ class LocalMusicPage extends GetView<LocalMusicController> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('本地音乐'),
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+          IconButton(onPressed: (){}, icon: Icon(Icons.more_vert))
+        ],
       ),
       bottomNavigationBar: PlayBar(),
       body: widget,
