@@ -21,28 +21,27 @@ class SongListDetailPage extends GetView<SongListDetailController> {
     File song = File(songs[index].data!);
     bool fileExit = song.existsSync();
     return Dismissible(
-      key: Key(songs[index].id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        child: Icon(Icons.delete),
-        color: Colors.redAccent,
-        alignment: Alignment.centerRight,
-      ),
-      onDismissed: (direction) {
-        controller.deleteSongInSongList(songs[index].id);
-      },
-      child: InkWell(
-          onTap: () {
-            if (fileExit) PlayInvoke.init(songList: songs, index: index);
-          },
-          child: Container(
-            color: fileExit ? Colors.white : Colors.grey[400],
-            child: SongItem(
-              index: index,
-              songEntity: songs[index],
-            ),
-          )),
-    );
+        key: Key(songs[index].id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          child: Icon(Icons.delete),
+          color: Colors.redAccent,
+          alignment: Alignment.centerRight,
+        ),
+        onDismissed: (direction) {
+          controller.deleteSongInSongList(songs[index].id);
+        },
+        child: Ink(
+          color: fileExit ? Colors.white : Colors.grey[400],
+          child: InkWell(
+              onTap: () {
+                if (fileExit) PlayInvoke.init(songList: songs, index: index);
+              },
+              child: SongItem(
+                index: index,
+                songEntity: songs[index],
+              )),
+        ));
   }
 
   _buildFeatureBar() {
