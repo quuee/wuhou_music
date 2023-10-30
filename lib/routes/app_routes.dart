@@ -33,6 +33,7 @@ class Routes {
     GetPage(
       name: play,
       page: () => const PlayPage(),
+
     ),
     GetPage(
         name: localMusicPage,

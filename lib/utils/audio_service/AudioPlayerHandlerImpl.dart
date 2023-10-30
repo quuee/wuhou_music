@@ -1,16 +1,13 @@
 import 'dart:convert';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-
+import 'package:wuhoumusic/resource/constant.dart';
 import 'dart:developer' as developer;
 
-import 'package:wuhoumusic/resource/constant.dart';
 
 class QueueState {
   static const QueueState empty =

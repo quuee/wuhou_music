@@ -73,6 +73,7 @@ class SongEntity {
       'loadThumbnailUri': uri,
       'id':id,
       'artAlbum':artAlbum,
+      'data':data,
     },
   );
 
