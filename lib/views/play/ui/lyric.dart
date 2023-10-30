@@ -1,29 +1,26 @@
+import 'dart:io';
 import 'dart:ui';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lyric/lyrics_model_builder.dart';
 import 'package:flutter_lyric/lyrics_reader.dart';
-import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
-import 'package:wuhoumusic/views/play/play_controller.dart';
 
 class Lyric extends StatefulWidget {
-  const Lyric({super.key});
+  const Lyric({super.key, required this.song});
+
+  final SongEntity song;
 
   @override
   State<Lyric> createState() => _LyricState();
 }
 
 class _LyricState extends State<Lyric> {
-  double sliderProgress = 111658;
-  int playProgress = 111658;
-  double max_value = 211658;
+
   var lyricUI = UINetease();
 
-  static final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
+  var lyricModel;
 
   List<Widget> buildReaderBackground() {
     return [
@@ -44,12 +41,34 @@ class _LyricState extends State<Lyric> {
     ];
   }
 
-  Widget buildLyricReader() {
-    PlayController playController = Get.find<PlayController>();
-    playController.fetchLyric();
-    var lyricModel = LyricsModelBuilder.create()
-        .bindLyricToMain(playController.currentLyricContent)
+  // initState(){
+  //
+  //   super.initState();
+  // }
+
+  fetchLyric(String path) {
+
+    if (path.compareTo('') == 0) {
+      return '';
+    }
+    String currentLyricContent = '';
+    int lastIndex = path.lastIndexOf('.');
+    String lyricPath = path.substring(0, lastIndex) + '.lrc';
+    File lyricFile = File(lyricPath);
+    bool exist = lyricFile.existsSync();
+    if (exist) {
+      currentLyricContent = lyricFile.readAsStringSync();
+    } else {
+      // 从服务端获取
+    }
+
+    lyricModel = LyricsModelBuilder.create()
+        .bindLyricToMain(currentLyricContent)
         .getModel();
+  }
+
+  Widget buildLyricReader() {
+    fetchLyric(widget.song.data!);
     return StreamBuilder<Duration>(
       stream: AudioService.position,
       builder: (content, snapshot) {
