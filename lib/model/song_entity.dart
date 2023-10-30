@@ -34,7 +34,9 @@ class SongEntity {
   @HiveField(7)
   String? artAlbum; //专辑封面 artPath
   @HiveField(8)
-  String? data; //真是路径
+  String? data; // 真实路径
+  @HiveField(9)
+  String? bucketDisplayName; // 来自哪个包
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];
@@ -55,6 +57,7 @@ class SongEntity {
     this.quality,
     this.artAlbum,
     this.data,
+    this.bucketDisplayName,
   });
 
   /// id:uri 这里必须换uri，不然找不到文件
@@ -81,6 +84,8 @@ class SongEntity {
     'title',
     'duration',
     '_data',
+    'bucket_display_name',
+    // '_size', //文件大小
   ];
 
   /// Creates a song from data retrieved from the MediaStore.
@@ -92,6 +97,7 @@ class SongEntity {
     title: data[4] as String,
     duration: data[5] as int,
     data: data[6] as String,
+    bucketDisplayName: data[7] as String,
   );
 
   /// Returns a markup of what data to get from the cursor.
@@ -103,7 +109,8 @@ class SongEntity {
         ..getString(3)
         ..getString(4)
         ..getInt(5)
-        ..getString(6);
+        ..getString(6)
+        ..getString(7);
 
   factory SongEntity.fromJson(Map<String, dynamic> json) => SongEntity(
     id: json["id"],
@@ -115,6 +122,7 @@ class SongEntity {
     quality: json["quality"],
     artAlbum: json["artAlbum"],
     data: json["data"],
+    bucketDisplayName: json["bucketDisplayName"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -127,5 +135,6 @@ class SongEntity {
     "quality": quality,
     "artAlbum": artAlbum,
     "data": data,
+    "bucketDisplayName": bucketDisplayName,
   };
 }

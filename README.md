@@ -68,6 +68,7 @@ projection： 代表告诉Provider要返回的字段内容（列Column），用�
 selection：相当于SQL语句中的where子句，就是代表查询条件。null表示不进行添加筛选查询。  
 selectArgs：如果selection里有？这个符号时，这里可以以实际值代替这个问号。如果Selections这个没有？的话，那么这个String数组可以为null。  
 sortOrder：说明查询结果按什么来排序。相当于SQL语句中的Order by，升序 asc /降序 desc，null为默认排序
+![示例](./document/contentResolver.query.png)
 
 类型：MimeType  
 Image(图片)	content://media/external/images/media	MediaStore.Images.Media.EXTERNAL_CONTENT_URI	image/*	Pictures	DCIM、Pictures  
