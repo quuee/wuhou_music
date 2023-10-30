@@ -55,27 +55,6 @@ class SongListDetailPage extends GetView<SongListDetailController> {
               },
               child: songWidget),
         ));
-    // return GetBuilder<SongListDetailController>(builder: (c) {
-    //   return Dismissible(
-    //       key: Key(c.songs[index].id),
-    //       direction: DismissDirection.endToStart,
-    //       background: Container(
-    //         child: Icon(Icons.delete),
-    //         color: Colors.redAccent,
-    //         alignment: Alignment.centerRight,
-    //       ),
-    //       onDismissed: (direction) {
-    //         controller.deleteSongInSongList(c.songs[index].id);
-    //       },
-    //       child: Ink(
-    //         // color: fileExit ? Colors.white : Colors.grey[400],
-    //         child: InkWell(
-    //             onTap: () {
-    //               if (fileExit) PlayInvoke.init(songList: c.songs, index: index);
-    //             },
-    //             child: songWidget),
-    //       ));
-    // });
   }
 
   _buildFeatureBar() {
@@ -84,25 +63,29 @@ class SongListDetailPage extends GetView<SongListDetailController> {
       // height: 60,
       child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.play_circle,
-                size: 35,
-                color: Colors.deepPurple,
-              ),
-              Text(
-                '播放全部',
-                style: TextStyle(fontSize: 20),
-              ),
-            ],
+          GestureDetector(
+            onTap: () {
+              PlayInvoke.init(songList: controller.songs, index: 0);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.play_circle,
+                  size: 35,
+                  color: Colors.deepPurple,
+                ),
+                Text(
+                  '播放全部',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
           ),
           Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // IconButton(onPressed: () {}, icon: Icon(Icons.music_note)),
               IconButton(
                   onPressed: () {
                     Get.toNamed(Routes.songListAdd);
