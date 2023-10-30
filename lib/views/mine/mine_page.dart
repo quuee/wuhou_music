@@ -3,7 +3,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
-import 'package:wuhoumusic/common_widgets/song_list.dart';
+import 'package:wuhoumusic/views/mine/ui/song_list.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 

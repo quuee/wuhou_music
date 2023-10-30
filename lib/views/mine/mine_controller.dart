@@ -9,7 +9,7 @@ import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
-import 'package:wuhoumusic/views/mine/create_song_list_dialog.dart';
+import 'package:wuhoumusic/views/mine/ui/create_song_list_dialog.dart';
 
 class MineController extends GetxController {
   final box = Hive.box(Keys.hiveSongList);

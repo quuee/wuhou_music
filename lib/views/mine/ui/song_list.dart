@@ -61,7 +61,7 @@ class SongList extends StatelessWidget {
     final child = GestureDetector(
       onTap: () {
         Get.toNamed(Routes.songListDetail,
-            parameters: {'title': listTitle, 'songListUUID': id});
+            parameters: {'title': listTitle, 'songListUUID': id,'coverImage':listAlbum??''});
       },
       behavior: HitTestBehavior.translucent,
       child: Container(
@@ -107,7 +107,7 @@ class SongList extends StatelessWidget {
                 onPressed: () {
                   _showModalBottomSheet();
                 },
-                icon: Icon(AliIcons.more))
+                icon: Icon(Icons.more_vert))
           ],
         ),
       ),

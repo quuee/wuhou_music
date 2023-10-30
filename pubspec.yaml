@@ -60,10 +60,7 @@ flutter:
     - family: PuHuiTiX
       fonts:
         - asset: assets/fonts/Puhuitix.ttf
-    - family: iconfont
-      fonts:
-        - asset: assets/fonts/iconfont.ttf
     - family: aliIconfont
       fonts:
-        - asset: assets/fonts/ali_iconfont.ttf
+        - asset: assets/iconfont/ali_iconfont.ttf
 

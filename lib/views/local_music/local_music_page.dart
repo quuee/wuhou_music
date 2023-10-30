@@ -5,12 +5,12 @@ import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 
-import 'package:wuhoumusic/views/mine/ui/local_music_controller.dart';
+import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
 
 class LocalMusicPage extends GetView<LocalMusicController> {
   const LocalMusicPage({super.key});
 
-
+  // 单曲 歌手 封面 文件夹
 
   @override
   Widget build(BuildContext context) {
