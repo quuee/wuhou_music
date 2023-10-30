@@ -352,7 +352,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   @override
-  Future<void> play() => _player.play();
+  Future<void> play() async {
+    //判断文件是否存在
+
+    _player.play();
+  }
 
   @override
   Future<void> pause() async {
@@ -413,12 +417,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     ));
   }
 
-  void _playbackError(err) {
-    developer.log('Error from audio_service:${err.hashCode}',
-        name: '_playbackError');
-    if (err is PlatformException &&
-        err.code == 'abort' &&
-        err.message == 'Connection aborted') return;
-    developer.log('Error from audio_service:$err', name: '_playbackError');
+  void _playbackError(Object e, StackTrace st) {
+    if (e is PlayerException) {
+      print('Error code: ${e.code}');
+      print('Error message: ${e.message}');
+    } else {
+      print('An error occurred: $e');
+    }
   }
 }
