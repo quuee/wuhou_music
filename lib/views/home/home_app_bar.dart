@@ -31,7 +31,7 @@ buildAppBar({required HomeController controller}) {
                     InputDecoration(
                   isDense: true,
                   border: InputBorder.none,
-                  hintText: '请输入关键字',
+                  hintText: '搜索歌曲',
                   hintStyle: TextStyle(fontSize: 14, color: Colors.black),
                 ),
                 style: TextStyle(

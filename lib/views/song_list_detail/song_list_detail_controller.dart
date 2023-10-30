@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -9,8 +8,7 @@ import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
 import 'dart:developer' as developer;
 
-class SongListDetailController extends GetxController{
-
+class SongListDetailController extends GetxController {
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   get loadingStatus => _loadingStatus;
 
@@ -18,34 +16,36 @@ class SongListDetailController extends GetxController{
 
   final box = Hive.box(Keys.hiveSongList);
 
-  String? songListUUID;
+  late String songListUUIDContro;
+
+  getSongListUUID(){
+    songListUUIDContro = Get.parameters['songListUUID'] ?? '未知';
+  }
 
   /// 加载歌单歌曲
-  loadSongs(){
+  loadSongs() {
 
-    songListUUID = Get.parameters['songListUUID'];
-    if(songListUUID == null || songListUUID!.isEmpty){
-      return ;
-    }
-
-    List<dynamic> temp = box.get(songListUUID,defaultValue: []);
+    List<dynamic> temp = box.get(songListUUIDContro, defaultValue: []);
     songs = songEntityFromJson(jsonEncode(temp));
 
     _loadingStatus = LoadingStatus.success;
-    developer.log('加载歌单歌曲$songEntityToJson(songs)',name: 'SongListDetailController loadSongs');
+    developer.log('加载歌单歌曲$songEntityToJson(songs)',
+        name: 'SongListDetailController loadSongs');
     update();
   }
 
   @override
   void onReady() {
-    super.onReady();
+    getSongListUUID();
     loadSongs();
+    super.onReady();
   }
 
   /// 将歌曲加到歌单
-  addSongToSongList(String songListUUID, List<SongEntity> songs) {
+  addSongToSongList(String? songListUUID, List<SongEntity> songs) {
+    songListUUID ??= songListUUIDContro;
 
-    List<dynamic> temp = box.get(songListUUID,defaultValue: []);
+    List<dynamic> temp = box.get(songListUUID, defaultValue: []);
     List<SongEntity> tempList = songEntityFromJson(jsonEncode(temp));
     tempList.addAll(songs);
     box.put(songListUUID, tempList);
@@ -53,20 +53,20 @@ class SongListDetailController extends GetxController{
     // 拿到songListBox
     MineController mineController = Get.find<MineController>();
     mineController.computedCount(songListUUID, tempList);
-    mineController.pullDownRefresh();//可以更新UI
+    mineController.pullDownRefresh(); //可以更新UI
     // update(['songListBuilder']);//更新不了UI
+
+    loadSongs();
   }
 
   /// 从歌单删除歌曲
-  deleteSongInSongList(String songId){
-
-    songs.removeWhere((element) => element.id.compareTo(songId)==0);
-    box.put(songListUUID, songs);
+  deleteSongInSongList(String songId) {
+    songs.removeWhere((element) => element.id.compareTo(songId) == 0);
+    box.put(songListUUIDContro, songs);
 
     // 拿到songListBox
     MineController mineController = Get.find<MineController>();
-    mineController.computedCount(songListUUID!, songs);
-    mineController.pullDownRefresh();//可以更新UI
-
+    mineController.computedCount(songListUUIDContro!, songs);
+    mineController.pullDownRefresh(); //可以更新UI
   }
 }

@@ -5,10 +5,15 @@ import 'package:wuhoumusic/views/mine/mine_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 
 class SongItem extends StatelessWidget {
-  SongItem({super.key, required this.index, required this.songEntity});
+  SongItem(
+      {super.key,
+      required this.index,
+      required this.songEntity,
+      this.fileExist = true});
 
   final int index;
   final SongEntity songEntity;
+  bool fileExist;
   // final String? quality;
   // final String? singer;
   // final String? album;
@@ -90,7 +95,9 @@ class SongItem extends StatelessWidget {
       children: [
         Text(
           songEntity.title,
-          style: TextStyle(fontSize: songTitleSize),
+          style: TextStyle(
+              fontSize: songTitleSize,
+              color: fileExist ? Colors.black : Colors.grey[400]),
           overflow: TextOverflow.visible,
           maxLines: 1,
         ), //歌名
@@ -110,17 +117,21 @@ class SongItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(3.0),
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              child: Icon(
-                Icons.download_done,
-                size: 10,
-              ), //本地 或 云端(未下载),
-            ),
+            fileExist
+                ? Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Icon(
+                      Icons.download_done,
+                      size: 10,
+                    ), //本地 或 云端(未下载),
+                  )
+                : SizedBox.shrink(),
             Expanded(
               child: Text(
                 (songEntity.artist) + ' - ' + (songEntity.album ?? ''),
-                style: TextStyle(fontSize: secondSize),
+                style: TextStyle(
+                    fontSize: secondSize,
+                    color: fileExist ? Colors.black : Colors.grey[400]),
                 overflow:
                     TextOverflow.ellipsis, // row 里面多个text 需要放在Expanded 才有效
                 maxLines: 1,

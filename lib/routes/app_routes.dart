@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:wuhoumusic/views/login/login_page.dart';
 import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
 import 'package:wuhoumusic/views/local_music/local_music_page.dart';
+import 'package:wuhoumusic/views/song_list_detail/song_list_add_page.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_page.dart';
 import 'package:wuhoumusic/views/play/play_page.dart';
@@ -19,6 +20,7 @@ class Routes {
   static const play = '/play';
   static const localMusicPage = '/local_music_page';
   static const songListDetail = '/song_list_detail';
+  static const songListAdd = '/song_list_add';
 
   static final routes = <GetPage>[
     GetPage(
@@ -44,5 +46,12 @@ class Routes {
         page: () => SongListDetailPage(),
         binding: BindingsBuilder(
             () => Get.lazyPut(() => SongListDetailController()))),
+    GetPage(
+        name: songListAdd,
+        page: () => SongListAddPage(),
+        binding: BindingsBuilder(() {
+          Get.lazyPut(() => SongListDetailController());
+          Get.lazyPut(() => LocalMusicController());
+        })),
   ];
 }

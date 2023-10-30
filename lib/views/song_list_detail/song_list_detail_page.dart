@@ -9,6 +9,7 @@ import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
+import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/ui/song_list_cover.dart';
@@ -20,6 +21,21 @@ class SongListDetailPage extends GetView<SongListDetailController> {
   _buildSongs(List<SongEntity> songs, int index) {
     File song = File(songs[index].data!);
     bool fileExit = song.existsSync();
+
+    final songWidget;
+    if (fileExit) {
+      songWidget = SongItem(
+        index: index,
+        songEntity: songs[index],
+        fileExist: true,
+      );
+    } else {
+      songWidget = SongItem(
+        index: index,
+        songEntity: songs[index],
+        fileExist: false,
+      );
+    }
     return Dismissible(
         key: Key(songs[index].id),
         direction: DismissDirection.endToStart,
@@ -32,16 +48,34 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           controller.deleteSongInSongList(songs[index].id);
         },
         child: Ink(
-          color: fileExit ? Colors.white : Colors.grey[400],
+          // color: fileExit ? Colors.white : Colors.grey[400],
           child: InkWell(
               onTap: () {
                 if (fileExit) PlayInvoke.init(songList: songs, index: index);
               },
-              child: SongItem(
-                index: index,
-                songEntity: songs[index],
-              )),
+              child: songWidget),
         ));
+    // return GetBuilder<SongListDetailController>(builder: (c) {
+    //   return Dismissible(
+    //       key: Key(c.songs[index].id),
+    //       direction: DismissDirection.endToStart,
+    //       background: Container(
+    //         child: Icon(Icons.delete),
+    //         color: Colors.redAccent,
+    //         alignment: Alignment.centerRight,
+    //       ),
+    //       onDismissed: (direction) {
+    //         controller.deleteSongInSongList(c.songs[index].id);
+    //       },
+    //       child: Ink(
+    //         // color: fileExit ? Colors.white : Colors.grey[400],
+    //         child: InkWell(
+    //             onTap: () {
+    //               if (fileExit) PlayInvoke.init(songList: c.songs, index: index);
+    //             },
+    //             child: songWidget),
+    //       ));
+    // });
   }
 
   _buildFeatureBar() {
@@ -56,6 +90,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
               Icon(
                 Icons.play_circle,
                 size: 35,
+                color: Colors.deepPurple,
               ),
               Text(
                 '播放全部',
@@ -68,7 +103,11 @@ class SongListDetailPage extends GetView<SongListDetailController> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               // IconButton(onPressed: () {}, icon: Icon(Icons.music_note)),
-              IconButton(onPressed: () {}, icon: Icon(AliIcons.music_add_line)),
+              IconButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.songListAdd);
+                  },
+                  icon: Icon(AliIcons.music_add_line)),
               IconButton(onPressed: () {}, icon: Icon(AliIcons.sync)),
               IconButton(
                   onPressed: () {}, icon: Icon(AliIcons.list_choose_line)),
@@ -88,7 +127,9 @@ class SongListDetailPage extends GetView<SongListDetailController> {
 
     return Scaffold(
       // bottomNavigationBar: PlayBar(),
-      body: GetBuilder<SongListDetailController>(builder: (c) {
+      body: GetBuilder<SongListDetailController>(
+          // id: 'songListDetail',
+          builder: (c) {
         if (c.loadingStatus == LoadingStatus.loading) {
           return Center(
             child: Text('加载中。。。'),
@@ -124,7 +165,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
               // 封面 可被隐藏
               SliverToBoxAdapter(
                 child: SongListCover(
-                  songListUUID: c.songListUUID!,
+                  songListUUID: c.songListUUIDContro,
                   songListTitle: songTitle,
                   songListCoverImagePath: coverImage,
                 ),
@@ -145,7 +186,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
                       childCount: c.songs.length, (context, index) {
                 return _buildSongs(c.songs, index);
                 // listView + inkWell 有按下去样式，这个没有了
-              })),
+              }))
             ],
           );
         }
