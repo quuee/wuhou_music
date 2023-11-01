@@ -14,11 +14,26 @@ class PlayInvoke {
     bool shuffle = false,
     String? playListBox,
   }) async {
-    final int globalIndex = index < 0 ? 0 : index;
     // 跳过本地不存在的文件
     final List<SongEntity> finalList = songList.where((element) {
       return File(element.data!).existsSync();
     }).toList();
+
+    // 因为存在 本地不存在的文件 索引不正常
+    int globalIndex = 0;
+    if (index >= finalList.length) {
+      globalIndex = finalList.length - 1;
+    } else {
+      int temp =
+          finalList.elementAt(index).id.compareTo(songList.elementAt(index).id);
+      if (temp == 0) {
+        globalIndex = index;
+      } else {
+        globalIndex = finalList.indexWhere((element) =>
+            element.id.compareTo(songList.elementAt(index).id) == 0);
+      }
+    }
+
     if (shuffle) finalList.shuffle();
 
     final List<MediaItem> queue = [];

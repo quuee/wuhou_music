@@ -101,6 +101,57 @@ class SongListDetailPage extends GetView<SongListDetailController> {
     );
   }
 
+  _buildCenterPage(String songTitle,String coverImage){
+    return CustomScrollView(
+      shrinkWrap: false,
+      primary: true,
+      slivers: [
+        SliverAppBar(
+          pinned: true,
+          elevation: 0,
+          // expandedHeight: 100,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text(
+              songTitle,
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+          ],
+        ),
+        // 封面 可被隐藏
+        SliverToBoxAdapter(
+          child: SongListCover(
+            songListUUID: controller.songListUUIDContro,
+            songListTitle: songTitle,
+            songListCoverImagePath: coverImage,
+          ),
+        ),
+
+        // 固定
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: MySliverPersistentHeaderDelegate(
+              minHeight: 48, maxHeight: 48, child: _buildFeatureBar()),
+        ),
+
+        // SliverFillRemaining(
+        //   child: _buildSongs(c.songs),
+        // )
+        SliverList(
+            delegate: SliverChildBuilderDelegate(
+                childCount: controller.songs.length, (context, index) {
+              return _buildSongs(controller.songs, index);
+              // listView + inkWell 有按下去样式，这个没有了
+            }))
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Map<String, dynamic> param = Get.arguments as Map<String, dynamic>;
@@ -119,59 +170,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           );
         }
         if (c.loadingStatus == LoadingStatus.success) {
-          if (c.songs.isEmpty)
-            return Center(
-              child: Text('空空如也'),
-            );
-
-          return CustomScrollView(
-            shrinkWrap: false,
-            primary: true,
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                elevation: 0,
-                // expandedHeight: 100,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    songTitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.visible,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                actions: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
-                ],
-              ),
-              // 封面 可被隐藏
-              SliverToBoxAdapter(
-                child: SongListCover(
-                  songListUUID: c.songListUUIDContro,
-                  songListTitle: songTitle,
-                  songListCoverImagePath: coverImage,
-                ),
-              ),
-
-              // 固定
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: MySliverPersistentHeaderDelegate(
-                    minHeight: 48, maxHeight: 48, child: _buildFeatureBar()),
-              ),
-
-              // SliverFillRemaining(
-              //   child: _buildSongs(c.songs),
-              // )
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: c.songs.length, (context, index) {
-                return _buildSongs(c.songs, index);
-                // listView + inkWell 有按下去样式，这个没有了
-              }))
-            ],
-          );
+          return _buildCenterPage(songTitle,coverImage);
         }
         return SizedBox.shrink();
       }),

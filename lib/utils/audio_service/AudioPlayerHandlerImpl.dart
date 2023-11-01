@@ -350,8 +350,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   @override
   Future<void> play() async {
-    //判断文件是否存在
-
     _player.play();
   }
 
@@ -384,7 +382,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     final playing = _player.playing;
     final queueIndex = getQueueIndex(
         event.currentIndex, _player.shuffleModeEnabled, _player.shuffleIndices);
-    developer.log('_broadcastState playbackState.add $event',name: '_broadcastState');
 
     playbackState.add(playbackState.value.copyWith(
       controls: [
@@ -416,10 +413,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   void _playbackError(Object e, StackTrace st) {
     if (e is PlayerException) {
-      print('Error code: ${e.code}');
-      print('Error message: ${e.message}');
+      developer.log('Error code: ${e.code},Error message: ${e.message}',name: '_playbackError');
     } else {
-      print('An error occurred: $e');
+      developer.log('An error occurred: $e',name: '_playbackError');
     }
   }
 }

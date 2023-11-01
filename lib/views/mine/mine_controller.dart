@@ -132,6 +132,7 @@ class MineController extends GetxController {
       cancel: ElevatedButton(
           onPressed: () {
             songListNameContro.clear();
+            songListImagePath = null;
             Get.back();
           },
           child: Text('取消')),
