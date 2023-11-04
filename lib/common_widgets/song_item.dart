@@ -13,7 +13,7 @@ class SongItem extends StatelessWidget {
 
   final int index;
   final SongEntity songEntity;
-  bool fileExist;
+  final bool fileExist;
   // final String? quality;
   // final String? singer;
   // final String? album;

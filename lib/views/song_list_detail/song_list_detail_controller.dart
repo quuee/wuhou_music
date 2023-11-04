@@ -66,7 +66,7 @@ class SongListDetailController extends GetxController {
 
     // 拿到songListBox
     MineController mineController = Get.find<MineController>();
-    mineController.computedCount(songListUUIDContro!, songs);
+    mineController.computedCount(songListUUIDContro, songs);
     mineController.pullDownRefresh(); //可以更新UI
   }
 }

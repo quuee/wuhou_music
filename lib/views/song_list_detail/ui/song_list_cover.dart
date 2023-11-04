@@ -12,7 +12,7 @@ class SongListCover extends StatelessWidget {
   String songListUUID;
   String songListTitle;
   String? songListCoverImagePath;
-  //封面 歌单名 创建者 共N首，被听N次 被隐藏
+  //封面 歌单名 创建者 共N首，被听N次 可被隐藏
 
   _buildCover() {
     final coverChild;

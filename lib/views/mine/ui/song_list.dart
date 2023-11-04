@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wuhoumusic/api/songs_list_api.dart';
 import 'package:wuhoumusic/model/song_list_entity.dart';
-import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/mine/mine_controller.dart';
@@ -39,6 +39,20 @@ class SongList extends StatelessWidget {
                     count: count,
                   );
                   c.createOrUpdateSongListDialog(s);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.sync),
+                title: Text('同步歌单到云'),
+                onTap: () async {
+                  // todo 同步歌单到云
+                  SongListEntity s = SongListEntity(
+                    id: id,
+                    listTitle: listTitle,
+                    listAlbum: listAlbum!,
+                    count: count,
+                  );
+                  SongsListApi.createSongsList(s);
                 },
               ),
               ListTile(
