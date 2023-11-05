@@ -91,7 +91,7 @@ class LocalMusicController extends GetxController {
       for (final data in albumsData) {
         for (SongEntity song in songs) {
           if (song.albumId!.compareTo((data.first as int)) == 0) {
-            song.artAlbum = data.last as String;
+            song.albumArt = data.last as String;
           }
         }
       }

@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wuhoumusic/api/songs_list_api.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/views/songs_list/ui/create_song_list_dialog.dart';
+import 'package:dio/dio.dart' as dio;
 import 'dart:developer' as developer;
 
 
@@ -146,5 +148,30 @@ class SongsListController extends GetxController {
     gedan.count = tempList.length;
     developer.log('更新歌单$songEntityToJson(mineController.songList)',name: 'SongListDetailController addSongToSongList');
     box.put(Keys.localSongList, songList);
+  }
+
+  /// 将歌单同步到云
+  syncSongsList(SongListEntity songListEntity){
+    List<dynamic> temp = box.get(songListEntity.id, defaultValue: []);
+    List<SongEntity> tempList = songEntityFromJson(jsonEncode(temp));
+
+    Map<String, dynamic> map = Map();
+    map['listTitle'] = songListEntity.listTitle;
+    map['appslid'] = songListEntity.id;
+    map['count'] = tempList.length;
+
+    if(songListEntity.listAlbum.isNotEmpty && !songListEntity.listAlbum.startsWith('assets')){
+      map['file'] = dio.MultipartFile.fromFileSync(songListEntity.listAlbum,
+          filename: songListEntity.listAlbum
+              .substring(songListEntity.listAlbum.lastIndexOf('/')));
+    }
+
+    SongsListApi.syncSongsList(map);
+
+    Map<String, dynamic> map2 = Map();
+    map2['appslid'] = songListEntity.id;
+    map2['songs'] = tempList;
+    // songs传上去是字符串，二次请求上传songs
+    SongsListApi.syncSongs(map2);
   }
 }

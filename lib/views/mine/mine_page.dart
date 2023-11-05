@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:wuhoumusic/resource/constant.dart';
-import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/views/mine/user_info.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -19,34 +19,27 @@ class _MinePageState extends State<MinePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text('我的'),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
+
         child: Column(
           children: [
             // 个人信息 或 点我登录
-            Card(
-              child: Column(
-                children: [
-                  Image.network("https://avatars.githubusercontent.com/u/33923687?v=4", errorBuilder: (c, e, s) {
-                    return ClipOval(
-                      child: Image.asset(
-                        R.images.tom,
-                      ),
-                    );
-                  }),
-                  Text('站直了别趴下')
-                ],
-              ),
-            ),
+            MyInfo()
+          ],
+        )
+
+
 
             // 最近听过
 
             //
-          ],
-        ),
+
+
       ),
       drawer: Drawer(
         child: ListView(
@@ -55,7 +48,6 @@ class _MinePageState extends State<MinePage> {
             ListTile(
               leading: Switch(value: dayOrNight, onChanged: (v) {}),
               title: Text('白天/黑夜'),
-
             ),
 
             // 退出

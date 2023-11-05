@@ -24,7 +24,7 @@ class SongEntityAdapter extends TypeAdapter<SongEntity> {
       title: fields[4] as String,
       duration: fields[5] as int,
       quality: fields[6] as String?,
-      artAlbum: fields[7] as String?,
+      albumArt: fields[7] as String?,
       data: fields[8] as String?,
     );
   }
@@ -48,7 +48,7 @@ class SongEntityAdapter extends TypeAdapter<SongEntity> {
       ..writeByte(6)
       ..write(obj.quality)
       ..writeByte(7)
-      ..write(obj.artAlbum)
+      ..write(obj.albumArt)
       ..writeByte(8)
       ..write(obj.data);
   }

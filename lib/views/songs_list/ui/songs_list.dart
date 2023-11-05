@@ -51,8 +51,9 @@ class SongList extends StatelessWidget {
                     listAlbum: listAlbum!,
                     count: count,
                   );
-                  // todo 同步歌单到云
-                  SongsListApi.createSongsList(s);
+                  // TODO 同步歌单到云
+                  SongsListController c = Get.find<SongsListController>();
+                  c.syncSongsList(s);
                 },
               ),
               ListTile(

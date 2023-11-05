@@ -32,7 +32,7 @@ class SongEntity {
   @HiveField(6)
   String? quality; // 音频质量
   @HiveField(7)
-  String? artAlbum; //专辑封面 artPath
+  String? albumArt; //专辑封面 artPath
   @HiveField(8)
   String? data; // 真实路径
   @HiveField(9)
@@ -55,7 +55,7 @@ class SongEntity {
     required this.title,
     required this.duration,
     this.quality,
-    this.artAlbum,
+    this.albumArt,
     this.data,
     this.bucketDisplayName,
   });
@@ -72,7 +72,7 @@ class SongEntity {
     extras: <String, dynamic>{
       'loadThumbnailUri': uri,
       'id':id,
-      'artAlbum':artAlbum,
+      'albumArt':albumArt,
       'data':data,
     },
   );
@@ -121,7 +121,7 @@ class SongEntity {
     title: json["title"],
     duration: json["duration"],
     quality: json["quality"],
-    artAlbum: json["artAlbum"],
+    albumArt: json["albumArt"],
     data: json["data"],
     bucketDisplayName: json["bucketDisplayName"],
   );
@@ -134,7 +134,7 @@ class SongEntity {
     "title": title,
     "duration": duration,
     "quality": quality,
-    "artAlbum": artAlbum,
+    "albumArt": albumArt,
     "data": data,
     "bucketDisplayName": bucketDisplayName,
   };

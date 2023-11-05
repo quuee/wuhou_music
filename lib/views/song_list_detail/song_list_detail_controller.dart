@@ -69,8 +69,5 @@ class SongListDetailController extends GetxController {
     mineController.pullDownRefresh(); //可以更新UI
   }
 
-  /// 将歌单同步到云
-  syncSongList(){
 
-  }
 }
