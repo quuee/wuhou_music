@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -25,14 +24,14 @@ class _LoginPageState extends State<LoginPage>
 
   final _formKey = GlobalKey<FormState>();
 
-  late Timer _timer;
+  Timer? _timer;
   int _seconds = 60;
   String verifyStr = '获取验证码';
   bool sendMessageEnable = true;
 
   /// 取消倒计时的计时器。
   void _cancelTimer() {
-    _timer.cancel();
+    _timer!.cancel();
   }
 
   _sendMessage() {
@@ -85,8 +84,10 @@ class _LoginPageState extends State<LoginPage>
         ),
         GestureDetector(
           onTap: () {
-            _cancelTimer();
-            Get.offAndToNamed(Routes.root);
+            if (_timer != null) {
+              _cancelTimer();
+            }
+            Get.offAllNamed(Routes.root,arguments: 0);
           },
           child: Container(
             margin: const EdgeInsets.fromLTRB(0, 45, 30, 0),
@@ -230,12 +231,11 @@ class _LoginPageState extends State<LoginPage>
                 ),
               ),
               onPressed: () {
-                if(_formKey.currentState!.validate()){
+                if (_formKey.currentState!.validate()) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('登录成功')),
                   );
                   controller.accountLogin();
-
                 }
               },
             ),
@@ -243,7 +243,6 @@ class _LoginPageState extends State<LoginPage>
         ],
       ),
     );
-
   }
 
   /// 手机登录
@@ -443,11 +442,11 @@ class _LoginPageState extends State<LoginPage>
                 child: _buildChooseMenuBar(),
               ),
               Expanded(
-                flex: 6,
+                flex: 7,
                 child: _buildTabView(),
               ),
-              Expanded(flex: 2, child: SizedBox.shrink()),
-              Expanded(flex: 4, child: _buildOtherLogin()),
+              Expanded(flex: 1, child: SizedBox.shrink()),
+              Expanded(flex: 5, child: _buildOtherLogin()),
             ],
           ),
         ));

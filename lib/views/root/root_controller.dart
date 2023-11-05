@@ -29,4 +29,18 @@ class RootController extends GetxController{
     bottomBarIndex.value = index;
   }
 
+  @override
+  void onInit() {
+    developer.log('onInit',name: 'RootController');
+    // int index = Get.arguments;
+    // bottomBarIndex.value = index;
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    developer.log('onReady',name: 'RootController');
+    super.onReady();
+  }
+
 }

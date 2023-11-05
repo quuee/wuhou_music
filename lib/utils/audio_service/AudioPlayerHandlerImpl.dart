@@ -178,7 +178,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     // _player.playbackEventStream
     //     .listen(_broadcastState, onError: _playbackError);
     _player.playbackEventStream.listen((event) {
-      developer.log('_broadcastState $event',name: '_player.playbackEventStream.listen');
       _broadcastState(_player.playbackEvent);
     }, onError: _playbackError);
 
@@ -239,7 +238,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   AudioSource _itemToSource(MediaItem mediaItem) {
     final audioSource = AudioSource.uri(Uri.parse(mediaItem.id));
-    developer.log('${audioSource.uri}', name: '_itemToSource');
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }

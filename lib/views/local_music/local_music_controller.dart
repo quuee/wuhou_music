@@ -25,7 +25,7 @@ class LocalMusicController extends GetxController {
 
   /// 扫描本地歌曲
   Future<void> _fetchSongs() async {
-    developer.log('_fetchSongs...', name: 'LocalMusicPage _fetchSongs');
+    developer.log('扫描本地歌曲...', name: 'LocalMusicPage _fetchSongs');
 
     final cursor = await AndroidContentResolver.instance.query(
       // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -44,16 +44,16 @@ class LocalMusicController extends GetxController {
       songs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
           .where((element) {
-        developer.log(
-            'id:${element.id},'
-            'album:${element.album},'
-            'albumId:${element.albumId},'
-            'artist:${element.artist},'
-            'title${element.title},'
-            'duration:${element.duration},'
-            'data:${element.data},'
-            'bucketDisplayName:${element.bucketDisplayName},',
-            name: '_fetchSongs');
+        // developer.log(
+        //     'id:${element.id},'
+        //     'album:${element.album},'
+        //     'albumId:${element.albumId},'
+        //     'artist:${element.artist},'
+        //     'title${element.title},'
+        //     'duration:${element.duration},'
+        //     'data:${element.data},'
+        //     'bucketDisplayName:${element.bucketDisplayName},',
+        //     name: '_fetchSongs');
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
 

@@ -9,7 +9,6 @@ import 'package:wuhoumusic/utils/audio_service/controlButtons.dart';
 import 'package:wuhoumusic/views/play/ui/lyric.dart';
 import 'package:wuhoumusic/views/play/ui/playing.dart';
 import 'package:wuhoumusic/views/play/ui/song_play_list.dart';
-import 'dart:developer' as developer;
 
 class PlayPage extends StatefulWidget {
   const PlayPage({super.key});
@@ -91,8 +90,6 @@ class _PlayPageState extends State<PlayPage> {
                     position: positionData.position,
                     bufferedPosition: positionData.bufferedPosition,
                     onChangeEnd: (newPosition) {
-                      developer.log('$newPosition',
-                          name: 'playPage onChangeEnd');
                       _audioHandler.seek(newPosition);
                     },
                   );

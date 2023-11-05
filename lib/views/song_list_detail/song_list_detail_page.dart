@@ -153,7 +153,6 @@ class SongListDetailPage extends GetView<SongListDetailController> {
   @override
   Widget build(BuildContext context) {
     // Map<String, dynamic> param = Get.arguments as Map<String, dynamic>;
-    developer.log('${Get.parameters}', name: 'SongListDetailPage');
     String songTitle = Get.parameters['title'] ?? '未知';
     String coverImage = Get.parameters['coverImage'] ?? '';
 
