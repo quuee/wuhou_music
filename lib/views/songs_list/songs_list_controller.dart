@@ -6,8 +6,9 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wuhoumusic/api/songs_list_api.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/model/song_list_entity.dart';
+import 'package:wuhoumusic/model/songs_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/views/songs_list/ui/create_song_list_dialog.dart';
 import 'package:dio/dio.dart' as dio;
 import 'dart:developer' as developer;
@@ -16,7 +17,10 @@ import 'dart:developer' as developer;
 class SongsListController extends GetxController {
   final box = Hive.box(Keys.hiveSongList);
 
-  List<SongListEntity> songList = [];
+  LoadingStatus _loadingStatus = LoadingStatus.loading;
+  get loadingStatus => _loadingStatus;
+
+  List<SongsListEntity> songList = [];
 
   TextEditingController songListNameContro = TextEditingController();
 
@@ -28,7 +32,6 @@ class SongsListController extends GetxController {
 
   @override
   void onInit() {
-    loadSongList();
     easyRefreshController = EasyRefreshController(
       controlFinishRefresh: true,
       controlFinishLoad: true,
@@ -38,21 +41,34 @@ class SongsListController extends GetxController {
   }
 
   @override
+  void onReady() {
+    loadSongList();
+    super.onReady();
+  }
+
+  @override
   onClose() {
     easyRefreshController.dispose();
     super.onClose();
   }
 
   /// 加载本地歌单
-  loadSongList() {
+  loadSongList() async {
     //  从hive获取本地歌单
-    var temp = box.get(Keys.localSongList, defaultValue: <SongListEntity>[]);
+    var temp = box.get(Keys.localSongList, defaultValue: <SongsListEntity>[]);
     songList = songListEntityFromJson(jsonEncode(temp));
     developer.log('加载本地歌单$songListEntityToJson(songList)',
         name: 'MineController loadSongList ');
-    if (songList.isEmpty) {
-      // todo 从服务端加载
+
+    // todo 从服务端加载，比较云端和本地歌单，将本地不存在歌单写入hive
+    var fetchList = await SongsListApi.fetchAllSongsList();
+    List<SongsListEntity> cloudSongList = songListEntityFromJson(jsonEncode(fetchList));
+    if (songList.isEmpty || songList.length < cloudSongList.length) {
+
+      songList.addAll(cloudSongList);
     }
+    _loadingStatus = LoadingStatus.success;
+    update([songListBuilder]);
   }
 
   /// 下拉刷新
@@ -60,7 +76,7 @@ class SongsListController extends GetxController {
     developer.log('onRefresh', name: 'MineController');
     await Future.delayed(Duration(milliseconds: 500));
     loadSongList();
-    update([songListBuilder]);
+    // update([songListBuilder]);
     easyRefreshController.finishRefresh();
     easyRefreshController.resetFooter();
   }
@@ -70,7 +86,7 @@ class SongsListController extends GetxController {
     developer.log('onLoading', name: 'MineController');
     await Future.delayed(Duration(milliseconds: 500));
     loadSongList();
-    update([songListBuilder]);
+    // update([songListBuilder]);
     easyRefreshController.finishLoad(IndicatorResult.success);
   }
 
@@ -79,7 +95,7 @@ class SongsListController extends GetxController {
 
     if(songListUUID!=null){
       // 更新
-      var s = SongListEntity(
+      var s = SongsListEntity(
         id: songListUUID,
         listTitle: songListNameContro.text.trim(),
         listAlbum: songListImagePath ?? '',
@@ -89,7 +105,7 @@ class SongsListController extends GetxController {
       songList[index] = s;
     }else{
       // 新增
-      var s = SongListEntity(
+      var s = SongsListEntity(
         id: Uuid().v1(),
         listTitle: songListNameContro.text.trim(),
         listAlbum: songListImagePath ?? '',
@@ -113,7 +129,7 @@ class SongsListController extends GetxController {
   }
 
   /// 创建歌单的中间弹窗
-  createOrUpdateSongListDialog(SongListEntity? songListEntity) {
+  createOrUpdateSongListDialog(SongsListEntity? songListEntity) {
 
     if (songListEntity == null) {
       // songListNameContro.clear();
@@ -144,14 +160,14 @@ class SongsListController extends GetxController {
   computedCount(String songListUUID,List<SongEntity> tempList){
     // 拿到songListBox
     int index = songList.indexWhere((element) => element.id.compareTo(songListUUID) == 0);
-    SongListEntity gedan = songList[index];
+    SongsListEntity gedan = songList[index];
     gedan.count = tempList.length;
     developer.log('更新歌单$songEntityToJson(mineController.songList)',name: 'SongListDetailController addSongToSongList');
     box.put(Keys.localSongList, songList);
   }
 
   /// 将歌单同步到云
-  syncSongsList(SongListEntity songListEntity){
+  syncSongsList(SongsListEntity songListEntity){
     List<dynamic> temp = box.get(songListEntity.id, defaultValue: []);
     List<SongEntity> tempList = songEntityFromJson(jsonEncode(temp));
 

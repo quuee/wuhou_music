@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/model/song_list_entity.dart';
+import 'package:wuhoumusic/model/songs_list_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';

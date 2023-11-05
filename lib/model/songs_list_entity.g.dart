@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'song_list_entity.dart';
+part of 'songs_list_entity.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
+class SongListEntityAdapter extends TypeAdapter<SongsListEntity> {
   @override
   final int typeId = 1;
 
   @override
-  SongListEntity read(BinaryReader reader) {
+  SongsListEntity read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return SongListEntity(
+    return SongsListEntity(
       id: fields[0] as String,
       listTitle: fields[1] as String,
       listAlbum: fields[2] as String,
@@ -25,7 +25,7 @@ class SongListEntityAdapter extends TypeAdapter<SongListEntity> {
   }
 
   @override
-  void write(BinaryWriter writer, SongListEntity obj) {
+  void write(BinaryWriter writer, SongsListEntity obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)

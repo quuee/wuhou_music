@@ -1,8 +1,8 @@
-
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/views/songs_list/ui/songs_list.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
@@ -76,22 +76,30 @@ class _MinePageState extends State<SongsListPage> {
     return GetBuilder<SongsListController>(
         id: 'songListBuilder',
         builder: (c) {
-          return EasyRefresh(
-            header: ClassicHeader(),
-            footer: ClassicFooter(),
-            onRefresh: () => c.pullDownRefresh(),
-            onLoad: () => c.pullUponLoading(),
-            child: ListView.builder(
-                itemCount: c.songList.length,
-                itemBuilder: (context, index) {
-                  return SongList(
-                    id: c.songList[index].id,
-                    listTitle: c.songList[index].listTitle,
-                    count: c.songList[index].count,
-                    listAlbum: c.songList[index].listAlbum,
-                  );
-                }),
-          );
+          if (c.loadingStatus == LoadingStatus.loading) {
+            return Center(
+              child: Text('加载中。。。'),
+            );
+          }
+          if (c.loadingStatus == LoadingStatus.success) {
+            return EasyRefresh(
+              header: ClassicHeader(),
+              footer: ClassicFooter(),
+              onRefresh: () => c.pullDownRefresh(),
+              onLoad: () => c.pullUponLoading(),
+              child: ListView.builder(
+                  itemCount: c.songList.length,
+                  itemBuilder: (context, index) {
+                    return SongList(
+                      id: c.songList[index].id,
+                      listTitle: c.songList[index].listTitle,
+                      count: c.songList[index].count,
+                      listAlbum: c.songList[index].listAlbum,
+                    );
+                  }),
+            );
+          }
+          return SizedBox.shrink();
         });
   }
 

@@ -46,6 +46,7 @@ class SongsListApi {
 
   }
 
+  /// 将歌单中的歌曲同步到云
   static Future<dynamic?> syncSongs(Map<String, dynamic> map) async {
     Options op = Options(
         contentType: Headers.jsonContentType,
@@ -61,4 +62,24 @@ class SongsListApi {
 
     return apiResult;
   }
+
+  /// 拉取服务端歌单
+  static Future<dynamic> fetchAllSongsList() async {
+    Options op = Options(
+        contentType: Headers.jsonContentType,
+        method: RequestClient.get
+    );
+    Response response = await RequestClient.instance
+        .request( '/songsList/fetchAll',options:op );
+
+    ApiResult apiResult = ApiResult.fromJson(response.data);
+    if (apiResult.data == null) {
+      return null;
+    }
+    developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+
+    return apiResult.data;
+  }
+
+  /// TODO 将歌曲文件上传到云
 }

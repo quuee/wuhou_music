@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/api/songs_list_api.dart';
-import 'package:wuhoumusic/model/song_list_entity.dart';
+import 'package:wuhoumusic/model/songs_list_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
@@ -32,7 +31,7 @@ class SongList extends StatelessWidget {
                 title: Text("编辑"),
                 onTap: () async {
                   SongsListController c = Get.find<SongsListController>();
-                  SongListEntity s = SongListEntity(
+                  SongsListEntity s = SongsListEntity(
                     id: id,
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
@@ -45,13 +44,13 @@ class SongList extends StatelessWidget {
                 leading: Icon(Icons.sync),
                 title: Text('同步歌单到云'),
                 onTap: () async {
-                  SongListEntity s = SongListEntity(
+                  SongsListEntity s = SongsListEntity(
                     id: id,
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
                   );
-                  // TODO 同步歌单到云
+                  // TODO 提示同步完成
                   SongsListController c = Get.find<SongsListController>();
                   c.syncSongsList(s);
                 },

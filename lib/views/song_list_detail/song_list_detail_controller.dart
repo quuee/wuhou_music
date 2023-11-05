@@ -27,6 +27,8 @@ class SongListDetailController extends GetxController {
     List<dynamic> temp = box.get(songListUUIDContro, defaultValue: []);
     songs = songEntityFromJson(jsonEncode(temp));
 
+    // TODO 从服务端拉取数据
+
     _loadingStatus = LoadingStatus.success;
     developer.log('加载歌单歌曲$songEntityToJson(songs)',
         name: 'SongListDetailController loadSongs');

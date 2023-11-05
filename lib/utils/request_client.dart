@@ -57,6 +57,10 @@ class RequestClient {
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
           // 如果你想终止请求并触发一个错误，你可以使用 `handler.reject(error)`。
+
+          // TODO 凭证过期
+          bool b = response.data['code'] == 493;
+
           return handler.next(response);
         },
         onError: (DioException e, ErrorInterceptorHandler handler) {
