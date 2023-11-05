@@ -5,6 +5,8 @@ const hiveBoxes = [
   {'name': 'songList', 'limit': false},
   // 缓存播放队列
   {'name': 'cache', 'limit': false},
+  // 用户信息
+  {'name': 'userInfo', 'limit': false},
 ];
 
 class Keys {
@@ -18,5 +20,8 @@ class Keys {
   static final String lastQueue = 'lastQueue';
   static final String lastIndex = 'lastIndex';
   static final String lastPos = 'lastPos';
+
+  static final String hiveUserInfo = 'userInfo';
+  static final String token = 'token';
 
 }

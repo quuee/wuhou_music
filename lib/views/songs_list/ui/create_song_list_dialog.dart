@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 
 class CreateSongListDialog extends StatefulWidget {
   CreateSongListDialog({super.key});
@@ -14,24 +14,24 @@ class CreateSongListDialog extends StatefulWidget {
 
 class _CreateSongListDialogState extends State<CreateSongListDialog> {
   final ImagePicker _picker = ImagePicker();
-
+  SongsListController songsListController = Get.find<SongsListController>();
   _chooseImage() async {
-    MineController mineController = Get.find<MineController>();
+
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      if(mineController.songListImagePath == null || mineController.songListImagePath?.trim().compareTo('') == 0){
-        mineController.songListImagePath = (image != null ? image.path : null);
+      if(songsListController.songListImagePath == null || songsListController.songListImagePath?.trim().compareTo('') == 0){
+        songsListController.songListImagePath = (image != null ? image.path : null);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    MineController mineController = Get.find<MineController>();
+
 
     final imageChild;
-    if (mineController.songListImagePath == null ||
-        mineController.songListImagePath?.trim().compareTo('') == 0) {
+    if (songsListController.songListImagePath == null ||
+        songsListController.songListImagePath?.trim().compareTo('') == 0) {
       imageChild = Container(
         width: 150,
         height: 150,
@@ -46,7 +46,7 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
     } else {
       // 判断 网络 本地
       imageChild = Image.file(
-        File(mineController.songListImagePath!),
+        File(songsListController.songListImagePath!),
         width: 150,
         height: 150,
       );
@@ -59,7 +59,7 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: TextFormField(
-              controller: mineController.songListNameContro,
+              controller: songsListController.songListNameContro,
             ),
           ),
           SizedBox(

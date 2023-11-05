@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 
@@ -16,6 +18,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late Tween<double> _tween;
+
+  final userInfoBox = Hive.box(Keys.hiveUserInfo);
 
   @override
   void initState() {
@@ -38,8 +42,15 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          /// 跳转到首页，不做强制登录
-          Get.offAndToNamed(Routes.login);
+          // TODO 判断是否登录
+          bool checkLogin = _checkLogin();
+          // 跳转到首页，不做强制登录
+          if(!checkLogin){
+            Get.offAndToNamed(Routes.login);
+          }else{
+            Get.offAndToNamed(Routes.root);
+          }
+
         });
       }
     });
@@ -60,6 +71,15 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     if (tempStatus != PermissionStatus.granted) {
       await openAppSettings();
     }
+  }
+
+  bool _checkLogin(){
+    bool loginFlag = false;
+    String token = userInfoBox.get(Keys.token,defaultValue: '');
+    if(token.trim() != ''){
+      return true;
+    }
+    return loginFlag;
   }
 
   @override

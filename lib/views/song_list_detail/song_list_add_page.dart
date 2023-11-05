@@ -14,12 +14,10 @@ class SongListAddPage extends StatefulWidget {
 class _SongListAddPageState extends State<SongListAddPage> {
 
   final List<SongEntity> _selectedItems = [];
+  SongListDetailController songListDetailController = Get.find<SongListDetailController>();
 
   @override
   Widget build(BuildContext context) {
-
-    SongListDetailController songListDetailController =
-        Get.find<SongListDetailController>();
 
     return Scaffold(
       appBar: AppBar(

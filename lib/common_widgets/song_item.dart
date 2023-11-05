@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 
 class SongItem extends StatelessWidget {
@@ -18,9 +18,8 @@ class SongItem extends StatelessWidget {
   // final String? singer;
   // final String? album;
 
-  final SongListDetailController songListDetailController =
-      Get.find<SongListDetailController>();
-  final MineController mineController = Get.find<MineController>();
+  final SongListDetailController songListDetailController = Get.find<SongListDetailController>();
+  final SongsListController songsListController = Get.find<SongsListController>();
 
   /// 本地音乐底部弹窗
   _bottomSheet() {
@@ -58,7 +57,7 @@ class SongItem extends StatelessWidget {
 
   /// 收藏到歌单
   _collectBottomSheet() {
-    List<Widget> list = mineController.songList
+    List<Widget> list = songsListController.songList
         .map((e) => ListTile(
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),

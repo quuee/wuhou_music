@@ -5,7 +5,7 @@ import 'package:wuhoumusic/api/songs_list_api.dart';
 import 'package:wuhoumusic/model/song_list_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
-import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 
 class SongList extends StatelessWidget {
   const SongList({
@@ -31,7 +31,7 @@ class SongList extends StatelessWidget {
                 leading: Icon(Icons.edit),
                 title: Text("编辑"),
                 onTap: () async {
-                  MineController c = Get.find<MineController>();
+                  SongsListController c = Get.find<SongsListController>();
                   SongListEntity s = SongListEntity(
                     id: id,
                     listTitle: listTitle,
@@ -45,13 +45,13 @@ class SongList extends StatelessWidget {
                 leading: Icon(Icons.sync),
                 title: Text('同步歌单到云'),
                 onTap: () async {
-                  // todo 同步歌单到云
                   SongListEntity s = SongListEntity(
                     id: id,
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
                   );
+                  // todo 同步歌单到云
                   SongsListApi.createSongsList(s);
                 },
               ),
@@ -59,7 +59,7 @@ class SongList extends StatelessWidget {
                 leading: Icon(Icons.delete),
                 title: Text("删除"),
                 onTap: () async {
-                  MineController c = Get.find<MineController>();
+                  SongsListController c = Get.find<SongsListController>();
                   c.deleteSongList(id);
                   Get.back();
                 },

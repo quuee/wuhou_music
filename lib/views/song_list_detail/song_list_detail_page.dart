@@ -1,10 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
-import 'dart:developer' as developer;
-
 import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
@@ -14,6 +11,7 @@ import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/ui/song_list_cover.dart';
 import 'package:wuhoumusic/views/song_list_detail/ui/my_sliver_persistent_header_delegate.dart';
+import 'dart:developer' as developer;
 
 class SongListDetailPage extends GetView<SongListDetailController> {
   SongListDetailPage({super.key});
@@ -101,7 +99,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
     );
   }
 
-  _buildCenterPage(String songTitle,String coverImage){
+  _buildCenterPage(String songTitle, String coverImage) {
     return CustomScrollView(
       shrinkWrap: false,
       primary: true,
@@ -145,9 +143,9 @@ class SongListDetailPage extends GetView<SongListDetailController> {
         SliverList(
             delegate: SliverChildBuilderDelegate(
                 childCount: controller.songs.length, (context, index) {
-              return _buildSongs(controller.songs, index);
-              // listView + inkWell 有按下去样式，这个没有了
-            }))
+          return _buildSongs(controller.songs, index);
+          // listView + inkWell 有按下去样式，这个没有了
+        }))
       ],
     );
   }
@@ -170,7 +168,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           );
         }
         if (c.loadingStatus == LoadingStatus.success) {
-          return _buildCenterPage(songTitle,coverImage);
+          return _buildCenterPage(songTitle, coverImage);
         }
         return SizedBox.shrink();
       }),

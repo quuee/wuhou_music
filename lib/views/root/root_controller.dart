@@ -1,10 +1,12 @@
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/views/home/home_page.dart';
 import 'package:wuhoumusic/views/mine/mine_page.dart';
+import 'package:wuhoumusic/views/songs_list/songs_list_page.dart';
 import 'dart:developer' as developer;
+
 
 class RootController extends GetxController{
 
@@ -12,12 +14,14 @@ class RootController extends GetxController{
 
   List bodyPage = [
     HomePage(),
-    MinePage()
+    SongsListPage(),
+    MinePage(),
   ];
 
   List<BottomNavigationBarItem> barList = [
     const BottomNavigationBarItem(icon: Icon(AliIcons.music,), label: '首页',),
-    const BottomNavigationBarItem(icon: Icon(AliIcons.mine), label: '我的',),
+    const BottomNavigationBarItem(icon: Icon(Icons.queue_music_sharp), label: '歌单',),
+    const BottomNavigationBarItem(icon: Icon(AliIcons.mine), label: '我',),
   ];
 
   changeBottomBarIndex(int index){

@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
-import 'package:wuhoumusic/views/mine/mine_controller.dart';
+import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 import 'dart:developer' as developer;
 
 class SongListDetailController extends GetxController {
@@ -16,7 +15,7 @@ class SongListDetailController extends GetxController {
 
   final box = Hive.box(Keys.hiveSongList);
 
-  late String songListUUIDContro;
+  late String songListUUIDContro; // 歌单本地id
 
   getSongListUUID(){
     songListUUIDContro = Get.parameters['songListUUID'] ?? '未知';
@@ -51,9 +50,9 @@ class SongListDetailController extends GetxController {
     box.put(songListUUID, tempList);
 
     // 拿到songListBox
-    MineController mineController = Get.find<MineController>();
-    mineController.computedCount(songListUUID, tempList);
-    mineController.pullDownRefresh(); //可以更新UI
+    SongsListController songsListController = Get.find<SongsListController>();
+    songsListController.computedCount(songListUUID, tempList);
+    songsListController.pullDownRefresh(); //可以更新UI
     // update(['songListBuilder']);//更新不了UI
 
     loadSongs();
@@ -65,8 +64,13 @@ class SongListDetailController extends GetxController {
     box.put(songListUUIDContro, songs);
 
     // 拿到songListBox
-    MineController mineController = Get.find<MineController>();
+    SongsListController mineController = Get.find<SongsListController>();
     mineController.computedCount(songListUUIDContro, songs);
     mineController.pullDownRefresh(); //可以更新UI
+  }
+
+  /// 将歌单同步到云
+  syncSongList(){
+
   }
 }

@@ -6,19 +6,23 @@ import 'package:wuhoumusic/utils/request_client.dart';
 import 'dart:developer' as developer;
 
 class SongsListApi {
+
+  /// 将歌单同步到云
   static Future<dynamic?> createSongsList(SongListEntity songListEntity) async {
+
     Map<String, dynamic> map = Map();
     map['listTitle'] = songListEntity.listTitle;
     map['appid'] = songListEntity.id;
     map['count'] = songListEntity.count;
-    map['file'] = MultipartFile.fromFileSync(songListEntity.listAlbum,
-        filename: songListEntity.listAlbum
-            .substring(songListEntity.listAlbum.lastIndexOf('/')));
-
+    if(songListEntity.listAlbum.isNotEmpty && !songListEntity.listAlbum.startsWith('assets')){
+      map['file'] = MultipartFile.fromFileSync(songListEntity.listAlbum,
+          filename: songListEntity.listAlbum
+              .substring(songListEntity.listAlbum.lastIndexOf('/')));
+    }
     var formData = FormData.fromMap(map);
 
     try{
-      var op = Options(
+      Options op = Options(
         contentType: Headers.multipartFormDataContentType,
         method: RequestClient.post
       );
