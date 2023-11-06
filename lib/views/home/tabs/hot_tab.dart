@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class HotTab extends StatelessWidget {
@@ -8,7 +9,7 @@ class HotTab extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(child: Text("refesh"), onPressed: () {
+        ElevatedButton(child: Text("refresh"), onPressed: () {
 
         }),
       ],

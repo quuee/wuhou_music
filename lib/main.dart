@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/model/songs_list_entity.dart';
-import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'dart:developer' as developer;
+
+import 'package:wuhoumusic/utils/isar_helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,23 +18,25 @@ Future<void> main() async {
   int sdkInt = androidInfo.version.sdkInt!;
 
   // 初始化 Hive
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // await Hive.initFlutter('wuhou_music/Database');
-  } else if (Platform.isIOS) {
-    // await Hive.initFlutter('Database');
-  } else {
-    var directory = await getApplicationDocumentsDirectory();
-    Hive.init(directory.path);
-  }
-  Hive.registerAdapter(SongEntityAdapter());
-  Hive.registerAdapter(SongListEntityAdapter());
-  for (final box in hiveBoxes) {
-    await openHiveBox(
-      box['name'].toString(),
-      limit: box['limit'] as bool? ?? false,
-    );
-  }
-  Hive.box(Keys.hiveGlobalParam).put(Keys.sdkInt, sdkInt);
+  // if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  //   // await Hive.initFlutter('wuhou_music/Database');
+  // } else if (Platform.isIOS) {
+  //   // await Hive.initFlutter('Database');
+  // } else {
+  //   var directory = await getApplicationDocumentsDirectory();
+  //   Hive.init(directory.path);
+  // }
+  // Hive.registerAdapter(SongEntityAdapter());
+  // Hive.registerAdapter(SongsListEntityAdapter());
+  // for (final box in hiveBoxes) {
+  //   await openHiveBox(
+  //     box['name'].toString(),
+  //     limit: box['limit'] as bool? ?? false,
+  //   );
+  // }
+  // Hive.box(Keys.hiveGlobalParam).put(Keys.sdkInt, sdkInt);
+
+  IsarHelper.instance.init();
 
   // 初始化 audio_service
   await initServices();
@@ -73,26 +72,26 @@ Future<void> initServices() async {
   GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
 }
 
-Future<void> openHiveBox(String boxName, {bool limit = false}) async {
-  final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final String dirPath = dir.path;
-    File dbFile = File('$dirPath/$boxName.hive');
-    File lockFile = File('$dirPath/$boxName.lock');
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      dbFile = File('$dirPath/wuhou_music/$boxName.hive');
-      lockFile = File('$dirPath/wuhou_music/$boxName.lock');
-    }
-    await dbFile.delete();
-    await lockFile.delete();
-    await Hive.openBox(boxName);
-    throw 'Failed to open $boxName Box\nError: $error';
-  });
-  // clear box if it grows large
-  if (limit && box.length > 500) {
-    box.clear();
-  }
-}
+// Future<void> openHiveBox(String boxName, {bool limit = false}) async {
+//   final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
+//     final Directory dir = await getApplicationDocumentsDirectory();
+//     final String dirPath = dir.path;
+//     File dbFile = File('$dirPath/$boxName.hive');
+//     File lockFile = File('$dirPath/$boxName.lock');
+//     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+//       dbFile = File('$dirPath/wuhou_music/$boxName.hive');
+//       lockFile = File('$dirPath/wuhou_music/$boxName.lock');
+//     }
+//     await dbFile.delete();
+//     await lockFile.delete();
+//     await Hive.openBox(boxName);
+//     throw 'Failed to open $boxName Box\nError: $error';
+//   });
+//   // clear box if it grows large
+//   if (limit && box.length > 500) {
+//     box.clear();
+//   }
+// }
 
 ///透明状态栏
 topInit() {

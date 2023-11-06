@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/songs_list_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
@@ -7,17 +8,19 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 
 class SongList extends StatelessWidget {
-  const SongList({
+  SongList({
     super.key,
-    required this.id,
+    required this.apslid,
+    required this.slid,
     required this.listTitle,
     this.listAlbum,
     required this.count,
   });
 
-  final String id;
+  final int apslid;
+  final String slid;
   final String listTitle;
-  final String? listAlbum;
+  String? listAlbum;
   final int count;
 
   /// 底部弹窗
@@ -32,7 +35,7 @@ class SongList extends StatelessWidget {
                 onTap: () async {
                   SongsListController c = Get.find<SongsListController>();
                   SongsListEntity s = SongsListEntity(
-                    id: id,
+                    apslid: apslid,
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
@@ -45,14 +48,15 @@ class SongList extends StatelessWidget {
                 title: Text('同步歌单到云'),
                 onTap: () async {
                   SongsListEntity s = SongsListEntity(
-                    id: id,
+                    apslid: apslid,
                     listTitle: listTitle,
                     listAlbum: listAlbum!,
                     count: count,
                   );
-                  // TODO 提示同步完成
+
                   SongsListController c = Get.find<SongsListController>();
                   c.syncSongsList(s);
+                  Fluttertoast.showToast(msg: '同步完成');
                 },
               ),
               ListTile(
@@ -60,7 +64,7 @@ class SongList extends StatelessWidget {
                 title: Text("删除"),
                 onTap: () async {
                   SongsListController c = Get.find<SongsListController>();
-                  c.deleteSongList(id);
+                  c.deleteSongList(apslid);
                   Get.back();
                 },
               ),
@@ -75,7 +79,7 @@ class SongList extends StatelessWidget {
     final child = GestureDetector(
       onTap: () {
         Get.toNamed(Routes.songListDetail,
-            parameters: {'title': listTitle, 'songListUUID': id,'coverImage':listAlbum??''});
+            parameters: {'title': listTitle, 'songListId': apslid.toString(),'slid':slid!,'coverImage':listAlbum??''});
       },
       behavior: HitTestBehavior.translucent,
       child: Container(

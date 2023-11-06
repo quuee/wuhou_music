@@ -81,5 +81,25 @@ class SongsListApi {
     return apiResult.data;
   }
 
+  /// 根据歌单id查询歌曲
+  static Future<dynamic> fetchSongsBySLID(String slid) async {
+    Options op = Options(
+        contentType: Headers.jsonContentType,
+        method: RequestClient.get
+    );
+    Map<String,dynamic> map = Map();
+    map['slid'] = slid;
+    Response response = await RequestClient.instance
+        .request( '/songsList/fetchAll', params: map,options:op );
+
+    ApiResult apiResult = ApiResult.fromJson(response.data);
+    if (apiResult.data == null) {
+      return null;
+    }
+    developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+
+    return apiResult.data;
+  }
+
   /// TODO 将歌曲文件上传到云
 }

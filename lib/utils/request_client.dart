@@ -1,19 +1,24 @@
-import 'package:dio/dio.dart';
 import 'dart:developer' as developer;
-
-import 'package:hive/hive.dart';
+import 'package:dio/dio.dart';
+import 'package:get/get.dart' as Getx;
+import 'package:isar/isar.dart';
+import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
+import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 
 class RequestClient {
 
   static const String apiPrefix=
       'http://192.168.2.143:10070/api-v1'; // dio不能解析127.0.0.1
+  static const String imagesPrefix = 'http://192.168.2.124:9000/images/';
+  static const String songsPrefix = 'http://192.168.2.124:9000/songs/';
   //请求时间
-  static const int connectTimeout = 60;
+  static const int connectTimeout = 30;
   //响应时间
-  static const int receiveTimeout = 60;
+  static const int receiveTimeout = 30;
 
-  static const int sendTimeout = 60;
+  static const int sendTimeout = 30;
 
   late Dio _mDio;
   late BaseOptions options;
@@ -41,7 +46,6 @@ class RequestClient {
         contentType: Headers.jsonContentType);
 
     _mDio = Dio(options);
-    final userInfoBox = Hive.box(Keys.hiveUserInfo);
 
     _mDio.interceptors.add(
       InterceptorsWrapper(
@@ -49,7 +53,8 @@ class RequestClient {
           // 如果你想完成请求并返回一些自定义数据，你可以使用 `handler.resolve(response)`。
           // 如果你想终止请求并触发一个错误，你可以使用 `handler.reject(error)`。
 
-          String token = userInfoBox.get(Keys.token,defaultValue: '');
+          String? token = IsarHelper.instance.isarInstance
+              .anyEntitys.filter().keyNameEqualTo(Keys.token).findFirstSync()?.anything;
           Map<String,dynamic> header = Map();
           header['Authorization'] = token;
           options.headers.addAll(header);
@@ -60,6 +65,11 @@ class RequestClient {
 
           // TODO 凭证过期
           bool b = response.data['code'] == 493;
+          if(b){
+            // 可能多个请求 跳转多次
+            Getx.Get.offAllNamed(Routes.login);
+            return;
+          }
 
           return handler.next(response);
         },

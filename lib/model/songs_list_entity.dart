@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
+
 part 'songs_list_entity.g.dart';
 //dart run build_runner build
 
@@ -10,41 +11,45 @@ List<SongsListEntity> songListEntityFromJson(String str) =>
 String songListEntityToJson(List<SongsListEntity> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-@HiveType(typeId: 1)
+@collection
+@Name('songs_list')
 class SongsListEntity {
-  @HiveField(0)
-  String id;
-  @HiveField(1)
+  @Name("apslid")
+  Id? apslid = Isar.autoIncrement;
+  @Name("slid")
+  String? slid; // 服务端id
+  @Name("listTitle")
   String listTitle;
-  @HiveField(2)
-  String listAlbum;
-  @HiveField(3)
-  int count;
-  // @HiveField(4,defaultValue: <SongEntity>[])
-  // List<SongEntity> songEntityList;
+  @Name("listAlbum")
+  String? listAlbum;
+  @Name("count")
+  int? count;
 
   SongsListEntity({
-    required this.id,
+    this.apslid,
+    this.slid,
     required this.listTitle,
-    required this.listAlbum,
-    required this.count,
-    // required this.songEntityList,
+    this.listAlbum,
+    this.count,
+
   });
 
   factory SongsListEntity.fromJson(Map<String, dynamic> json) =>
       SongsListEntity(
-        id: json["id"],
+        apslid: json["apslid"],
         listTitle: json["listTitle"],
         listAlbum: json["listAlbum"] ?? '',
         count: json["count"] ?? 0,
-        // songEntityList: songEntityFromJson(songEntityToJson(json["songEntityList"])),
+        slid: json["slid"] ?? '',
+
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "apslid": apslid,
         "listTitle": listTitle,
         "listAlbum": listAlbum,
         "count": count,
-        // "songEntityList": songEntityList,
+        "slid": slid,
+
       };
 }

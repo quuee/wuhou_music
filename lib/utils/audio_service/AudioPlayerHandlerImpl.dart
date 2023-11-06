@@ -1,12 +1,14 @@
+import 'dart:developer' as developer;
 import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wuhoumusic/model/cache_songs_entity.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
-import 'dart:developer' as developer;
+import 'package:wuhoumusic/utils/isar_helper.dart';
 
 
 class QueueState {
@@ -203,25 +205,24 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     // Load the playlist.
     if (queue.value.isEmpty) {
       // 从hive恢复最近一次的队列
-      final List lastSongEntityList = await Hive.box(Keys.hiveCache)
-          .get(Keys.lastQueue, defaultValue: [])?.toList() as List;
-      final int lastIndex = await Hive.box(Keys.hiveCache)
-          .get(Keys.lastIndex, defaultValue: 0) as int;
-      final int lastPos = await Hive.box(Keys.hiveCache)
-          .get(Keys.lastPos, defaultValue: 0) as int;
+      List<CacheSongEntity> cacheList =IsarHelper.instance.isarInstance.cacheSongEntitys.where(distinct: true,sort: Sort.asc).findAllSync();
+      // final List lastSongEntityList = await Hive.box(Keys.hiveCache)
+      //     .get(Keys.lastQueue, defaultValue: [])?.toList() as List;
+      // final int lastIndex = await Hive.box(Keys.hiveCache)
+      //     .get(Keys.lastIndex, defaultValue: 0) as int;
+      // final int lastPos = await Hive.box(Keys.hiveCache)
+      //     .get(Keys.lastPos, defaultValue: 0) as int;
 
-      if (lastSongEntityList.isNotEmpty) {
+      if (cacheList.isNotEmpty) {
         List<SongEntity> temp =
-            songEntityFromJson(jsonEncode(lastSongEntityList));
+            songEntityFromJson(jsonEncode(cacheList));
         final List<MediaItem> lastQueue =
             temp.map((e) => e.toMediaItem()).toList();
         if (lastQueue.isNotEmpty) {
           _playlist.addAll(_itemsToSources(lastQueue));
           await _player.setAudioSource(_playlist);
+          await _player.seek(Duration(seconds: 0), index: 0);
 
-          if (lastIndex != 0 || lastPos > 0) {
-            await _player.seek(Duration(seconds: lastPos), index: lastIndex);
-          }
         }
       } else {
         await _player
@@ -277,8 +278,19 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> addLastQueue(List<MediaItem> queue) async {
     if (queue.isNotEmpty) {
       // 将queue的mediaItem 转成 map 或 songEntity，存入hive
+      // final lastSongEntityList = queue
+      //     .map((item) => SongEntity(
+      //         id: item.extras![
+      //             'id'], //因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
+      //         album: item.album,
+      //         artist: item.artist ?? '',
+      //         title: item.title,
+      //         duration: item.duration!.inMilliseconds))
+      //     .toList();
+
+      // Hive.box(Keys.hiveCache).put(Keys.lastQueue, lastSongEntityList);
       final lastSongEntityList = queue
-          .map((item) => SongEntity(
+          .map((item) => CacheSongEntity(
               id: item.extras![
                   'id'], //因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
               album: item.album,
@@ -286,7 +298,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
               title: item.title,
               duration: item.duration!.inMilliseconds))
           .toList();
-      Hive.box(Keys.hiveCache).put(Keys.lastQueue, lastSongEntityList);
+      IsarHelper.instance.isarInstance.cacheSongEntitys.putAll(lastSongEntityList);
     }
   }
 
@@ -354,9 +366,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> pause() async {
     _player.pause();
-    await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
-    await Hive.box(Keys.hiveCache)
-        .put(Keys.lastPos, _player.position.inSeconds);
+    // await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
+    // await Hive.box(Keys.hiveCache)
+    //     .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
   }
 
@@ -369,9 +381,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
 
-    await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
-    await Hive.box(Keys.hiveCache)
-        .put(Keys.lastPos, _player.position.inSeconds);
+    // await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
+    // await Hive.box(Keys.hiveCache)
+    //     .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
   }
 

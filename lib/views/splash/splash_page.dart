@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -18,8 +20,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late Tween<double> _tween;
-
-  final userInfoBox = Hive.box(Keys.hiveUserInfo);
 
   @override
   void initState() {
@@ -75,8 +75,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
   bool _checkLogin(){
     bool loginFlag = false;
-    String token = userInfoBox.get(Keys.token,defaultValue: '');
-    if(token.trim() != ''){
+    AnyEntity? anyEntity =IsarHelper.instance.isarInstance
+        .anyEntitys.filter().keyNameEqualTo(Keys.token).findFirstSync();
+    if(anyEntity !=null ){
       return true;
     }
     return loginFlag;

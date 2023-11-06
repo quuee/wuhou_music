@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:android_content_provider/android_content_provider.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 
 part 'song_entity.g.dart';
 //dart run build_runner build
@@ -15,28 +14,32 @@ List<SongEntity> songEntityFromJson(String str) {
 // String songEntityToJson(List<SongEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 String songEntityToJson(List<dynamic> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-@HiveType(typeId: 0)
+@collection
 class SongEntity {
-  @HiveField(0)
+
+  @Name("sid")
+  Id? sid = Isar.autoIncrement;
+  @Name("id")
   late String id; // 媒体库id
-  @HiveField(1)
+  @Name("album")
   String? album; // 专辑
-  @HiveField(2)
+  @Name("albumId")
   int? albumId; // 专辑
-  @HiveField(3)
+  @Name("artist")
   String artist; // 艺术家
-  @HiveField(4)
+  @Name("title")
   late String title; // 歌名
-  @HiveField(5)
+  @Name("duration")
   late int duration; // 时长
-  @HiveField(6)
+  @Name("quality")
   String? quality; // 音频质量
-  @HiveField(7)
+  @Name("albumArt")
   String? albumArt; //专辑封面 artPath
-  @HiveField(8)
+  @Name("data")
   String? data; // 真实路径
-  @HiveField(9)
+  @Name("bucketDisplayName")
   String? bucketDisplayName; // 来自哪个包
+
 
   /// Actual art file path, if any.
   // String? get artPath => albumArtPaths[albumId];
@@ -58,6 +61,7 @@ class SongEntity {
     this.albumArt,
     this.data,
     this.bucketDisplayName,
+
   });
 
   /// id:uri 这里必须换uri，不然找不到文件
@@ -124,6 +128,7 @@ class SongEntity {
     albumArt: json["albumArt"],
     data: json["data"],
     bucketDisplayName: json["bucketDisplayName"],
+
   );
 
   Map<String, dynamic> toJson() => {
@@ -137,5 +142,6 @@ class SongEntity {
     "albumArt": albumArt,
     "data": data,
     "bucketDisplayName": bucketDisplayName,
+
   };
 }

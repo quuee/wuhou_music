@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
+import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/views/mine/user_info.dart';
 
 class MinePage extends StatefulWidget {
@@ -14,7 +17,7 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage> {
   bool dayOrNight = true;
-  final userInfoBox = Hive.box(Keys.hiveUserInfo);
+  // final userInfoBox = Hive.box(Keys.hiveUserInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +58,8 @@ class _MinePageState extends State<MinePage> {
               child: ListTile(
                 title: Text('退出'),
                 onTap: () {
-                  userInfoBox.delete(Keys.token);
+                  // userInfoBox.delete(Keys.token);
+                  IsarHelper.instance.isarInstance.anyEntitys.filter().keyNameEqualTo(Keys.token).deleteAll();
                   Get.offAllNamed(Routes.login);
                 },
               ),

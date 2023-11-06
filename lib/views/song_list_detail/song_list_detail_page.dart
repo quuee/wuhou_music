@@ -43,7 +43,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
           alignment: Alignment.centerRight,
         ),
         onDismissed: (direction) {
-          controller.deleteSongInSongList(songs[index].id);
+          controller.deleteSongInSongList(songs[index].sid!);
         },
         child: Ink(
           // color: fileExit ? Colors.white : Colors.grey[400],
@@ -124,7 +124,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
         // 封面 可被隐藏
         SliverToBoxAdapter(
           child: SongListCover(
-            songListUUID: controller.songListUUIDContro,
+            songListUUID: controller.songListId!,
             songListTitle: songTitle,
             songListCoverImagePath: coverImage,
           ),

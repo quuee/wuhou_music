@@ -16,6 +16,12 @@ class _SongListAddPageState extends State<SongListAddPage> {
   final List<SongEntity> _selectedItems = [];
   SongListDetailController songListDetailController = Get.find<SongListDetailController>();
 
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -94,7 +100,7 @@ class _SongListAddPageState extends State<SongListAddPage> {
       bottomNavigationBar: ElevatedButton(
         child: Text('加入歌单'),
         onPressed: () {
-          songListDetailController.addSongToSongList(null,_selectedItems);
+          songListDetailController.addSongToSongList(songListDetailController.songListId!,_selectedItems);
           Get.back();
         },
       ),

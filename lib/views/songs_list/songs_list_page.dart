@@ -74,7 +74,7 @@ class _MinePageState extends State<SongsListPage> {
   /// 歌单列表
   Widget _buildSongListWidget() {
     return GetBuilder<SongsListController>(
-        id: 'songListBuilder',
+        id: SongsListController.songListBuilder,
         builder: (c) {
           if (c.loadingStatus == LoadingStatus.loading) {
             return Center(
@@ -88,13 +88,14 @@ class _MinePageState extends State<SongsListPage> {
               onRefresh: () => c.pullDownRefresh(),
               onLoad: () => c.pullUponLoading(),
               child: ListView.builder(
-                  itemCount: c.songList.length,
+                  itemCount: c.songsList.length,
                   itemBuilder: (context, index) {
                     return SongList(
-                      id: c.songList[index].id,
-                      listTitle: c.songList[index].listTitle,
-                      count: c.songList[index].count,
-                      listAlbum: c.songList[index].listAlbum,
+                      apslid: c.songsList[index].apslid ?? -1,
+                      slid: c.songsList[index].slid ?? '',
+                      listTitle: c.songsList[index].listTitle,
+                      count: c.songsList[index].count ?? 0,
+                      listAlbum: c.songsList[index].listAlbum ?? '',
                     );
                   }),
             );

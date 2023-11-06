@@ -8,7 +8,7 @@ class SongListCover extends StatelessWidget {
       required this.songListUUID,
       required this.songListTitle,
       this.songListCoverImagePath});
-  String songListUUID;
+  int songListUUID;
   String songListTitle;
   String? songListCoverImagePath;
   //封面 歌单名 创建者 共N首，被听N次 可被隐藏

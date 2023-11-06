@@ -57,12 +57,12 @@ class SongItem extends StatelessWidget {
 
   /// 收藏到歌单
   _collectBottomSheet() {
-    List<Widget> list = songsListController.songList
+    List<Widget> list = songsListController.songsList
         .map((e) => ListTile(
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),
               onTap: () {
-                songListDetailController.addSongToSongList(e.id, [songEntity]);
+                songListDetailController.addSongToSongList(e.apslid!, [songEntity]);
                 Get.back();
               },
             ))

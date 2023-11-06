@@ -4,6 +4,7 @@ import 'package:wuhoumusic/model/song_entity.dart';
 import 'dart:developer' as developer;
 
 import 'package:wuhoumusic/resource/loading_status.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 
 class LocalMusicController extends GetxController {
   List<SongEntity> songs = [];
@@ -44,18 +45,23 @@ class LocalMusicController extends GetxController {
       songs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
           .where((element) {
-        // developer.log(
-        //     'id:${element.id},'
-        //     'album:${element.album},'
-        //     'albumId:${element.albumId},'
-        //     'artist:${element.artist},'
-        //     'title${element.title},'
-        //     'duration:${element.duration},'
-        //     'data:${element.data},'
-        //     'bucketDisplayName:${element.bucketDisplayName},',
-        //     name: '_fetchSongs');
+        developer.log(
+            'id:${element.id},'
+            'album:${element.album},'
+            'albumId:${element.albumId},'
+            'artist:${element.artist},'
+            'title${element.title},'
+            'duration:${element.duration},'
+            'data:${element.data},'
+            'bucketDisplayName:${element.bucketDisplayName},',
+            name: '_fetchSongs');
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
+
+      // TODO 将本地歌曲存入isra？ 不同的media id 会不会变化
+      IsarHelper.instance.isarInstance.writeTxn(() async {
+        await IsarHelper.instance.isarInstance.songEntitys.putAll(songs);
+      });
 
       _loadingStatus = LoadingStatus.success;
     } on Exception catch (e) {
