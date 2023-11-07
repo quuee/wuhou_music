@@ -114,7 +114,6 @@ class _MinePageState extends State<SongsListPage> {
             children: [
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
-                color: Colors.deepPurple[100],
                 child: Column(
                   children: [
                     /// 功能按钮

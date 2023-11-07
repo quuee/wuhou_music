@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SingerTab extends StatefulWidget {
@@ -70,9 +71,14 @@ class _State extends State<SingerTab> {
 
   _buildOnTaoJump(String word, int index) {
     return GestureDetector(
-      child: Text(
-        word,
-        style: TextStyle(fontSize: 14),
+      child: Container(
+        decoration: BoxDecoration(
+            color: _currentIndex == index ? Colors.deepPurple : Colors.white,
+            borderRadius: BorderRadius.circular(22)),
+        child: Text(
+          word,
+          style: TextStyle(fontSize: 14),
+        ),
       ),
       onTap: () {
         setState(() {
@@ -95,6 +101,7 @@ class _State extends State<SingerTab> {
         Padding(
             padding: EdgeInsets.only(left: 20),
             child: ListView.builder(
+                // 第一层 字母
                 controller: _scrollContr,
                 itemCount: singers.length,
                 itemBuilder: (context, index) {
@@ -109,6 +116,7 @@ class _State extends State<SingerTab> {
                         ),
                       ),
                       ListView.builder(
+                          //第二层 名字
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: singers[index].entries.first.value.length,
@@ -119,6 +127,14 @@ class _State extends State<SingerTab> {
                                 padding: EdgeInsets.symmetric(vertical: 10),
                                 child: Row(
                                   children: [
+                                    CachedNetworkImage(
+                                      imageUrl:
+                                          "http://192.168.2.124:9000/images/cat.png",
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ),
                                     Text(singers[index]
                                         .entries
                                         .first
@@ -131,8 +147,18 @@ class _State extends State<SingerTab> {
                     ],
                   );
                 })),
+        //右侧固定导航字母
         Align(
           alignment: FractionalOffset(1.0, 0.5),
+          // FractionalOffset(0.0, 0.0)：顶部左边
+          // FractionalOffset(0.5, 0.0)：顶部中间
+          // FractionalOffset(1.0, 0.0)：顶部右边
+          // FractionalOffset(0.0, 0.5)：中部左边
+          // FractionalOffset(0.5, 0.5)：中部中间
+          // FractionalOffset(1.0, 0.5)：中部右边
+          // FractionalOffset(0.0, 1.0)：底部左边
+          // FractionalOffset(0.5, 1.0)：底部中间
+          // FractionalOffset(1.0, 1.0)：底部右边
           child: SizedBox(
             width: 25,
             child: Padding(
