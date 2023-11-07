@@ -1,10 +1,10 @@
+
 import 'package:android_content_provider/android_content_provider.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'dart:developer' as developer;
-
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 
 class LocalMusicController extends GetxController {
   List<SongEntity> songs = [];
@@ -26,7 +26,7 @@ class LocalMusicController extends GetxController {
 
   /// 扫描本地歌曲
   Future<void> _fetchSongs() async {
-    developer.log('扫描本地歌曲...', name: 'LocalMusicPage _fetchSongs');
+    LogD('LocalMusicController _fetchSongs', '扫描本地歌曲...');
 
     final cursor = await AndroidContentResolver.instance.query(
       // MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -45,21 +45,21 @@ class LocalMusicController extends GetxController {
       songs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
           .where((element) {
-        developer.log(
-            'id:${element.id},'
+        LogD('LocalMusicController _fetchSongs', 'id:${element.id},'
             'album:${element.album},'
             'albumId:${element.albumId},'
             'artist:${element.artist},'
             'title${element.title},'
             'duration:${element.duration},'
             'data:${element.data},'
-            'bucketDisplayName:${element.bucketDisplayName},',
-            name: '_fetchSongs');
+            'bucketDisplayName:${element.bucketDisplayName},');
+
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
 
       // TODO 将本地歌曲存入isra？ 不同的media id 会不会变化
       IsarHelper.instance.isarInstance.writeTxn(() async {
+        await IsarHelper.instance.isarInstance.songEntitys.clear();
         await IsarHelper.instance.isarInstance.songEntitys.putAll(songs);
       });
 
@@ -69,7 +69,8 @@ class LocalMusicController extends GetxController {
       // catch (e, s) 可以多个参数
       // 可以多个catch
       _loadingStatus = LoadingStatus.failed;
-      developer.log(e.toString(), name: '_fetchSongs exception');
+      LogE('LocalMusicController _fetchSongs Exception', e.toString());
+
     } finally {
       cursor?.close();
       update();

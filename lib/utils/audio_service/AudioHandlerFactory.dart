@@ -1,7 +1,8 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
-import 'dart:developer' as developer;
+import 'package:wuhoumusic/utils/log_util.dart';
+
 
 class AudioHandlerFactory{
 
@@ -30,7 +31,7 @@ class AudioHandlerFactory{
   }
 
   Future<AudioPlayerHandler> getAudioHandler() async {
-    developer.log('getAudioHandler _initialize', name: 'AudioHandlerFactory');
+    LogI('AudioHandlerFactory getAudioHandler', 'AudioHandlerFactory getAudioHandler');
     if (!_isInitialized) {
       await _initialize();
       _isInitialized = true;

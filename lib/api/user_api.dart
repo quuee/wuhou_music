@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:wuhoumusic/utils/api_result.dart';
 import 'package:wuhoumusic/utils/http_exception.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/utils/request_client.dart';
-import 'dart:developer' as developer;
+
 
 class UserApi {
   // static Future<UserEntity?> getUserInfo() async {
@@ -39,11 +42,11 @@ class UserApi {
       if (apiResult.data == null) {
         return null;
       }
-      developer.log(apiResult.toString(), name: 'UserApi accountLogin');
+      LogD("UserApi accountLogin",jsonEncode(apiResult));
       return apiResult;
     } on DioException catch (e) {
       String handleException = HttpException.handleException(e);
-      developer.log(handleException, name: 'UserApi accountLogin');
+      LogE("UserApi accountLogin DioException",handleException);
       return null;
     }
   }

@@ -2,7 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/resource/r.dart';
-import 'dart:developer' as developer;
+import 'package:wuhoumusic/utils/log_util.dart';
 
 
 class PlayingPage extends StatelessWidget {
@@ -16,7 +16,7 @@ class PlayingPage extends StatelessWidget {
     if (mediaItem.artUri != null) {
       int lastIndex = mediaItem.id.lastIndexOf('/');
       String id = mediaItem.id.substring(lastIndex + 1);
-      developer.log('${mediaItem.id} + $id', name: 'PlayingPage');
+      LogD('PlayingPage', '${mediaItem.id} + $id');
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,

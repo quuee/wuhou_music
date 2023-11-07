@@ -3,7 +3,7 @@ import 'dart:convert';
 class ApiResult {
   int? code;
   String? msg;
-  dynamic? data;
+  dynamic data;
 
   ApiResult({this.code, this.msg, this.data});
 

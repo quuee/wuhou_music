@@ -1,5 +1,4 @@
-import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,15 +6,13 @@ import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
-import 'dart:developer' as developer;
-
 import 'package:wuhoumusic/utils/isar_helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  int sdkInt = androidInfo.version.sdkInt!;
+  // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  // int sdkInt = androidInfo.version.sdkInt;
 
   // 初始化 Hive
   // if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -66,7 +63,6 @@ class MyApp extends StatelessWidget {
 }
 
 Future<void> initServices() async {
-  developer.log('初始化服务', name: 'main initServices');
   final audioHandlerFactory = AudioHandlerFactory();
   final AudioPlayerHandler audioHandler = await audioHandlerFactory.getAudioHandler();
   GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);

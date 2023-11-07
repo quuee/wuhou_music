@@ -1,11 +1,12 @@
-import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' as Getx;
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 
 class RequestClient {
 
@@ -35,7 +36,8 @@ class RequestClient {
   static RequestClient get instance => RequestClient();
 
   RequestClient._() {
-    developer.log('RequestClient._internal()', name: 'RequestClient');
+
+    LogI('RequestClient', 'RequestClient._()');
 
     /// 全局属性：请求前缀、连接超时时间、响应超时时间
     BaseOptions options = BaseOptions(
@@ -55,9 +57,12 @@ class RequestClient {
 
           String? token = IsarHelper.instance.isarInstance
               .anyEntitys.filter().keyNameEqualTo(Keys.token).findFirstSync()?.anything;
-          Map<String,dynamic> header = Map();
-          header['Authorization'] = token;
-          options.headers.addAll(header);
+          if(token!=null && token.isNotEmpty){
+            Map<String,dynamic> header = Map();
+            header['Authorization'] = token;
+            options.headers.addAll(header);
+          }
+
           return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
@@ -67,7 +72,14 @@ class RequestClient {
           bool b = response.data['code'] == 493;
           if(b){
             // 可能多个请求 跳转多次
+            Fluttertoast.showToast(msg: '登录已过期请重新登录');
             Getx.Get.offAllNamed(Routes.login);
+            IsarHelper.instance.isarInstance.writeTxn(() async {
+              AnyEntity? t = await IsarHelper.instance.isarInstance.anyEntitys.filter().keyNameEqualTo(Keys.token).findFirst();
+              if(t!=null){
+               await IsarHelper.instance.isarInstance.anyEntitys.delete(t.id!);
+              }
+            });
             return;
           }
 

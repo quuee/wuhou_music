@@ -1,4 +1,4 @@
-import 'dart:developer' as developer;
+
 import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -7,8 +7,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wuhoumusic/model/cache_songs_entity.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 
 
 class QueueState {
@@ -298,7 +298,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
               title: item.title,
               duration: item.duration!.inMilliseconds))
           .toList();
-      IsarHelper.instance.isarInstance.cacheSongEntitys.putAll(lastSongEntityList);
+      IsarHelper.instance.isarInstance.writeTxn(() async{
+        await IsarHelper.instance.isarInstance.cacheSongEntitys.putAll(lastSongEntityList);
+      });
     }
   }
 
@@ -423,9 +425,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   void _playbackError(Object e, StackTrace st) {
     if (e is PlayerException) {
-      developer.log('Error code: ${e.code},Error message: ${e.message}',name: '_playbackError');
+      LogE('_playbackError', e.message.toString());
     } else {
-      developer.log('An error occurred: $e',name: '_playbackError');
+      LogE('_playbackError', st.toString());
     }
   }
 }

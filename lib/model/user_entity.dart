@@ -4,14 +4,23 @@ List<UserEntity> userEntityFromJson(String str) => List<UserEntity>.from(json.de
 String userEntityToJson(List<UserEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class UserEntity {
-  int? userId;
-  String? username;
-  int? age;
+  String whuid;
+  String accountName;
+  String? nickName;
+  String? avatarUrl;
+  String? birthday;
+  String? phoneNumber;
+  String? email;
+
 
   UserEntity({
-    this.userId,
-    this.username,
-    this.age,
+    required this.whuid,
+    required this.accountName,
+    this.nickName,
+    this.avatarUrl,
+    this.birthday,
+    this.phoneNumber,
+    this.email,
   });
 
   factory UserEntity.fromRawJson(String str) => UserEntity.fromJson(json.decode(str));
@@ -19,14 +28,22 @@ class UserEntity {
   String toRawJson() => json.encode(toJson());
 
   factory UserEntity.fromJson(Map<String, dynamic> json) => UserEntity(
-    userId: json["userId"],
-    username: json["username"],
-    age: json["age"],
+    whuid: json["whuid"],
+    accountName: json["accountName"],
+    nickName: json["nickName"],
+    avatarUrl: json["avatarUrl"],
+    birthday: json["birthday"],
+    phoneNumber: json["phoneNumber"],
+    email: json["email"],
   );
 
   Map<String, dynamic> toJson() => {
-    "userId": userId,
-    "username": username,
-    "age": age,
+    "whuid": whuid,
+    "accountName": accountName,
+    "nickName": nickName,
+    "avatarUrl": avatarUrl,
+    "birthday": birthday,
+    "phoneNumber": phoneNumber,
+    "email": email,
   };
 }

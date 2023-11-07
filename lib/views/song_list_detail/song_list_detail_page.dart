@@ -11,7 +11,7 @@ import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/ui/song_list_cover.dart';
 import 'package:wuhoumusic/views/song_list_detail/ui/my_sliver_persistent_header_delegate.dart';
-import 'dart:developer' as developer;
+
 
 class SongListDetailPage extends GetView<SongListDetailController> {
   SongListDetailPage({super.key});

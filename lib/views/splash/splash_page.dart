@@ -42,7 +42,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          // TODO 判断是否登录
+          // 判断是否登录
           bool checkLogin = _checkLogin();
           // 跳转到首页，不做强制登录
           if(!checkLogin){
@@ -78,6 +78,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     AnyEntity? anyEntity =IsarHelper.instance.isarInstance
         .anyEntitys.filter().keyNameEqualTo(Keys.token).findFirstSync();
     if(anyEntity !=null ){
+      // TODO 发送token到服务器校验，过期跳转到登录页
       return true;
     }
     return loginFlag;

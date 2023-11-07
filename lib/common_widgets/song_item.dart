@@ -18,7 +18,7 @@ class SongItem extends StatelessWidget {
   // final String? singer;
   // final String? album;
 
-  final SongListDetailController songListDetailController = Get.find<SongListDetailController>();
+
   final SongsListController songsListController = Get.find<SongsListController>();
 
   /// 本地音乐底部弹窗
@@ -62,6 +62,7 @@ class SongItem extends StatelessWidget {
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),
               onTap: () {
+                final SongListDetailController songListDetailController = Get.find<SongListDetailController>();
                 songListDetailController.addSongToSongList(e.apslid!, [songEntity]);
                 Get.back();
               },

@@ -4,7 +4,6 @@ import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-
 import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
 
 class LocalMusicPage extends GetView<LocalMusicController> {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/views/home/home_app_bar.dart';
-
 import 'package:wuhoumusic/views/home/home_controller.dart';
 
 /// 热门 排行

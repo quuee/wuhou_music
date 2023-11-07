@@ -1,13 +1,16 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:wuhoumusic/utils/api_result.dart';
 import 'package:wuhoumusic/utils/http_exception.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/utils/request_client.dart';
-import 'dart:developer' as developer;
+
 
 class SongsListApi {
 
   /// 将歌单同步到云
-  static Future<dynamic?> syncSongsList(Map<String, dynamic> map) async {
+  static Future<dynamic> syncSongsList(Map<String, dynamic> map) async {
 
     // Map<String, dynamic> map = Map();
     // map['listTitle'] = songListEntity.listTitle;
@@ -35,19 +38,19 @@ class SongsListApi {
       if (apiResult.data == null) {
         return null;
       }
-      developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+      LogD("SongsListApi syncSongsList",jsonEncode(apiResult));
 
       return apiResult;
     }on DioException catch (e) {
       String handleException = HttpException.handleException(e);
-      developer.log(handleException, name: 'SongsListApi createSongsList');
+      LogE("SongsListApi syncSongsList DioException",handleException);
       return null;
     }
 
   }
 
   /// 将歌单中的歌曲同步到云
-  static Future<dynamic?> syncSongs(Map<String, dynamic> map) async {
+  static Future<dynamic> syncSongs(Map<String, dynamic> map) async {
     Options op = Options(
         contentType: Headers.jsonContentType,
         method: RequestClient.post
@@ -58,7 +61,7 @@ class SongsListApi {
     if (apiResult.data == null) {
       return null;
     }
-    developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+    LogD("SongsListApi syncSongs",jsonEncode(apiResult));
 
     return apiResult;
   }
@@ -76,7 +79,7 @@ class SongsListApi {
     if (apiResult.data == null) {
       return null;
     }
-    developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+    LogD("SongsListApi fetchAllSongsList",jsonEncode(apiResult));
 
     return apiResult.data;
   }
@@ -96,7 +99,7 @@ class SongsListApi {
     if (apiResult.data == null) {
       return null;
     }
-    developer.log(apiResult.toString(), name: 'SongsListApi createSongsList');
+    LogD("SongsListApi fetchSongsBySLID",jsonEncode(apiResult));
 
     return apiResult.data;
   }

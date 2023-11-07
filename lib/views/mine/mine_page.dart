@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';

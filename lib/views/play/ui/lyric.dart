@@ -68,7 +68,7 @@ class _LyricState extends State<Lyric> {
   }
 
   Widget buildLyricReader() {
-    fetchLyric(widget.song.data!);
+    fetchLyric(widget.song.data??"");
     return StreamBuilder<Duration>(
       stream: AudioService.position,
       builder: (content, snapshot) {
@@ -80,7 +80,7 @@ class _LyricState extends State<Lyric> {
           position: position.inMilliseconds,
           lyricUi: lyricUI,
           playing: true,
-          size: Size(double.infinity, MediaQuery.of(context).size.height / 2),
+          size: Size(double.infinity, MediaQuery.of(context).size.height),
           emptyBuilder: () => Center(
             child: Text(
               'No lyrics',

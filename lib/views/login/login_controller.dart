@@ -13,7 +13,7 @@ class LoginController extends GetxController {
   TextEditingController phonedCtro = TextEditingController();
   TextEditingController validCodeCtro = TextEditingController();
 
-  accountLogin() async {
+  _accountLogin() async {
     var resp = await UserApi.accountLogin(accountCtro.text, passwdCtro.text);
     if (resp == null) {
       return;

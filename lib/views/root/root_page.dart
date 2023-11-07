@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:wuhoumusic/views/root/root_controller.dart';
 
 class RootPage extends GetView<RootController> {

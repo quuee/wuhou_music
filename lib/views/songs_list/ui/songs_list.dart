@@ -47,16 +47,16 @@ class SongList extends StatelessWidget {
                 leading: Icon(Icons.sync),
                 title: Text('同步歌单到云'),
                 onTap: () async {
-                  SongsListEntity s = SongsListEntity(
-                    apslid: apslid,
-                    listTitle: listTitle,
-                    listAlbum: listAlbum!,
-                    count: count,
-                  );
+                  // SongsListEntity s = SongsListEntity(
+                  //   apslid: apslid,
+                  //   listTitle: listTitle,
+                  //   listAlbum: listAlbum!,
+                  //   count: count,
+                  // );
 
-                  SongsListController c = Get.find<SongsListController>();
-                  c.syncSongsList(s);
-                  Fluttertoast.showToast(msg: '同步完成');
+                  // SongsListController c = Get.find<SongsListController>();
+                  // c.syncSongsList(s);
+                  Fluttertoast.showToast(msg: '待实现');
                 },
               ),
               ListTile(
@@ -79,7 +79,7 @@ class SongList extends StatelessWidget {
     final child = GestureDetector(
       onTap: () {
         Get.toNamed(Routes.songListDetail,
-            parameters: {'title': listTitle, 'songListId': apslid.toString(),'slid':slid!,'coverImage':listAlbum??''});
+            parameters: {'title': listTitle, 'songListId': apslid.toString(),'slid':slid,'coverImage':listAlbum??''});
       },
       behavior: HitTestBehavior.translucent,
       child: Container(

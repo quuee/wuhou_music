@@ -1,4 +1,4 @@
-import 'dart:developer' as developer;
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +7,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 
 class PlayBar extends StatelessWidget {
   const PlayBar({
@@ -55,9 +56,8 @@ class PlayBar extends StatelessWidget {
                         .lastIndexOf('/');
                     String id = queueState.queue[queueState.queueIndex!].id
                         .substring(lastIndex + 1);
-                    developer.log(
-                        '${queueState.queue[queueState.queueIndex!].id} + $id',
-                        name: 'PlayBar');
+                    LogD("PlayBar",'${queueState.queue[queueState.queueIndex!].id}');
+
                     // var artAlbum = queueState.queue[queueState.queueIndex!]
                     //         .extras!['artAlbum'] ??
                     //     '';
