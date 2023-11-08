@@ -68,9 +68,9 @@ SLSongsEntity _sLSongsEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = SLSongsEntity(
-    apslid: reader.readLongOrNull(offsets[0]),
+    apslid: reader.readLong(offsets[0]),
     id: id,
-    sid: reader.readLongOrNull(offsets[1]),
+    sid: reader.readLong(offsets[1]),
   );
   return object;
 }
@@ -83,9 +83,9 @@ P _sLSongsEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -188,25 +188,7 @@ extension SLSongsEntityQueryWhere
 extension SLSongsEntityQueryFilter
     on QueryBuilder<SLSongsEntity, SLSongsEntity, QFilterCondition> {
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
-      apslidIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'apslid',
-      ));
-    });
-  }
-
-  QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
-      apslidIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'apslid',
-      ));
-    });
-  }
-
-  QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
-      apslidEqualTo(int? value) {
+      apslidEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'apslid',
@@ -217,7 +199,7 @@ extension SLSongsEntityQueryFilter
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
       apslidGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -231,7 +213,7 @@ extension SLSongsEntityQueryFilter
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
       apslidLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -245,8 +227,8 @@ extension SLSongsEntityQueryFilter
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
       apslidBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -332,26 +314,8 @@ extension SLSongsEntityQueryFilter
     });
   }
 
-  QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
-      sidIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'sid',
-      ));
-    });
-  }
-
-  QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
-      sidIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'sid',
-      ));
-    });
-  }
-
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition> sidEqualTo(
-      int? value) {
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'sid',
@@ -362,7 +326,7 @@ extension SLSongsEntityQueryFilter
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition>
       sidGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -375,7 +339,7 @@ extension SLSongsEntityQueryFilter
   }
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition> sidLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -388,8 +352,8 @@ extension SLSongsEntityQueryFilter
   }
 
   QueryBuilder<SLSongsEntity, SLSongsEntity, QAfterFilterCondition> sidBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -500,13 +464,13 @@ extension SLSongsEntityQueryProperty
     });
   }
 
-  QueryBuilder<SLSongsEntity, int?, QQueryOperations> apslidProperty() {
+  QueryBuilder<SLSongsEntity, int, QQueryOperations> apslidProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'apslid');
     });
   }
 
-  QueryBuilder<SLSongsEntity, int?, QQueryOperations> sidProperty() {
+  QueryBuilder<SLSongsEntity, int, QQueryOperations> sidProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'sid');
     });

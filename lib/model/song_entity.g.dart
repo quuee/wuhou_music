@@ -172,9 +172,9 @@ SongEntity _songEntityDeserialize(
     duration: reader.readLong(offsets[7]),
     id: reader.readString(offsets[8]),
     quality: reader.readStringOrNull(offsets[9]),
+    sid: id,
     title: reader.readString(offsets[10]),
   );
-  object.sid = id;
   return object;
 }
 

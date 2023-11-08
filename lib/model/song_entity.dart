@@ -18,7 +18,7 @@ String songEntityToJson(List<dynamic> data) => json.encode(List<dynamic>.from(da
 class SongEntity {
 
   @Name("sid")
-  Id? sid = Isar.autoIncrement;
+  Id? sid ; // 用在isra中，建立歌单歌曲关系
   @Name("id")
   late String id; // 媒体库id
   @Name("album")
@@ -51,6 +51,7 @@ class SongEntity {
   String get artUri => 'content://media/external/audio/media/$id/albumart';
 
   SongEntity({
+    this.sid,
     required this.id,
      this.album,
      this.albumId,
@@ -95,6 +96,7 @@ class SongEntity {
 
   /// Creates a song from data retrieved from the MediaStore.
   factory SongEntity.fromMediaStore(List<Object?> data) => SongEntity(
+    sid: data[0] as int,
     id: data[0] as String,
     album: data[1] as String?,
     albumId: data[2] as int,

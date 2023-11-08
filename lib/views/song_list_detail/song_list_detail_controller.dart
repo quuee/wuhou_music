@@ -39,7 +39,7 @@ class SongListDetailController extends GetxController {
     List<SLSongsEntity> tempSongs = IsarHelper
         .instance.isarInstance.sLSongsEntitys
         .filter()
-        .apslidEqualTo(apslid)
+        .apslidEqualTo(apslid!)
         .findAllSync();
 
     // if (tempSongs.isEmpty) {
@@ -80,14 +80,14 @@ class SongListDetailController extends GetxController {
     // tempList.addAll(songs);
     // Hive.box(Keys.hiveSongs).put(songListUUID, tempList);
     List<SLSongsEntity> s =
-        songs.map((e) => SLSongsEntity(sid: e.sid, apslid: apslid)).toList();
+        songs.map((e) => SLSongsEntity(sid: e.sid!, apslid: apslid!)).toList();
 
     SongsListEntity songsListEntity =
         IsarHelper.instance.isarInstance.songsListEntitys.getSync(apslid!)!;
     List<SLSongsEntity> slsList = IsarHelper
         .instance.isarInstance.sLSongsEntitys
         .filter()
-        .apslidEqualTo(apslid)
+        .apslidEqualTo(apslid!)
         .findAllSync();
     songsListEntity.count = slsList.length + songs.length;
 

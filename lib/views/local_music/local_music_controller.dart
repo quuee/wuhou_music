@@ -63,16 +63,16 @@ class LocalMusicController extends GetxController
       songs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
           .where((element) {
-        LogD(
-            'LocalMusicController _fetchSongs',
-            'id:${element.id},'
-                'album:${element.album},'
-                'albumId:${element.albumId},'
-                'artist:${element.artist},'
-                'title${element.title},'
-                'duration:${element.duration},'
-                'data:${element.data},'
-                'bucketDisplayName:${element.bucketDisplayName},');
+        // LogD(
+        //     'LocalMusicController _fetchSongs',
+        //     'id:${element.id},'
+        //         'album:${element.album},'
+        //         'albumId:${element.albumId},'
+        //         'artist:${element.artist},'
+        //         'title${element.title},'
+        //         'duration:${element.duration},'
+        //         'data:${element.data},'
+        //         'bucketDisplayName:${element.bucketDisplayName},');
 
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();

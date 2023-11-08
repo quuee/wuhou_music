@@ -184,9 +184,9 @@ class SongsListController extends GetxController {
   _syncSongsList(SongsListEntity songListEntity) {
     List<SLSongsEntity> sls = IsarHelper.instance.isarInstance.sLSongsEntitys
         .filter()
-        .apslidEqualTo(songListEntity.apslid)
+        .apslidEqualTo(songListEntity.apslid!)
         .findAllSync();
-    List<int> ids = sls.map((e) => e.sid!).toList();
+    List<int> ids = sls.map((e) => e.sid).toList();
     List<SongEntity?> songs =
         IsarHelper.instance.isarInstance.songEntitys.getAllSync(ids);
     Map<String, dynamic> map = Map();
