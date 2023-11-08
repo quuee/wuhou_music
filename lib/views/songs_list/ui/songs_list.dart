@@ -79,7 +79,7 @@ class SongList extends StatelessWidget {
     final child = GestureDetector(
       onTap: () {
         Get.toNamed(Routes.songListDetail,
-            parameters: {'title': listTitle, 'songListId': apslid.toString(),'slid':slid,'coverImage':listAlbum??''});
+            parameters: {'title': listTitle, 'apslid': apslid.toString(),'coverImage':listAlbum??''});
       },
       behavior: HitTestBehavior.translucent,
       child: Container(

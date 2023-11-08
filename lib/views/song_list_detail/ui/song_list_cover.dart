@@ -5,20 +5,20 @@ import 'package:wuhoumusic/resource/r.dart';
 class SongListCover extends StatelessWidget {
   SongListCover(
       {super.key,
-      required this.songListUUID,
-      required this.songListTitle,
-      this.songListCoverImagePath});
-  int songListUUID;
-  String songListTitle;
-  String? songListCoverImagePath;
+      required this.songsListId,
+      required this.songsListTitle,
+      this.songsListCoverImagePath});
+  int songsListId;
+  String songsListTitle;
+  String? songsListCoverImagePath;
   //封面 歌单名 创建者 共N首，被听N次 可被隐藏
 
   _buildCover() {
     final coverChild;
-    if (songListCoverImagePath != null &&
-        songListCoverImagePath?.trim().compareTo('') != 0) {
+    if (songsListCoverImagePath != null &&
+        songsListCoverImagePath?.trim().compareTo('') != 0) {
       coverChild = Image.file(
-        File(songListCoverImagePath!),
+        File(songsListCoverImagePath!),
         width: 100,
         height: 100,
         errorBuilder: (c, e, s) {
@@ -52,7 +52,7 @@ class SongListCover extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                songListTitle,
+                songsListTitle,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400),
               ),
               Text('来自：xxx'),

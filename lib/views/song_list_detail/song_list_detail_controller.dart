@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/sl_songs_entity.dart';
@@ -16,28 +17,36 @@ class SongListDetailController extends GetxController {
 
   // final songsBox = Hive.box(Keys.hiveSongs);
 
-  int? songListId; // 歌单本地id
-  String? slid; // 云端歌单id
+  int? apslid; // 歌单本地id
+  // String? slid; // 云端歌单id
 
-  getSongListUUID() {
-    // TODO 在本地歌曲页面添加到歌单 需要调用SongListDetailController，但是没有页面传递歌单id 空指针
-
-    songListId = int.parse(Get.parameters['songListId']!);
-    slid = Get.parameters['slid'] ?? '';
+  getSongsListId() {
+    // 在本地歌曲页面添加到歌单 需要调用SongListDetailController，但是没有页面传递歌单id 空指针
+    try {
+      apslid = int.parse(Get.parameters['apslid']!);
+    } catch (e) {
+      LogE('SongListDetailController', e.toString());
+      apslid = -1;
+    }
   }
 
   /// 加载歌单歌曲
   loadSongs() {
+
+    if (apslid == null || apslid! <= 0) {
+      return;
+    }
     List<SLSongsEntity> tempSongs = IsarHelper
         .instance.isarInstance.sLSongsEntitys
         .filter()
-        .apslidEqualTo(songListId)
+        .apslidEqualTo(apslid)
         .findAllSync();
 
-    if (tempSongs.isEmpty) {
-      // 从服务端拉取数据
-      if (slid != null && slid!.isNotEmpty) {}
-    }
+    // if (tempSongs.isEmpty) {
+    //   // 从服务端拉取数据
+    //   if (slid != null && slid!.isNotEmpty) {}
+    // }
+
     List<int> apslidlist = tempSongs.map((e) => e.sid!).toSet().toList();
 
     List<SongEntity?> a =
@@ -53,29 +62,32 @@ class SongListDetailController extends GetxController {
 
   @override
   void onReady() {
-    getSongListUUID();
-    loadSongs();
     super.onReady();
+    getSongsListId();
+    loadSongs();
   }
 
   /// 将歌曲加到歌单
-  addSongToSongList(int id, List<SongEntity> songs) {
-    songListId ??= id;
+  addSongToSongList(int? id, List<SongEntity> songs) {
+    apslid ??= id;
+    if (apslid == null || apslid! <= 0) {
+      Fluttertoast.showToast(msg: '缺少歌单id，操作失败');
+      return;
+    }
 
     // List<dynamic> temp = Hive.box(Keys.hiveSongs).get(songListUUID, defaultValue: []);
     // List<SongEntity> tempList = songEntityFromJson(jsonEncode(temp));
     // tempList.addAll(songs);
     // Hive.box(Keys.hiveSongs).put(songListUUID, tempList);
-    List<SLSongsEntity> s = songs
-        .map((e) => SLSongsEntity(sid: e.sid, apslid: songListId))
-        .toList();
+    List<SLSongsEntity> s =
+        songs.map((e) => SLSongsEntity(sid: e.sid, apslid: apslid)).toList();
 
     SongsListEntity songsListEntity =
-        IsarHelper.instance.isarInstance.songsListEntitys.getSync(songListId!)!;
+        IsarHelper.instance.isarInstance.songsListEntitys.getSync(apslid!)!;
     List<SLSongsEntity> slsList = IsarHelper
         .instance.isarInstance.sLSongsEntitys
         .filter()
-        .apslidEqualTo(songListId)
+        .apslidEqualTo(apslid)
         .findAllSync();
     songsListEntity.count = slsList.length + songs.length;
 
@@ -94,7 +106,7 @@ class SongListDetailController extends GetxController {
     // Hive.box(Keys.hiveSongs).put(songListUUIDContro, songs);
 
     SongsListEntity songsListEntity =
-        IsarHelper.instance.isarInstance.songsListEntitys.getSync(songListId!)!;
+        IsarHelper.instance.isarInstance.songsListEntitys.getSync(apslid!)!;
     if (songsListEntity.count == null) {
       songsListEntity.count = 0;
     }
@@ -104,7 +116,8 @@ class SongListDetailController extends GetxController {
     songsListEntity.count = songsListEntity.count! - 1;
     IsarHelper.instance.isarInstance.writeTxnSync(() {
       IsarHelper.instance.isarInstance.sLSongsEntitys.deleteSync(sid);
-      IsarHelper.instance.isarInstance.songsListEntitys.putSync(songsListEntity);
+      IsarHelper.instance.isarInstance.songsListEntitys
+          .putSync(songsListEntity);
     });
 
     // 拿到songListBox

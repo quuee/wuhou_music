@@ -106,4 +106,8 @@ class LocalMusicController extends GetxController {
       cursor?.close();
     }
   }
+
+  // searchSongs(String searchWord){
+  //
+  // }
 }

@@ -124,9 +124,9 @@ class SongListDetailPage extends GetView<SongListDetailController> {
         // 封面 可被隐藏
         SliverToBoxAdapter(
           child: SongListCover(
-            songListUUID: controller.songListId!,
-            songListTitle: songTitle,
-            songListCoverImagePath: coverImage,
+            songsListId: controller.apslid!,
+            songsListTitle: songTitle,
+            songsListCoverImagePath: coverImage,
           ),
         ),
 

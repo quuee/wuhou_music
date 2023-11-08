@@ -62,7 +62,7 @@ class SongItem extends StatelessWidget {
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),
               onTap: () {
-                final SongListDetailController songListDetailController = Get.find<SongListDetailController>();
+                SongListDetailController songListDetailController = Get.find<SongListDetailController>();
                 songListDetailController.addSongToSongList(e.apslid!, [songEntity]);
                 Get.back();
               },
