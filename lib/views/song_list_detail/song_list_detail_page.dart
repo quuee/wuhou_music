@@ -138,13 +138,13 @@ class SongListDetailPage extends GetView<SongListDetailController> {
         ),
 
         // SliverFillRemaining(
+        //   //利用剩余空间填满
         //   child: _buildSongs(c.songs),
         // )
         SliverList(
             delegate: SliverChildBuilderDelegate(
                 childCount: controller.songs.length, (context, index) {
           return _buildSongs(controller.songs, index);
-          // listView + inkWell 有按下去样式，这个没有了
         }))
       ],
     );

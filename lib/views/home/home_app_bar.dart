@@ -53,6 +53,7 @@ buildAppBar({required HomeController controller}) {
             .map((e) => Tab(
                   text: e,
                 ))
-            .toList()),
+            .toList()
+    ),
   );
 }

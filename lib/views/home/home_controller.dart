@@ -8,7 +8,7 @@ import 'package:wuhoumusic/views/home/tabs/singer_tab.dart';
 class HomeController extends GetxController
     with GetSingleTickerProviderStateMixin {
   final List tabs = ["热门", "排行", "歌手"];
-  final List<Widget> tabsPage = [HotTab(),RankTab(),SingerTab()];
+  List<Widget> tabsPage = [HotTab(),RankTab(),SingerTab()];
   TabController? tabController;
 
   @override
@@ -17,7 +17,6 @@ class HomeController extends GetxController
 
     tabController = TabController(length: tabs.length, vsync: this)
       ..addListener(() {
-
         LogD('HomeController', '_tabController.index:${tabController?.index}');
       });
   }

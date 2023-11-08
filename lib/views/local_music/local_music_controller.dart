@@ -1,19 +1,37 @@
-
 import 'package:android_content_provider/android_content_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
+import 'package:wuhoumusic/views/local_music/tabs/directory_tab.dart';
+import 'package:wuhoumusic/views/local_music/tabs/singer_tab.dart';
+import 'package:wuhoumusic/views/local_music/tabs/single_song_tab.dart';
 
-class LocalMusicController extends GetxController {
+class LocalMusicController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   List<SongEntity> songs = [];
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   get loadingStatus => _loadingStatus;
 
+  final List tabs = ['单曲', '歌手', '文件夹'];
+
+  List<Widget> tabsPage = [
+    SingleSongTab(),
+    SingerTab(),
+    DirectoryTab(),
+  ];
+  TabController? tabController;
+
   @override
   void onInit() {
     super.onInit();
+    tabController = TabController(length: tabs.length, vsync: this)
+      ..addListener(() {
+        LogD('LocalMusicController',
+            '_tabController.index:${tabController?.index}');
+      });
   }
 
   @override
@@ -45,14 +63,16 @@ class LocalMusicController extends GetxController {
       songs = songsData
           .map((data) => SongEntity.fromMediaStore(data))
           .where((element) {
-        LogD('LocalMusicController _fetchSongs', 'id:${element.id},'
-            'album:${element.album},'
-            'albumId:${element.albumId},'
-            'artist:${element.artist},'
-            'title${element.title},'
-            'duration:${element.duration},'
-            'data:${element.data},'
-            'bucketDisplayName:${element.bucketDisplayName},');
+        LogD(
+            'LocalMusicController _fetchSongs',
+            'id:${element.id},'
+                'album:${element.album},'
+                'albumId:${element.albumId},'
+                'artist:${element.artist},'
+                'title${element.title},'
+                'duration:${element.duration},'
+                'data:${element.data},'
+                'bucketDisplayName:${element.bucketDisplayName},');
 
         return element.duration / 1000 > 60; // 大于60秒的音频
       }).toList();
@@ -70,7 +90,6 @@ class LocalMusicController extends GetxController {
       // 可以多个catch
       _loadingStatus = LoadingStatus.failed;
       LogE('LocalMusicController _fetchSongs Exception', e.toString());
-
     } finally {
       cursor?.close();
       update();

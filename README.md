@@ -23,7 +23,7 @@
 - [ ] 本地 云端 歌单同步标识  
 - [x] 账户密码登录
 - [x] token过期重新登录
-- 
+
 ## 服务端
 - [ ] 歌单同步到服务端  
 - [ ] 歌曲文件存储  
@@ -72,9 +72,9 @@ controller onStart (内部调用，不可覆盖)之后调用oninit
 controller onInit 和界面无关，初始化成员属性  
 StatefulWidget initState  
 StatefulWidget build  
-controller onReady 界面加载完成了，可以操作界面相关 处理异步事件 网络请求
-controller onClose （页面退出前）关闭流对象、动画、释放内存、数据持久化 （如果页面销毁了controller还在就不会走oninit onready，但是widget还是会走build）
-controller deleted (内部调用，不可覆盖)
+controller onReady 界面加载完成了，可以操作界面相关 处理异步事件 网络请求  
+controller onClose （页面退出前）关闭流对象、动画、释放内存、数据持久化 （如果页面销毁了controller还在就不会走oninit onready，但是widget还是会走build）  
+controller deleted (内部调用，不可覆盖)  
 
 ## 下拉上拉库 
 pull_to_refresh_flutter3 子组件有图片刷新就会ui变形，而且不维护了  
