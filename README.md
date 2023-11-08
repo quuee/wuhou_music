@@ -11,7 +11,7 @@
 - [x] 歌单列表 没有点击样式了
 - [x] 多选歌曲 添加到歌单
 - [x] 歌词(读取已存在本地歌词)
-- [ ] 本地音乐 增加 单曲 歌手 封面 文件夹 吸顶bar  
+- [ ] 本地音乐 增加tab 单曲 歌手 文件夹  
 - [ ] 主题切换
 - [x] 添加歌曲页面 已存在歌单的歌曲灰色显示，不能勾选
 - [x] 添加歌曲页面 搜素当前本地歌曲
@@ -113,6 +113,57 @@ MediaStore.Audio.Media.ARTIST：歌手
 MediaStore.Audio.Media.DURATION：总时长  
 MediaStore.Audio.Media.DATA：地址  
 MediaStore.Audio.Media.SIZE：大小
+
+音频文件所有字段：
+_id//主键id
+_data//路径
+_size//大小
+format
+parent
+date_added//添加日期
+date_modified//修改日期
+mime_type//文件类型
+title
+description
+_display_name
+picasa_id
+orientation
+latitude
+longitude
+datetaken
+mini_thumb_magic
+bucket_id
+bucket_display_name
+isprivate
+title_key
+artist_id
+album_id
+composer
+track
+year
+is_ringtone
+is_music
+is_alarm
+is_notification
+is_podcast
+album_artist
+duration
+bookmark
+artist
+album
+resolution
+tags
+category
+language
+mini_thumb_data
+name
+media_type
+old_id
+is_drm
+width
+height
+title_resource_uri
+
 
 视频文件比较常见的列名有:  
 MediaStore.Video.Media.TITLE 名称  

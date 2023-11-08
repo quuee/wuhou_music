@@ -5,23 +5,21 @@ import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
-import 'package:wuhoumusic/views/local_music/tabs/directory_tab.dart';
-import 'package:wuhoumusic/views/local_music/tabs/singer_tab.dart';
-import 'package:wuhoumusic/views/local_music/tabs/single_song_tab.dart';
 
 class LocalMusicController extends GetxController
     with GetSingleTickerProviderStateMixin {
   List<SongEntity> songs = [];
   LoadingStatus _loadingStatus = LoadingStatus.loading;
+
   get loadingStatus => _loadingStatus;
 
   final List tabs = ['单曲', '歌手', '文件夹'];
 
-  List<Widget> tabsPage = [
-    SingleSongTab(),
-    SingerTab(),
-    DirectoryTab(),
-  ];
+  // List<Widget> tabsPage = [
+  //   SingleSongTab(),
+  //   SingerTab(),
+  //   DirectoryTab(),
+  // ];
   TabController? tabController;
 
   @override
@@ -51,8 +49,10 @@ class LocalMusicController extends GetxController
       uri: 'content://media/external/audio/media',
       // uri: 'content://media/internal/audio/media',
       projection: SongEntity.mediaStoreProjection,
-      selection: '(mime_type = ? or mime_type = ?) and duration > ?',
-      selectionArgs: <String>['audio/mpeg', 'audio/ogg', '60000'],
+      // selection: '(mime_type = ? or mime_type = ?) and duration > ?',
+      // selectionArgs: <String>['audio/mpeg', 'audio/ogg', '60000'],
+      selection: 'is_music != 0',
+      selectionArgs: null,
       sortOrder: null,
     );
     try {
@@ -126,7 +126,7 @@ class LocalMusicController extends GetxController
     }
   }
 
-  // searchSongs(String searchWord){
-  //
-  // }
+// searchSongs(String searchWord){
+//
+// }
 }

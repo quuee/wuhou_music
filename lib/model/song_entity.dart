@@ -96,7 +96,7 @@ class SongEntity {
 
   /// Creates a song from data retrieved from the MediaStore.
   factory SongEntity.fromMediaStore(List<Object?> data) => SongEntity(
-    sid: data[0] as int,
+    sid: int.parse(data[0].toString()) ,
     id: data[0] as String,
     album: data[1] as String?,
     albumId: data[2] as int,
