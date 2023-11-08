@@ -1,4 +1,5 @@
 
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -50,10 +51,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = GetMaterialApp(
       title: 'Wuhou music',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: FlexThemeData.light(scheme: FlexScheme.aquaBlue),
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.aquaBlue),
+      themeMode: ThemeMode.system,
       initialRoute: Routes.splash,
       getPages: Routes.routes,
     );

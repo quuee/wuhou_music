@@ -73,7 +73,7 @@ class _State extends State<SingerTab> {
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
-            color: _currentIndex == index ? Colors.deepPurple : Colors.white,
+            color: _currentIndex == index ? Colors.cyan : Colors.white,
             borderRadius: BorderRadius.circular(22)),
         child: Text(
           word,
