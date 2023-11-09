@@ -18,8 +18,8 @@ class SongItem extends StatelessWidget {
   // final String? singer;
   // final String? album;
 
-
-  final SongsListController songsListController = Get.find<SongsListController>();
+  final SongsListController songsListController =
+      Get.find<SongsListController>();
 
   /// 本地音乐底部弹窗
   _bottomSheet() {
@@ -62,8 +62,10 @@ class SongItem extends StatelessWidget {
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),
               onTap: () {
-                SongListDetailController songListDetailController = Get.find<SongListDetailController>();
-                songListDetailController.addSongToSongList(e.apslid!, [songEntity]);
+                SongListDetailController songListDetailController =
+                    Get.find<SongListDetailController>();
+                songListDetailController
+                    .addSongToSongList(e.apslid!, [songEntity]);
                 Get.back();
               },
             ))
@@ -95,12 +97,15 @@ class SongItem extends StatelessWidget {
       children: [
         Text(
           songEntity.title,
-          style: TextStyle(
-              fontSize: songTitleSize,
-              color: fileExist ? Colors.black : Colors.grey[400]),
-          overflow: TextOverflow.visible,
+          style: fileExist
+              ? TextStyle(
+                  fontSize: songTitleSize,
+                )
+              : TextStyle(fontSize: songTitleSize, color: Colors.grey),
+          overflow: TextOverflow.ellipsis,
           maxLines: 1,
-        ), //歌名
+        ),
+        //歌名
         // 歌名组件下面一行
         Row(
           children: [
@@ -129,9 +134,11 @@ class SongItem extends StatelessWidget {
             Expanded(
               child: Text(
                 (songEntity.artist) + ' - ' + (songEntity.album ?? ''),
-                style: TextStyle(
-                    fontSize: secondSize,
-                    color: fileExist ? Colors.black : Colors.grey[400]),
+                style: fileExist
+                    ? TextStyle(
+                        fontSize: secondSize,
+                      )
+                    : TextStyle(fontSize: secondSize, color: Colors.grey),
                 overflow:
                     TextOverflow.ellipsis, // row 里面多个text 需要放在Expanded 才有效
                 maxLines: 1,
@@ -151,8 +158,7 @@ class SongItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Text(
                 index.toString(),
-                style:
-                    TextStyle(fontSize: songTitleSize, color: Colors.black45),
+                style: TextStyle(fontSize: songTitleSize),
               ),
             )),
         // Expanded(

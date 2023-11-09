@@ -57,8 +57,6 @@ class SongListDetailPage extends GetView<SongListDetailController> {
 
   _buildFeatureBar() {
     return Container(
-      color: Colors.grey[200],
-      // height: 60,
       child: Row(
         children: [
           GestureDetector(
@@ -107,12 +105,11 @@ class SongListDetailPage extends GetView<SongListDetailController> {
         SliverAppBar(
           pinned: true,
           elevation: 0,
-          // expandedHeight: 100,
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               songTitle,
               maxLines: 1,
-              overflow: TextOverflow.visible,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Colors.black),
             ),
           ),
