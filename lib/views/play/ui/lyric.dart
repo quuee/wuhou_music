@@ -41,11 +41,6 @@ class _LyricState extends State<Lyric> {
     ];
   }
 
-  // initState(){
-  //
-  //   super.initState();
-  // }
-
   fetchLyric(String path) {
 
     if (path.compareTo('') == 0) {

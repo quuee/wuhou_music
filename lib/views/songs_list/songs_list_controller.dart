@@ -169,17 +169,6 @@ class SongsListController extends GetxController {
     );
   }
 
-  // computedCount(String songListUUID,List<SongEntity> songs){
-  //   // var temp = Hive.box(Keys.hiveSongsList).get(Keys.localSongsList,defaultValue: <SongsListEntity>[]);
-  //   // List<SongsListEntity> tempList2 = songListEntityFromJson(jsonEncode(temp));
-  //   // 拿到songListBox
-  //   // int index = songsList.indexWhere((element) => element.id.compareTo(songListUUID) == 0);
-  //   // SongsListEntity gedan = songsList[index];
-  //   // gedan.count = songs.length;
-  //   // developer.log('更新歌单$songListUUID',name: 'songs_list_controller computedCount');
-  //   // Hive.box(Keys.hiveSongsList).put(Keys.localSongsList, songsList);
-  // }
-
   /// 将歌单同步到云
   _syncSongsList(SongsListEntity songListEntity) {
     List<SLSongsEntity> sls = IsarHelper.instance.isarInstance.sLSongsEntitys

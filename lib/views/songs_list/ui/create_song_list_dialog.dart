@@ -12,22 +12,24 @@ class CreateSongListDialog extends StatefulWidget {
 }
 
 class _CreateSongListDialogState extends State<CreateSongListDialog> {
-  final ImagePicker _picker = ImagePicker();
-  SongsListController songsListController = Get.find<SongsListController>();
-  _chooseImage() async {
 
+  final ImagePicker _picker = ImagePicker();
+
+  SongsListController songsListController = Get.find<SongsListController>();
+
+  _chooseImage() async {
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      if(songsListController.songListImagePath == null || songsListController.songListImagePath?.trim().compareTo('') == 0){
-        songsListController.songListImagePath = (image != null ? image.path : null);
+      if (songsListController.songListImagePath == null ||
+          songsListController.songListImagePath?.trim().compareTo('') == 0) {
+        songsListController.songListImagePath =
+            (image != null ? image.path : null);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     final imageChild;
     if (songsListController.songListImagePath == null ||
         songsListController.songListImagePath?.trim().compareTo('') == 0) {

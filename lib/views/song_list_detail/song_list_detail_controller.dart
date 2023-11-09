@@ -15,7 +15,6 @@ class SongListDetailController extends GetxController {
 
   List<SongEntity> songs = [];
 
-  // final songsBox = Hive.box(Keys.hiveSongs);
 
   int? apslid; // 歌单本地id
   // String? slid; // 云端歌单id
@@ -74,11 +73,6 @@ class SongListDetailController extends GetxController {
       Fluttertoast.showToast(msg: '缺少歌单id，操作失败');
       return;
     }
-
-    // List<dynamic> temp = Hive.box(Keys.hiveSongs).get(songListUUID, defaultValue: []);
-    // List<SongEntity> tempList = songEntityFromJson(jsonEncode(temp));
-    // tempList.addAll(songs);
-    // Hive.box(Keys.hiveSongs).put(songListUUID, tempList);
     List<SLSongsEntity> s =
         songs.map((e) => SLSongsEntity(sid: e.sid!, apslid: apslid!)).toList();
 
@@ -120,8 +114,5 @@ class SongListDetailController extends GetxController {
           .putSync(songsListEntity);
     });
 
-    // 拿到songListBox
-    // SongsListController mineController = Get.find<SongsListController>();
-    // mineController.computedCount(songListUUIDContro, songs);
   }
 }

@@ -157,7 +157,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
     String coverImage = Get.parameters['coverImage'] ?? '';
 
     return Scaffold(
-      // bottomNavigationBar: PlayBar(),
+
       body: GetBuilder<SongListDetailController>(
           // id: 'songListDetail',
           builder: (c) {

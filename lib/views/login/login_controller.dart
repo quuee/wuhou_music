@@ -19,7 +19,6 @@ class LoginController extends GetxController {
       return;
     }
     if (resp.code != null && resp.code == 0) {
-      // Hive.box(Keys.hiveUserInfo).put(Keys.token, resp.data);
 
       IsarHelper.instance.isarInstance.writeTxn(() async {
         AnyEntity any = new AnyEntity(keyName: Keys.token, anything: resp.data);
