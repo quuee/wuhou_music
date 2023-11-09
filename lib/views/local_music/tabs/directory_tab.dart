@@ -35,6 +35,8 @@ class _DirectoryTabState extends State<DirectoryTab> {
 
   Widget _buildDirectory(BuildContext context) {
     return GetBuilder<LocalMusicController>(builder: (c) {
+
+      // 这里计算有点慢 应该放controller里，页面搞个加载中
       Map<String, List<SongEntity>> map = Map.fromIterable(c.songs,
           key: (e) => e.data!
               .substring(0, e.data!.lastIndexOf('/'))

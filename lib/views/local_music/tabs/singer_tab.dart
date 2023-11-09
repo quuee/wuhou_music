@@ -58,51 +58,47 @@ class _SingerTabState extends State<SingerTab> {
             // 第一层 分组信息
             itemCount: map.length,
             itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(map.keys.elementAt(index)),
-                    onTap: () {
-                      // 跳转到歌手下的歌曲
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return Scaffold(
-                          floatingActionButton: FloatingActionButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(Icons.arrow_back),
-                          ),
-                          body: ListView(
-                            children: [
-                              ListView.builder(
-                                  shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount:
-                                  map.entries.elementAt(index).value.length,
-                                  itemBuilder: (context, index2) {
-                                    return InkWell(
-                                      onTap: () {
-                                        PlayInvoke.init(
-                                            songList:
-                                            map.entries.elementAt(index).value,
-                                            index: index2);
-                                      },
-                                      child: SongItem(
-                                        index: index2,
-                                        songEntity: map.entries
-                                            .elementAt(index)
-                                            .value[index2],
-                                      ),
-                                    );
-                                  }),
-                            ],
-                          )
-                        );
-                      }));
-                    },
-                  ),
-                ],
+              return ListTile(
+                title: Text(map.keys.elementAt(index)),
+                onTap: () {
+                  // 跳转到歌手下的歌曲
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return Scaffold(
+                        floatingActionButton: FloatingActionButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(Icons.arrow_back),
+                        ),
+                        body: ListView(
+                          children: [
+                            ListView.builder(
+                                shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount:
+                                map.entries.elementAt(index).value.length,
+                                itemBuilder: (context, index2) {
+                                  return InkWell(
+                                    onTap: () {
+                                      PlayInvoke.init(
+                                          songList:
+                                          map.entries.elementAt(index).value,
+                                          index: index2);
+                                    },
+                                    child: SongItem(
+                                      index: index2,
+                                      songEntity: map.entries
+                                          .elementAt(index)
+                                          .value[index2],
+                                    ),
+                                  );
+                                }),
+                          ],
+                        )
+                    );
+                  }));
+                },
               );
             });
       }
