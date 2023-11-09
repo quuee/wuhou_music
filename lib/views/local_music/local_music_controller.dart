@@ -6,6 +6,10 @@ import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
+import 'tabs/directory_tab.dart';
+import 'tabs/singer_tab.dart';
+import 'tabs/single_song_tab.dart';
+
 class LocalMusicController extends GetxController
     with GetSingleTickerProviderStateMixin {
   List<SongEntity> songs = [];
@@ -15,11 +19,11 @@ class LocalMusicController extends GetxController
 
   final List tabs = ['单曲', '歌手', '文件夹'];
 
-  // List<Widget> tabsPage = [
-  //   SingleSongTab(),
-  //   SingerTab(),
-  //   DirectoryTab(),
-  // ];
+  List<Widget> tabsPage = [
+    SingleSongTab(),
+    SingerTab(),
+    DirectoryTab(),
+  ];
   TabController? tabController;
 
   @override

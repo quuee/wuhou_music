@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
+import 'package:wuhoumusic/theme/app_theme.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
@@ -51,8 +52,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = GetMaterialApp(
       title: 'Wuhou music',
-      theme: FlexThemeData.light(scheme: FlexScheme.aquaBlue),
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.aquaBlue),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       initialRoute: Routes.splash,
       getPages: Routes.routes,

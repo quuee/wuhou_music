@@ -117,7 +117,7 @@ class _State extends State<SingerTab> {
                       ),
                       ListView.builder(
                           //第二层 名字
-                          shrinkWrap: true,
+                          shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: singers[index].entries.first.value.length,
                           itemBuilder: (context, index2) {
