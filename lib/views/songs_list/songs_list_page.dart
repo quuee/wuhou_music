@@ -121,7 +121,7 @@ class _MinePageState extends State<SongsListPage> {
                         flex: 1,
                         child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white70,
+                              // color: Colors.white70,
                               border:
                                   Border.all(width: 0.5, color: Colors.white70),
                               borderRadius: BorderRadius.circular(20),

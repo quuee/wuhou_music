@@ -7,6 +7,7 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/theme/app_theme.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/config.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 
 Future<void> main() async {
@@ -35,7 +36,7 @@ Future<void> main() async {
   // Hive.box(Keys.hiveGlobalParam).put(Keys.sdkInt, sdkInt);
 
   IsarHelper.instance.init();
-
+  Config.instance.init();
   // 初始化 audio_service
   await initServices();
 

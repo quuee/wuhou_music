@@ -32,7 +32,7 @@ class PlayBar extends StatelessWidget {
             gradient: const LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [Colors.blueGrey, Colors.cyan])),
+                colors: [Color(0xff9ee29f), Colors.lightGreen])),
         child: GestureDetector(
           behavior: HitTestBehavior
               .opaque, // opaque：空白部分点击也有效果，但是会阻止后面目标接收事件；Translucent：空白部分点击也有效果，也允许其后面的目标接收事件。

@@ -85,7 +85,8 @@ class SongList extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(top: 5),
         decoration: BoxDecoration(
-            color: Colors.white60, borderRadius: BorderRadius.circular(10)),
+            // color: Colors.white60,
+            borderRadius: BorderRadius.circular(10)),
         // padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         child: Row(
           children: [

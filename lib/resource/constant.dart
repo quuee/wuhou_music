@@ -27,5 +27,6 @@ class Keys {
 
   // static final String hiveUserInfo = 'userInfo';
   static final String token = 'token';
+  static final String isDarkMode = 'isDarkMode';
 
 }

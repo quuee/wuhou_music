@@ -41,11 +41,12 @@ class _SongListAddPageState extends State<SongListAddPage> {
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          // color: Colors.grey[200],
           border: Border.all(),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.search),
             Expanded(
@@ -55,10 +56,16 @@ class _SongListAddPageState extends State<SongListAddPage> {
                 textInputAction: TextInputAction.search,
                 decoration: //装饰
                     InputDecoration(
-                  isDense: true,
-                  border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      isDense: true,//特殊属性isDense,作用是在较小空间时，使组件正常渲染（包括文本垂直居中）
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      fillColor: Colors.transparent,
                   hintText: '搜索当前歌曲',
-                  hintStyle: TextStyle(fontSize: 14, color: Colors.black),
+                  hintStyle: TextStyle(fontSize: 14,),
                 ),
                 style: TextStyle(
                   fontSize: 14,

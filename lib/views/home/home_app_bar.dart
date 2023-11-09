@@ -3,7 +3,6 @@ import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/views/home/home_controller.dart';
 
 buildAppBar({required HomeController controller}) {
-
   return AppBar(
     leading: Container(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
@@ -17,11 +16,12 @@ buildAppBar({required HomeController controller}) {
     title: Container(
         height: 36,
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          // color: Colors.grey[200],
           border: Border.all(),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: const Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.search),
             Expanded(
@@ -29,14 +29,20 @@ buildAppBar({required HomeController controller}) {
               child: TextField(
                 decoration: //装饰
                     InputDecoration(
-                  isDense: true,
+                      isDense: true,//特殊属性isDense,作用是在较小空间时，使组件正常渲染（包括文本垂直居中）
                   border: InputBorder.none,
-                  hintText: '搜索歌曲',
-                  hintStyle: TextStyle(fontSize: 14, color: Colors.black),
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  fillColor: Colors.transparent,
+                  hintText: '请开始搜索',
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black,
                 ),
               ),
             )
@@ -53,7 +59,6 @@ buildAppBar({required HomeController controller}) {
             .map((e) => Tab(
                   text: e,
                 ))
-            .toList()
-    ),
+            .toList()),
   );
 }

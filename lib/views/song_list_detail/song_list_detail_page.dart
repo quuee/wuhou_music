@@ -71,7 +71,7 @@ class SongListDetailPage extends GetView<SongListDetailController> {
                 Icon(
                   Icons.play_circle,
                   size: 35,
-                  color: Colors.cyan,
+                  color: Colors.lightGreen,
                 ),
                 Text(
                   '播放全部',
