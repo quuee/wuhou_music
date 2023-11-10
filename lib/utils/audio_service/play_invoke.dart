@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/mediaitem_converter.dart';
 
 class PlayInvoke {
-  static final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
+  static final AudioPlayerHandler _audioHandler = GetIt.I<AudioPlayerHandler>();
 
   static Future<void> init({
     required List<SongEntity> songList,
@@ -13,9 +15,25 @@ class PlayInvoke {
     bool shuffle = false,
     String? playListBox,
   }) async {
+
     // 跳过本地不存在的文件
     final List<SongEntity> finalList = songList.where((element) {
-      return File(element.data!).existsSync();
+      bool fileFlag = false;
+      if(element.data == null){
+        fileFlag = false;
+      }else{
+        if(File(element.data!).existsSync()){
+          fileFlag = true;
+        }
+      }
+
+      bool urlFlag = false;
+      if(element.url.toString().startsWith('http')){
+        urlFlag = true;
+      }
+
+      return fileFlag || urlFlag;
+
     }).toList();
 
     // 因为存在 本地不存在的文件 索引不正常
@@ -37,15 +55,15 @@ class PlayInvoke {
 
     final List<MediaItem> queue = [];
 
-    queue.addAll(finalList.map((e) => e.toMediaItem()));
+    queue.addAll(finalList.map((e) => MediaItemConverter.songEntityToMediaItem(e)));
 
-    updateNplay(queue, globalIndex);
+    _updateNplay(queue, globalIndex);
   }
 
-  static Future<void> updateNplay(List<MediaItem> queue, int index) async {
-    await audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
-    await audioHandler.updateQueue(queue);
-    await audioHandler.skipToQueueItem(index);
-    await audioHandler.play();
+  static Future<void> _updateNplay(List<MediaItem> queue, int index) async {
+    await _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+    await _audioHandler.updateQueue(queue);
+    await _audioHandler.skipToQueueItem(index);
+    await _audioHandler.play();
   }
 }

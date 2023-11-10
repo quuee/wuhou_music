@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/home/tabs/hot_tab_header.dart';
 
 class HotTab extends StatefulWidget {
@@ -69,15 +72,23 @@ buildSongsListItem() {
 }
 
 buildSectionSongs() {
+  List<SongEntity> songList = List.generate(10, (index) => SongEntity(id: index.toString(), artist: '新乐尘符', title: '123我爱你',url: 'http://192.168.2.124:9000/songs/123%E6%88%91%E7%88%B1%E4%BD%A0%20-%20%E6%96%B0%E4%B9%90%E5%B0%98%E7%AC%A6.mp3'));
   return Column(
     children: List<Widget>.generate(
-        10, (index) => buildSongItem(index, '你的月亮我的心', '曾小贤咸鱼水歌录')),
+        songList.length, (index) => buildSongItem(index, songList[index], ()=>_play(songList,index))),
   );
 }
 
-buildSongItem(int index, String songTitle, String songsListTitle) {
+_play(List<SongEntity> songList,int index){
+  LogD('_play','$index');
+  PlayInvoke.init(songList: songList, index: index);
+}
+
+buildSongItem(int index, SongEntity songEntity,VoidCallback play) {
   return InkWell(
-    onTap: () {},
+    onTap: () {
+      play();
+    },
     child: SizedBox(
       height: 64,
       child: Row(
@@ -96,12 +107,12 @@ buildSongItem(int index, String songTitle, String songsListTitle) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    songTitle,
+                    songEntity.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    songsListTitle,
+                    songEntity.artist,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

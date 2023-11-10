@@ -30,6 +30,8 @@ class CacheSongEntity {
   String? data; // 真实路径
   @Name("bucketDisplayName")
   String? bucketDisplayName; // 来自哪个包
+  @Name('url')
+  String? url; // 在线播放地址
 
   CacheSongEntity({
     required this.id,
@@ -42,6 +44,7 @@ class CacheSongEntity {
     this.albumArt,
     this.data,
     this.bucketDisplayName,
+    this.url
   });
 
   factory CacheSongEntity.fromJson(Map<String, dynamic> json) => CacheSongEntity(
@@ -55,6 +58,7 @@ class CacheSongEntity {
     albumArt: json["albumArt"],
     data: json["data"],
     bucketDisplayName: json["bucketDisplayName"],
+    url: json["url"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -68,5 +72,6 @@ class CacheSongEntity {
     "albumArt": albumArt,
     "data": data,
     "bucketDisplayName": bucketDisplayName,
+    "url": url,
   };
 }

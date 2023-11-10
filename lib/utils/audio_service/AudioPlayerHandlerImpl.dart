@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -9,7 +8,7 @@ import 'package:wuhoumusic/model/cache_songs_entity.dart';
 import 'package:wuhoumusic/model/song_entity.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
-
+import 'package:wuhoumusic/utils/mediaitem_converter.dart';
 
 class QueueState {
   static const QueueState empty =
@@ -205,7 +204,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     // Load the playlist.
     if (queue.value.isEmpty) {
       // 从hive恢复最近一次的队列
-      List<CacheSongEntity> cacheList =IsarHelper.instance.isarInstance.cacheSongEntitys.where(distinct: true,sort: Sort.asc).findAllSync();
+      List<CacheSongEntity> cacheList = IsarHelper
+          .instance.isarInstance.cacheSongEntitys
+          .where(distinct: true, sort: Sort.asc)
+          .findAllSync();
       // final List lastSongEntityList = await Hive.box(Keys.hiveCache)
       //     .get(Keys.lastQueue, defaultValue: [])?.toList() as List;
       // final int lastIndex = await Hive.box(Keys.hiveCache)
@@ -214,15 +216,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       //     .get(Keys.lastPos, defaultValue: 0) as int;
 
       if (cacheList.isNotEmpty) {
-        List<SongEntity> temp =
-            songEntityFromJson(jsonEncode(cacheList));
-        final List<MediaItem> lastQueue =
-            temp.map((e) => e.toMediaItem()).toList();
+        List<SongEntity> temp = songEntityFromJson(jsonEncode(cacheList));
+        final List<MediaItem> lastQueue = temp
+            .map((e) => MediaItemConverter.songEntityToMediaItem(e))
+            .toList();
         if (lastQueue.isNotEmpty) {
           _playlist.addAll(_itemsToSources(lastQueue));
           await _player.setAudioSource(_playlist);
           await _player.seek(Duration(seconds: 0), index: 0);
-
         }
       } else {
         await _player
@@ -238,7 +239,14 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    final audioSource = AudioSource.uri(Uri.parse(mediaItem.id));
+    AudioSource? audioSource;
+    if (mediaItem.artUri.toString().startsWith('content:')) {
+      audioSource = AudioSource.uri(mediaItem.artUri!);
+    } else if (mediaItem.artUri.toString().startsWith('file:')) {
+      audioSource = AudioSource.uri(mediaItem.artUri!);
+    }else{
+      audioSource = AudioSource.uri(Uri.parse(mediaItem.extras!['url']));
+    }
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
   }
@@ -278,28 +286,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> addLastQueue(List<MediaItem> queue) async {
     if (queue.isNotEmpty) {
       // 将queue的mediaItem 转成 map 或 songEntity，存入hive
-      // final lastSongEntityList = queue
-      //     .map((item) => SongEntity(
-      //         id: item.extras![
-      //             'id'], //因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
-      //         album: item.album,
-      //         artist: item.artist ?? '',
-      //         title: item.title,
-      //         duration: item.duration!.inMilliseconds))
-      //     .toList();
-
-      // Hive.box(Keys.hiveCache).put(Keys.lastQueue, lastSongEntityList);
       final lastSongEntityList = queue
           .map((item) => CacheSongEntity(
-              id: item.extras![
-                  'id'], //因为id会在_itemToSource方法中拼成uri给MediaItem，MediaItem再转songEntity需要转回来
+              id: item.id,
               album: item.album,
               artist: item.artist ?? '',
               title: item.title,
+              url: item.extras!['url'] ?? '',
               duration: item.duration!.inMilliseconds))
           .toList();
-      IsarHelper.instance.isarInstance.writeTxn(() async{
-        await IsarHelper.instance.isarInstance.cacheSongEntitys.putAll(lastSongEntityList);
+      IsarHelper.instance.isarInstance.writeTxn(() async {
+        await IsarHelper.instance.isarInstance.cacheSongEntitys
+            .putAll(lastSongEntityList);
       });
     }
   }
@@ -323,7 +321,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> updateQueue(List<MediaItem> queue) async {
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
-
+    // 清理cacheSongs
+    IsarHelper.instance.isarInstance.writeTxn(() async {
+      await IsarHelper.instance.isarInstance.cacheSongEntitys
+          .clear();
+    });
   }
 
   @override

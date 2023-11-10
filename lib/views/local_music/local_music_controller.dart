@@ -78,7 +78,7 @@ class LocalMusicController extends GetxController
         //         'data:${element.data},'
         //         'bucketDisplayName:${element.bucketDisplayName},');
 
-        return element.duration / 1000 > 60; // 大于60秒的音频
+        return element.duration! / 1000 > 60; // 大于60秒的音频
       }).toList();
 
       // TODO 将本地歌曲存入isra？ 不同的media id 会不会变化

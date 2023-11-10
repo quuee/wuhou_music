@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:android_content_provider/android_content_provider.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:isar/isar.dart';
 
 part 'song_entity.g.dart';
@@ -30,7 +29,7 @@ class SongEntity {
   @Name("title")
   late String title; // 歌名
   @Name("duration")
-  late int duration; // 时长
+  int? duration; // 时长
   @Name("quality")
   String? quality; // 音频质量
   @Name("albumArt")
@@ -38,17 +37,14 @@ class SongEntity {
   @Name("data")
   String? data; // 真实路径
   @Name("bucketDisplayName")
-  String? bucketDisplayName; // 来自哪个包
+  String? bucketDisplayName; // 来自哪个本地文件夹
+  @Name('url')
+  String? url; // 在线播放地址
 
-
-  /// Actual art file path, if any.
-  // String? get artPath => albumArtPaths[albumId];
 
   /// The content URI of the song for playback.
-  String get uri => 'content://media/external/audio/media/$id';
+  // String get uri => 'content://media/external/audio/media/$id';
 
-  /// The content URI of the art.
-  String get artUri => 'content://media/external/audio/media/$id/albumart';
 
   SongEntity({
     this.sid,
@@ -57,30 +53,13 @@ class SongEntity {
      this.albumId,
     required this.artist,
     required this.title,
-    required this.duration,
+    this.duration,
     this.quality,
     this.albumArt,
     this.data,
     this.bucketDisplayName,
-
+    this.url
   });
-
-  /// id:uri 这里必须换uri，不然找不到文件
-  /// Converts the song info to [AudioService] media item.
-  MediaItem toMediaItem() => MediaItem(
-    id: uri,
-    album: album,
-    artist: artist,
-    title: title,
-    duration: Duration(milliseconds: duration),
-    artUri: Uri.parse(artUri),
-    extras: <String, dynamic>{
-      'loadThumbnailUri': uri,
-      'id':id,
-      'albumArt':albumArt,
-      'data':data,
-    },
-  );
 
   static const mediaStoreProjection = [
     '_id',
@@ -130,6 +109,7 @@ class SongEntity {
     albumArt: json["albumArt"],
     data: json["data"],
     bucketDisplayName: json["bucketDisplayName"],
+    url: json["url"],
 
   );
 
@@ -144,6 +124,6 @@ class SongEntity {
     "albumArt": albumArt,
     "data": data,
     "bucketDisplayName": bucketDisplayName,
-
+    "url": url,
   };
 }

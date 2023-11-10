@@ -66,6 +66,11 @@ const CacheSongEntitySchema = CollectionSchema(
       id: 9,
       name: r'title',
       type: IsarType.string,
+    ),
+    r'url': PropertySchema(
+      id: 10,
+      name: r'url',
+      type: IsarType.string,
     )
   },
   estimateSize: _cacheSongEntityEstimateSize,
@@ -121,6 +126,12 @@ int _cacheSongEntityEstimateSize(
     }
   }
   bytesCount += 3 + object.title.length * 3;
+  {
+    final value = object.url;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -140,6 +151,7 @@ void _cacheSongEntitySerialize(
   writer.writeString(offsets[7], object.id);
   writer.writeString(offsets[8], object.quality);
   writer.writeString(offsets[9], object.title);
+  writer.writeString(offsets[10], object.url);
 }
 
 CacheSongEntity _cacheSongEntityDeserialize(
@@ -159,6 +171,7 @@ CacheSongEntity _cacheSongEntityDeserialize(
     id: reader.readString(offsets[7]),
     quality: reader.readStringOrNull(offsets[8]),
     title: reader.readString(offsets[9]),
+    url: reader.readStringOrNull(offsets[10]),
   );
   object.gid = id;
   return object;
@@ -191,6 +204,8 @@ P _cacheSongEntityDeserializeProp<P>(
       return (reader.readStringOrNull(offset)) as P;
     case 9:
       return (reader.readString(offset)) as P;
+    case 10:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1654,6 +1669,160 @@ extension CacheSongEntityQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'url',
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'url',
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'url',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'url',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'url',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterFilterCondition>
+      urlIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'url',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension CacheSongEntityQueryObject
@@ -1793,6 +1962,18 @@ extension CacheSongEntityQuerySortBy
       sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterSortBy> sortByUrl() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'url', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterSortBy> sortByUrlDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'url', Sort.desc);
     });
   }
 }
@@ -1942,6 +2123,18 @@ extension CacheSongEntityQuerySortThenBy
       return query.addSortBy(r'title', Sort.desc);
     });
   }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterSortBy> thenByUrl() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'url', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QAfterSortBy> thenByUrlDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'url', Sort.desc);
+    });
+  }
 }
 
 extension CacheSongEntityQueryWhereDistinct
@@ -2016,6 +2209,13 @@ extension CacheSongEntityQueryWhereDistinct
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<CacheSongEntity, CacheSongEntity, QDistinct> distinctByUrl(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'url', caseSensitive: caseSensitive);
+    });
+  }
 }
 
 extension CacheSongEntityQueryProperty
@@ -2084,6 +2284,12 @@ extension CacheSongEntityQueryProperty
   QueryBuilder<CacheSongEntity, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
+    });
+  }
+
+  QueryBuilder<CacheSongEntity, String?, QQueryOperations> urlProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'url');
     });
   }
 }
