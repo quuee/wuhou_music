@@ -66,10 +66,11 @@ class _VideoWidgetState extends State<VideoWidget> {
       LogD('视频宽高比',
           '视频宽高比:${_videoPlayerController.value.size.width / _videoPlayerController.value.size.height}');
 
-      if(_videoPlayerController.value.size.width > _videoPlayerController.value.size.height){
+      if (_videoPlayerController.value.size.width >
+          _videoPlayerController.value.size.height) {
         // 以宽度为主，计算高度 屏幕宽度计算屏幕高度 = 屏幕宽度*9/16
         videoLayoutHeight = videoLayoutWidth * 9 / 16;
-      }else{
+      } else {
         // 计算高度
         double screenHeight = MediaQuery.of(context).size.width * 16 / 9;
         if (screenHeight > widget.contentHeight) {
@@ -78,11 +79,10 @@ class _VideoWidgetState extends State<VideoWidget> {
           videoLayoutHeight = widget.contentHeight;
           videoLayoutWidth = videoLayoutHeight * 9 / 16;
           scale = videoLayoutWidth / MediaQuery.of(context).size.width;
-        }else{
+        } else {
           videoLayoutHeight = widget.contentHeight;
         }
       }
-
     }
 
     return Scaffold(
@@ -96,6 +96,7 @@ class _VideoWidgetState extends State<VideoWidget> {
             child: _getVideoPlayer(videoLayoutWidth, videoLayoutHeight, scale),
           ),
 
+          // 右侧按钮
           // Positioned(
           //     right: 10,
           //     bottom: 110,
@@ -112,17 +113,33 @@ class _VideoWidgetState extends State<VideoWidget> {
           //         widget.onClickHeader?.call();
           //       },
           //     )),
+
           // 底部黑胶旋转
           // Positioned(
           //     right: 2,
           //     bottom: 20,
           //     child: VinylDisk(video: widget.video,)),
+
           // 底部关键词
           // Positioned(
           //   left: 12,
           //   bottom: 20,
           //   child: VideoBottomBarWidget(video: widget.video,),
           // )
+
+          // 进度条
+          Positioned(
+            left: 0,
+            bottom: 0,
+            right: 0, // 要么给个宽度，要么加right。无限宽度会报错
+            // width: MediaQuery.of(context).size.width,
+            child: VideoProgressIndicator(_videoPlayerController,
+                colors: VideoProgressColors(
+                    playedColor: Colors.white60,
+                    bufferedColor: Colors.grey,
+                    backgroundColor: Colors.black),
+                allowScrubbing: true),
+          )
         ],
       ),
     );
@@ -142,7 +159,6 @@ class _VideoWidgetState extends State<VideoWidget> {
                 child: VideoPlayer(_videoPlayerController)),
           ),
         ),
-
         _playing == true ? Container() : _getPauseButton(),
       ],
     );
