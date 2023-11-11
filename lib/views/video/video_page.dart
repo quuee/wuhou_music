@@ -46,6 +46,7 @@ class _VideoPageState extends State<VideoPage> {
         // indicatorColor: Colors.white,
         // indicatorWeight: 2,
         // indicatorSize: TabBarIndicatorSize.label,
+        dividerColor: Colors.transparent,
         isScrollable: true,
       ),
     );

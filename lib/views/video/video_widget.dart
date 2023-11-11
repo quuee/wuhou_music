@@ -68,19 +68,18 @@ class _VideoWidgetState extends State<VideoWidget> {
 
       if(_videoPlayerController.value.size.width > _videoPlayerController.value.size.height){
         // 以宽度为主，计算高度 屏幕宽度计算屏幕高度 = 屏幕宽度*9/16
-        videoLayoutHeight = videoLayoutWidth * 10 / 16;
+        videoLayoutHeight = videoLayoutWidth * 9 / 16;
       }else{
         // 计算高度
-        double screenHeight = MediaQuery.of(context).size.width * 16 / 10;
+        double screenHeight = MediaQuery.of(context).size.width * 16 / 9;
         if (screenHeight > widget.contentHeight) {
           // 如果高度超出容器高度
           // 以高度为主，缩小宽度
           videoLayoutHeight = widget.contentHeight;
-          videoLayoutWidth = videoLayoutHeight * 10 / 16;
+          videoLayoutWidth = videoLayoutHeight * 9 / 16;
           scale = videoLayoutWidth / MediaQuery.of(context).size.width;
         }else{
-          videoLayoutHeight = screenHeight;
-          scale = screenHeight / widget.contentHeight;
+          videoLayoutHeight = widget.contentHeight;
         }
       }
 
