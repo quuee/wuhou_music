@@ -24,8 +24,10 @@ ThemeData lightTheme = FlexThemeData.light(
   subThemesData: const FlexSubThemesData(
     useTextTheme: true,
     useM2StyleDividerInM3: true,
-    tabBarIndicatorWeight: 5,
-    tabBarIndicatorTopRadius: 6,
+    // tabBarIndicatorWeight: 5,
+    // tabBarIndicatorTopRadius: 6,
+    tabBarDividerColor: Colors.transparent,
+
   ),
   keyColors: const FlexKeyColors(
     useSecondary: true,

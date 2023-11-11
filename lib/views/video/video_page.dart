@@ -17,29 +17,46 @@ class _VideoPageState extends State<VideoPage> {
   void initState() {
     super.initState();
     videoPageController.loadVideoList();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        bottom: TabBar( // TODO tab应该放stack
-            controller: videoPageController.tabController,
-            tabs: videoPageController.tabs
-                .map((e) => Tab(
-                      text: e,
-                    ))
-                .toList()),
+      body: Stack(
+        children: [
+          Positioned(
+              left: 0, right: 0, top: 0, bottom: 0, child: _buildTabBarView()),
+          Positioned(
+              left: 0, right: 0, top: 25, bottom: 0, child: _buildTabBar())
+        ],
       ),
-      body:
-          TabBarView(controller: videoPageController.tabController, children: [
-        _buildTabScreen(videoPageController.tabController.index),
-        _buildTabScreen(videoPageController.tabController.index),
-        _buildTabScreen(videoPageController.tabController.index)
-      ]),
     );
+  }
+
+  _buildTabBar() {
+    return Container(
+      alignment: Alignment.topCenter,
+      child: TabBar(
+        controller: videoPageController.tabController,
+        tabs: videoPageController.tabs
+            .map((e) => Tab(
+                  text: e,
+                ))
+            .toList(),
+        // indicatorColor: Colors.white,
+        // indicatorWeight: 2,
+        // indicatorSize: TabBarIndicatorSize.label,
+        isScrollable: true,
+      ),
+    );
+  }
+
+  _buildTabBarView() {
+    return TabBarView(controller: videoPageController.tabController, children: [
+      _buildTabScreen(videoPageController.tabController.index),
+      _buildTabScreen(videoPageController.tabController.index),
+      _buildTabScreen(videoPageController.tabController.index)
+    ]);
   }
 
   _buildTabScreen(int index) {
@@ -58,9 +75,7 @@ class _VideoPageState extends State<VideoPage> {
                   video: videoPageController.videos![index]);
               // TODO 视频滑一点就播放下个视频，应该滑动大点才能播放
             },
-            onPageChanged: (index) {
-
-            },
+            onPageChanged: (index) {},
           );
         },
       );
