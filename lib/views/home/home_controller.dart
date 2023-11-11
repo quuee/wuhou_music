@@ -20,4 +20,5 @@ class HomeController extends GetxController
         LogD('HomeController', '_tabController.index:${tabController?.index}');
       });
   }
+
 }
