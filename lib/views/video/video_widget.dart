@@ -23,12 +23,16 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   void initState() {
     super.initState();
+    //assets file networkUrl
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(widget.video.videoUrl));
+
     _videoPlayerController.initialize();
     _videoPlayerController.setLooping(true);
     _videoPlayerController.addListener(() {
-      setState(() {});
+      setState(() {
+        _playing = _videoPlayerController.value.isPlaying;
+      });
     });
     _playOrPause();
 
@@ -90,6 +94,7 @@ class _VideoWidgetState extends State<VideoWidget> {
       body: Stack(
         children: [
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               _playOrPause();
             },
@@ -128,21 +133,45 @@ class _VideoWidgetState extends State<VideoWidget> {
           // )
 
           // 进度条
+          // Positioned(
+          //   left: 0,
+          //   bottom: 0,
+          //   right: 0, // 要么给个宽度，要么加right。无限宽度会报错
+          //   // width: MediaQuery.of(context).size.width,
+          //   child: VideoProgressIndicator(_videoPlayerController,
+          //       colors: VideoProgressColors(
+          //           playedColor: Colors.white60,
+          //           bufferedColor: Colors.grey,
+          //           backgroundColor: Colors.black),
+          //       allowScrubbing: true),
+          // )
           Positioned(
             left: 0,
             bottom: 0,
-            right: 0, // 要么给个宽度，要么加right。无限宽度会报错
-            // width: MediaQuery.of(context).size.width,
-            child: VideoProgressIndicator(_videoPlayerController,
-                colors: VideoProgressColors(
-                    playedColor: Colors.white60,
-                    bufferedColor: Colors.grey,
-                    backgroundColor: Colors.black),
-                allowScrubbing: true),
+            right: 0,
+            child: _buildVideoProgressSlider(),
           )
         ],
       ),
     );
+  }
+
+  _buildVideoProgressSlider() {
+    // VideoProgressIndicator(_videoPlayerController,
+    //       colors: VideoProgressColors(
+    //           playedColor: Colors.white60,
+    //           bufferedColor: Colors.grey,
+    //           backgroundColor: Colors.black),
+    //       allowScrubbing: true)
+    return Slider(
+      activeColor: Colors.white60,
+        max: _videoPlayerController.value.duration.inMilliseconds.truncateToDouble(),
+        value: _videoPlayerController.value.position.inMilliseconds
+            .truncateToDouble(),
+        onChanged: (newRating) {
+          _videoPlayerController
+              .seekTo(Duration(milliseconds: newRating.truncate()));
+        });
   }
 
   _getVideoPlayer(
@@ -150,6 +179,8 @@ class _VideoWidgetState extends State<VideoWidget> {
     return Stack(
       children: [
         Container(
+          // width: MediaQuery.of(context).size.width,
+          // height: MediaQuery.of(context).size.height,
           alignment: Alignment.center,
           child: Transform.scale(
             scale: scale,
