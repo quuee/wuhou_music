@@ -34,9 +34,11 @@
 - [ ] 支持用户自己搭建云盘等存储空间 
 - [ ] minio 搭建，自定义访问策略  
 - [ ] meiliSearch 
+- [ ] 扩充曲库
 
 ## hive BUG2
 只要box更新或删除 一个值，其他地方取值就为空。debug时，是有值put进去，但是取为空。关闭应用重新查询又有修改后的值。  
+改用isra。（同一个作者）
 
 
 ## BUG
@@ -66,6 +68,12 @@ GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
 ```
 
 ## flutter中 key GlobalKey
+GlobalKey：用来帮助我们确定某一个Widget、Element或者State，来访问其信息；它在整个程序中是唯一的。  
+LocalKey：是Flutter增量渲染算法的核心，通过LocalKey来决定Element是否需要保留或者删除；它有几个子类：
+ValueKey：以值作为参数（数字、字符串）；  
+ObjectKey：以对象作为参数；  
+UniqueKey：创建唯一标识；  
+
 
 ## getx 
 状态管理 路由

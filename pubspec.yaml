@@ -22,7 +22,7 @@ dependencies:
   permission_handler: ^8.3.0
   rxdart: ^0.27.7
   android_content_provider: ^0.4.0
-  path_provider: ^2.0.1
+  path_provider: ^2.1.0
   get_it: ^7.6.4
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
@@ -53,6 +53,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/三体.txt
 
   fonts:
     - family: GuFengLiShu

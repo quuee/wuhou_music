@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/reader_main_screen.dart';
 import 'package:wuhoumusic/views/login/login_page.dart';
 import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
 import 'package:wuhoumusic/views/local_music/local_music_page.dart';
@@ -15,12 +16,12 @@ class Routes {
   static const splash = '/';
   static const login = '/login';
   static const root = '/root';
-  // static const home = '/home';
-  // static const mine = '/mine';
   static const play = '/play';
   static const localMusicPage = '/local_music_page';
   static const songListDetail = '/song_list_detail';
   static const songListAdd = '/song_list_add';
+
+  static const reader = '/reader';
 
   static final routes = <GetPage>[
     GetPage(
@@ -33,7 +34,6 @@ class Routes {
     GetPage(
       name: play,
       page: () => const PlayPage(),
-
     ),
     GetPage(
         name: localMusicPage,
@@ -54,5 +54,7 @@ class Routes {
           Get.lazyPut(() => SongListDetailController());
           Get.lazyPut(() => LocalMusicController());
         })),
+    // 阅读页面
+    GetPage(name: reader, page: () => ReaderMainScreen(),)
   ];
 }
