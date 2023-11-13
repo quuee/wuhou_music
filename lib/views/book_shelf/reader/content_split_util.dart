@@ -142,7 +142,7 @@ class ContentSplitUtil {
       textPainter.layout(maxWidth: contentWidth);
       // double currentLineHeight = textPainter.height;
 
-      double currentLineHeight =
+      double everyLineHeight =
           (firstLineStyle.height ?? 0) * (firstLineStyle.fontSize ?? 0);
 
       /// 当前段落内容计算偏移量
@@ -150,7 +150,7 @@ class ContentSplitUtil {
       /// 所以即使展示不全，也在它的判定范围内，所以要减去一行高度，保证都能展示全
       int endOffset = textPainter
           .getPositionForOffset(Offset(
-              contentWidth, contentHeight - currentHeight - currentLineHeight))
+              contentWidth, contentHeight - currentHeight - everyLineHeight * 2))
           .offset; // 最终能显示文字的位置
 
       /// 当前展示内容
@@ -187,7 +187,7 @@ class ContentSplitUtil {
         int lineLength = 0;
         if (lineMetrics.isEmpty) {
           // 空行也加上高度
-          height = currentLineHeight;
+          height = everyLineHeight;
           lineLength = 1;
         } else {
           height = lineMetrics[0].height;
