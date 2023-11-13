@@ -14,16 +14,13 @@ class ReaderMainScreen extends StatefulWidget {
 
 class _ReaderMainScreenState extends State<ReaderMainScreen>
     with SingleTickerProviderStateMixin {
-
   final GlobalKey _ignorePointerKey = GlobalKey();
   bool _shouldIgnorePointer = false;
   late AnimationController menuAnimationController;
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
-  List<NovelChapterInfo>? novelChapterInfoList;
 
-  bool _loadingCompleted = false;
 
   @override
   void initState() {
@@ -41,7 +38,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         setIgnorePointer(false);
       }
     });
-    _getBookNovelInfo();
+
   }
 
   void setIgnorePointer(bool value) {
@@ -56,9 +53,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
   @override
   void dispose() {
-
     super.dispose();
-
   }
 
   @override
@@ -79,7 +74,19 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
             child: IgnorePointer(
               key: _ignorePointerKey,
               ignoring: _shouldIgnorePointer,
-              child: _buildBookNovel(),
+              child: FutureBuilder<List<ChapterModel>>(
+                future: _getBookNovelInfo(),
+                builder: (context,snapshot){
+                  if(!snapshot.hasData){
+                    return Center(
+                      child: Text('loading'),
+                    );
+                  }
+                  List<ChapterModel> list = snapshot.data!;
+                  return _buildBookNovel(list);
+
+                },
+              ),
             ),
           )),
           // 顶部
@@ -94,7 +101,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
           ),
           //底部
           Positioned(
-            bottom: 10,
+            bottom: 0,
             left: 0,
             right: 0,
             child: SlideTransition(
@@ -136,33 +143,46 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         ],
       ),
     );
-
   }
 
-  _buildBookNovel() {
+  _buildBookNovel(List<ChapterModel> chapterList) {
 
-    if(!_loadingCompleted){
-      return Center(child: Text('loading'),);
-    }
-
-    ScrollController scrollController = ScrollController();
+    ScrollController scrollController = ScrollController(); //控制跳到某章
     // int initialChapterIndex = 0;
     return ListView.builder(
         controller: scrollController,
         physics: PageScrollPhysics(),
         scrollDirection: Axis.horizontal,
-        itemCount: novelChapterInfoList!.length,
+        itemCount: chapterList.length,
         itemBuilder: (context, index) {
-          return _buildChapter(novelChapterInfoList![index]);
+          return _buildChapter(chapterList[index]);
         });
-
   }
 
-  _buildChapter(NovelChapterInfo? chapterInfo){
+  _buildChapter(ChapterModel chapterModel) {
 
-    if(chapterInfo == null ){
-      return Center(child: Text('解析中'),);
-    }
+    double fontSize = 24;
+    NovelChapterInfo chapterInfo = ContentSplitUtil.calculateChapter(
+      chapterContent: TextSpan(
+          text: chapterModel.chapterTitle,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: fontSize * 1.3,
+            height: 1.3,
+          ),
+          children: [
+            TextSpan(
+                text: chapterModel.chapterContent,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: fontSize,
+                    height: 1.3)) // height行高是倍速
+          ]),
+      contentHeight: MediaQuery.of(context).size.height - 30 - 5 ,
+      contentWidth: MediaQuery.of(context).size.width - 20,
+    );
+
+    chapterInfo.chapterTitle = chapterModel.chapterTitle;
     return ListView.builder(
         physics: PageScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -171,6 +191,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         itemBuilder: (context, index) {
           return Container(
             margin: EdgeInsets.only(top: 30),
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Stack(
@@ -188,24 +209,22 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
             ),
           );
         });
+
   }
 
-
-  _getBookNovelInfo() async {
+  Future<List<ChapterModel>> _getBookNovelInfo() async {
     String bookContent = await rootBundle.loadString('assets/三体.txt');
-    _parse(bookContent);
+    return _parse(bookContent);
   }
-  _parse(String bookContent){
+
+  List<ChapterModel> _parse(String bookContent) {
     //匹配规则
     RegExp pest = RegExp(
         '(正文){0,1}(\\s|\\n)(第)([\\u4e00-\\u9fa5a-zA-Z0-9]{1,7})[章][^\\n]{1,35}(|\\n)');
 
     //将小说内容中的PS全部替换为""
     bookContent = bookContent.replaceAll(RegExp('(PS|ps)(.)*(|\\n)'), '');
-    List<String> chapterContentList = [];
-    for (String s in bookContent.split(pest)) {
-      chapterContentList.add(s); // 分割后只有章节内容，没有章节
-    }
+    List<String> chapterContentList = bookContent.split(pest);
 
     List<ChapterModel> chapterList = [];
     chapterList.add(ChapterModel(
@@ -217,33 +236,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
       chapterList.add(ChapterModel(
           chapterTitle: chapterName, chapterContent: chapterContentList[i]));
     }
-
-    int i = 1;
-    novelChapterInfoList = chapterList.map((e) {
-      NovelChapterInfo chapterInfo = ContentSplitUtil.calculateChapter(chapterContent: TextSpan(
-          text: e.chapterTitle,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16 * 2,
-            height: 1,
-          ),
-          children: [
-            TextSpan(
-                text: e.chapterContent,
-                style: TextStyle(color: Colors.black, fontSize: 16, height: 1))// height行高是倍速
-          ]),
-        contentHeight: MediaQuery.of(context).size.height - 30 - 60,
-        contentWidth: MediaQuery.of(context).size.width,);
-      chapterInfo.chapterTitle = e.chapterTitle;
-      chapterInfo.chapterIndex = i;
-      i++;
-      return chapterInfo;
-    }).toList();
-
-    setState(() {
-      _loadingCompleted = true;
-    });
-
-
+    return chapterList;
   }
 }
