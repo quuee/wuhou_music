@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
-import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/mediaitem_converter.dart';
 

@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lyric/lyrics_model_builder.dart';
 import 'package:flutter_lyric/lyrics_reader.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
 
 class Lyric extends StatefulWidget {

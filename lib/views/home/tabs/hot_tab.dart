@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/home/tabs/hot_tab_header.dart';

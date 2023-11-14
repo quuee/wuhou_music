@@ -1,6 +1,12 @@
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
+import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/content_split_util.dart';
 
 import 'novel_model.dart';
@@ -79,7 +85,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                 builder: (context,snapshot){
                   if(!snapshot.hasData){
                     return Center(
-                      child: Text('loading'),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation(Colors.blue),
+                      ),
                     );
                   }
                   List<ChapterModel> list = snapshot.data!;
@@ -213,11 +222,31 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   }
 
   Future<List<ChapterModel>> _getBookNovelInfo() async {
-    String bookContent = await rootBundle.loadString('assets/三体.txt');
+    // String bookContent = await rootBundle.loadString('assets/三体.txt');
+    BookNovelEntity arguments = Get.arguments as BookNovelEntity;
+    File file = File(arguments.localPath);
+    bool exist = await file.exists();
+    if(!exist){
+      return [];
+    }
+    String bookContent = '';
+    try{
+      bookContent = file.readAsStringSync();
+    } on FileSystemException catch (e){
+      LogE('读取book编码错误', e.message);
+      List<int> readBytes = file.readAsBytesSync().toList();
+      bookContent = CodeConvert.gbk2utf8(readBytes);
+    }
+
     return _parse(bookContent);
   }
 
+
+
   List<ChapterModel> _parse(String bookContent) {
+    if(bookContent.isEmpty){
+      return [];
+    }
     //匹配规则
     RegExp pest = RegExp(
         '(正文){0,1}(\\s|\\n)(第)([\\u4e00-\\u9fa5a-zA-Z0-9]{1,7})[章][^\\n]{1,35}(|\\n)');

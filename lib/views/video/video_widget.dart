@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wuhoumusic/model/video_entity.dart';
+import 'package:wuhoumusic/model/video/video_entity.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
 class VideoWidget extends StatefulWidget {

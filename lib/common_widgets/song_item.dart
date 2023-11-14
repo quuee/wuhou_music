@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 

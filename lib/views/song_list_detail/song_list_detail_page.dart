@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
 import 'package:wuhoumusic/common_widgets/song_item.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';

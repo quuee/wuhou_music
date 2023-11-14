@@ -1,10 +1,11 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wuhoumusic/model/any_entity.dart';
-import 'package:wuhoumusic/model/cache_songs_entity.dart';
-import 'package:wuhoumusic/model/sl_songs_entity.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
-import 'package:wuhoumusic/model/songs_list_entity.dart';
+import 'package:wuhoumusic/model/audio/cache_songs_entity.dart';
+import 'package:wuhoumusic/model/audio/sl_songs_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
+import 'package:wuhoumusic/model/audio/songs_list_entity.dart';
+import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
 
 class IsarHelper {
   IsarHelper._privateConstructor();
@@ -21,7 +22,8 @@ class IsarHelper {
         SongsListEntitySchema,
         AnyEntitySchema,
         CacheSongEntitySchema,
-        SLSongsEntitySchema
+        SLSongsEntitySchema,
+        BookNovelEntitySchema
       ],
       directory: dir.path,
     );

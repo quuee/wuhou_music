@@ -40,7 +40,7 @@ class ChapterModel {
 //     this.bookAuthor,
 //     this.lastChapterTitle
 // });
-
+// 
 //   List<NovelChapterInfo>? chapterList;
 //   int currentChapterIndex = 0;
 // }

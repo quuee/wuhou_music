@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/model/video_entity.dart';
+import 'package:wuhoumusic/model/video/video_entity.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
 class VideoPageController extends GetxController

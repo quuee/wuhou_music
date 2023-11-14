@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 
 class MediaItemConverter {
   static Map mediaItemToMap(MediaItem mediaItem) {

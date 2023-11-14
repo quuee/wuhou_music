@@ -1,7 +1,7 @@
 import 'package:android_content_provider/android_content_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/model/song_entity.dart';
+import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';

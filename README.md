@@ -74,6 +74,25 @@ ValueKey：以值作为参数（数字、字符串）；
 ObjectKey：以对象作为参数；  
 UniqueKey：创建唯一标识；  
 
+## dart try catch
+```dart
+  try {
+    var a = 1/0;
+  }on IntegerDivisionByZeroException{
+    //一个具体异常
+    print('0 被除');
+  }on Exception catch(e){
+    //任意一个异常
+    print('a exception: $e');
+  }catch (e) {
+    //非具体类型
+    print('exception $e');
+  }finally {
+    print('finally');
+  }
+
+```
+
 
 ## getx 
 状态管理 路由
@@ -85,6 +104,8 @@ StatefulWidget build
 controller onReady 界面加载完成了，可以操作界面相关 处理异步事件 网络请求  
 controller onClose （页面退出前）关闭流对象、动画、释放内存、数据持久化 （如果页面销毁了controller还在就不会走oninit onready，但是widget还是会走build）  
 controller deleted (内部调用，不可覆盖)  
+### 路由
+Get.arguments 可以获取到任何类型的参数，而 Get.parameters 只能获取到 Map<String, String> 类型的参数
 
 ## 下拉上拉库 
 pull_to_refresh_flutter3 子组件有图片刷新就会ui变形，而且不维护了  

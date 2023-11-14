@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/model/songs_list_entity.dart';
+import 'package:wuhoumusic/model/audio/songs_list_entity.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
