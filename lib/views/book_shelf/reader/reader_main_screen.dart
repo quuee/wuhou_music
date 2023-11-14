@@ -87,7 +87,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                     return Center(
                       child: CircularProgressIndicator(
                         backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation(Colors.blue),
+                        valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
                       ),
                     );
                   }
@@ -240,8 +240,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
     return _parse(bookContent);
   }
-
-
 
   List<ChapterModel> _parse(String bookContent) {
     if(bookContent.isEmpty){

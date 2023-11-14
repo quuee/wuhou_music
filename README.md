@@ -93,6 +93,27 @@ UniqueKey：创建唯一标识；
 
 ```
 
+## 单例
+```dart
+class MySingleton {
+  // 静态变量
+  static final MySingleton _singleton = MySingleton._internal();
+  
+  // 工厂方法
+  factory MySingleton() {
+    return _singleton;
+  }
+
+  // 私有构造函数
+  MySingleton._internal();
+  
+  // 其他方法
+  void doSomething() {
+    print("Doing something...");
+  }
+}
+```
+
 
 ## getx 
 状态管理 路由

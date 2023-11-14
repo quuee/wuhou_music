@@ -32,6 +32,7 @@ dependencies:
   fluttertoast: ^8.2.2
 #  EasyLoading
   on_audio_query: ^2.9.0
+  event_bus: ^2.0.0
   flutter_lyric: ^2.0.4+6
   logger: ^2.0.2+1
   cached_network_image: ^3.3.0
