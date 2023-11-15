@@ -19,8 +19,11 @@
 - [ ] 均衡器  
 - [x] 音乐在线播放
 - [x] 视频在线播放
+- [ ] 本地阅读 支持utf8 gbk编码，记录最后一次阅读位置
+- [ ] 解析文字 使用 isolate 创建新线程，避开主线程
+- [ ] 本地阅读 flutter tts
 - [ ] 网络搜索 可搜歌名歌词歌手相关视频
-- [ ] 歌曲分类 语种 粤语日语 国风 戏曲 广播剧 有声书 tts
+- [ ] 歌曲分类 语种 粤语日语 国风 戏曲 广播剧 有声书
 - [ ] 本地 云端 歌单同步统一标识 
 - [x] 账户密码登录
 - [x] token过期重新登录
@@ -167,54 +170,54 @@ MediaStore.Audio.Media.DATA：地址
 MediaStore.Audio.Media.SIZE：大小
 
 音频文件所有字段：
-_id//主键id
-_data//路径
-_size//大小
-format
-parent
-date_added//添加日期
-date_modified//修改日期
-mime_type//文件类型
-title
-description
-_display_name
-picasa_id
-orientation
-latitude
-longitude
-datetaken
-mini_thumb_magic
-bucket_id
-bucket_display_name
-isprivate
-title_key
-artist_id
-album_id
-composer
-track
-year
-is_ringtone
-is_music
-is_alarm
-is_notification
-is_podcast
-album_artist
-duration
-bookmark
-artist
-album
-resolution
-tags
-category
-language
-mini_thumb_data
-name
-media_type
-old_id
-is_drm
-width
-height
-title_resource_uri
+_id//主键id  
+_data//路径  
+_size//大小  
+format  
+parent  
+date_added//添加日期  
+date_modified//修改日期  
+mime_type//文件类型  
+title  
+description  
+_display_name  
+picasa_id  
+orientation  
+latitude  
+longitude  
+datetaken  
+mini_thumb_magic  
+bucket_id  
+bucket_display_name  
+isprivate  
+title_key  
+artist_id  
+album_id  
+composer  
+track  
+year  
+is_ringtone  
+is_music  
+is_alarm  
+is_notification  
+is_podcast  
+album_artist  
+duration  
+bookmark  
+artist  
+album  
+resolution  
+tags  
+category  
+language  
+mini_thumb_data  
+name  
+media_type  
+old_id  
+is_drm  
+width  
+height  
+title_resource_uri  
 
 
 视频文件比较常见的列名有:  

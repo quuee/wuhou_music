@@ -59,7 +59,7 @@ class _RootPageState extends State<RootPage>
     animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300))..forward();
 
-    eventBus.on<bool>().listen((event) {
+    EventBusHelper.instance.eventBus.on<bool>().listen((event) {
       LogD('eventBus', event.toString());
       event ? animationController.reverse() : animationController.forward();
     });

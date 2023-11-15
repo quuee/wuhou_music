@@ -1,10 +1,10 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/content_split_util.dart';
@@ -26,6 +26,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
+  BookNovelEntity? bookNovel; // TODO 当前阅读章节 退出后即上次阅读位置，如何获取准确的位置，似乎pageview比listview好实现
 
 
   @override
@@ -39,15 +40,15 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
     menuAnimationController.addStatusListener((state) {
       if (state == AnimationStatus.completed) {
-        setIgnorePointer(true);
+        _setIgnorePointer(true);
       } else {
-        setIgnorePointer(false);
+        _setIgnorePointer(false);
       }
     });
 
   }
 
-  void setIgnorePointer(bool value) {
+  _setIgnorePointer(bool value) {
     if (_shouldIgnorePointer == value) return;
     _shouldIgnorePointer = value;
     if (_ignorePointerKey.currentContext != null) {
@@ -59,6 +60,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
   @override
   void dispose() {
+    //记录阅读位置
+    // IsarHelper.instance.isarInstance.bookNovelEntitys
+
+    menuAnimationController.dispose();
     super.dispose();
   }
 
@@ -82,8 +87,8 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
               ignoring: _shouldIgnorePointer,
               child: FutureBuilder<List<ChapterModel>>(
                 future: _getBookNovelInfo(),
-                builder: (context,snapshot){
-                  if(!snapshot.hasData){
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
                     return Center(
                       child: CircularProgressIndicator(
                         backgroundColor: Colors.grey[200],
@@ -93,7 +98,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                   }
                   List<ChapterModel> list = snapshot.data!;
                   return _buildBookNovel(list);
-
                 },
               ),
             ),
@@ -143,7 +147,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text('目录'),
+              InkWell(child: Text('目录'),onTap: (){},),
               Text('亮度'),
               Text('设置'),
               Text('更多'),
@@ -156,10 +160,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
   _buildBookNovel(List<ChapterModel> chapterList) {
 
-    ScrollController scrollController = ScrollController(); //控制跳到某章
-    // int initialChapterIndex = 0;
     return ListView.builder(
-        controller: scrollController,
         physics: PageScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: chapterList.length,
@@ -169,7 +170,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   }
 
   _buildChapter(ChapterModel chapterModel) {
-
     double fontSize = 24;
     NovelChapterInfo chapterInfo = ContentSplitUtil.calculateChapter(
       chapterContent: TextSpan(
@@ -187,11 +187,14 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                     fontSize: fontSize,
                     height: 1.3)) // height行高是倍速
           ]),
-      contentHeight: MediaQuery.of(context).size.height - 30 - 5 ,
+      contentHeight: MediaQuery.of(context).size.height - 30 - 30,
       contentWidth: MediaQuery.of(context).size.width - 20,
     );
-
     chapterInfo.chapterTitle = chapterModel.chapterTitle;
+
+    // bookNovel?.lastReadChapterIndex = chapterModel.chapterIndex; // 记录位置到缓存
+    // bookNovel?.lastReadChapterPageIndex = chapterModel.chapterIndex; // 记录位置到缓存
+
     return ListView.builder(
         physics: PageScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -213,26 +216,37 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                             .chapterPageContentList[index].paragraphContents),
                     softWrap: true,
                   ),
-                )
+                ),
+                Positioned(
+                    bottom: 0,
+                    right: 10,
+                    child: Text('页码:' + (index + 1).toString(),
+                        style: TextStyle(color: Colors.grey, fontSize: 12))),
+                Positioned(
+                    bottom: 0,
+                    left: 10,
+                    child: Text(
+                      chapterInfo.chapterTitle ?? '',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    )),
               ],
             ),
           );
         });
-
   }
 
   Future<List<ChapterModel>> _getBookNovelInfo() async {
     // String bookContent = await rootBundle.loadString('assets/三体.txt');
-    BookNovelEntity arguments = Get.arguments as BookNovelEntity;
-    File file = File(arguments.localPath);
+    bookNovel = Get.arguments as BookNovelEntity;
+    File file = File(bookNovel!.localPath);
     bool exist = await file.exists();
-    if(!exist){
+    if (!exist) {
       return [];
     }
     String bookContent = '';
-    try{
+    try {
       bookContent = file.readAsStringSync();
-    } on FileSystemException catch (e){
+    } on FileSystemException catch (e) {
       LogE('读取book编码错误', e.message);
       List<int> readBytes = file.readAsBytesSync().toList();
       bookContent = CodeConvert.gbk2utf8(readBytes);
@@ -242,7 +256,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   }
 
   List<ChapterModel> _parse(String bookContent) {
-    if(bookContent.isEmpty){
+    if (bookContent.isEmpty) {
       return [];
     }
     //匹配规则
@@ -255,13 +269,17 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
     List<ChapterModel> chapterList = [];
     chapterList.add(ChapterModel(
-        chapterTitle: '正文', chapterContent: chapterContentList[0]));
+        chapterIndex: 0,
+        chapterTitle: '正文',
+        chapterContent: chapterContentList[0]));
 
     Iterable<Match> allMatches = pest.allMatches(bookContent);
     for (int i = 1; i < chapterContentList.length; i++) {
       String chapterName = allMatches.elementAt(i - 1).group(0).toString();
       chapterList.add(ChapterModel(
-          chapterTitle: chapterName, chapterContent: chapterContentList[i]));
+          chapterIndex: i,
+          chapterTitle: chapterName,
+          chapterContent: chapterContentList[i]));
     }
     return chapterList;
   }

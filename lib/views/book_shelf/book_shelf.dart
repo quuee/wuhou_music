@@ -48,7 +48,7 @@ class _BookShelfPageState extends State<BookShelfPage>
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(
               onPressed: () {
-                _filePicker();
+                _addBookNovel();
               },
               icon: Icon(Icons.add))
         ],
@@ -84,7 +84,7 @@ class _BookShelfPageState extends State<BookShelfPage>
                         setState(() {
                           isEditStatus = !isEditStatus;
                         });
-                        eventBus.fire(isEditStatus);
+                        EventBusHelper.instance.eventBus.fire(isEditStatus);
                       },
                       child: _buildBookCover(books![index]),
                     );
@@ -112,35 +112,44 @@ class _BookShelfPageState extends State<BookShelfPage>
     }
   }
 
-  _loadBooks() {
+  _loadBooks() async {
     books =
-        IsarHelper.instance.isarInstance.bookNovelEntitys.where().findAllSync();
+        await IsarHelper.instance.isarInstance.bookNovelEntitys.where().findAll();
     setState(() {});
   }
 
-  _filePicker() async {
+  _addBookNovel() async {
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['txt']);
     if (result != null) {
       LogD('_filePicker',
           result.files.single.name + " - " + result.files.single.path!);
+      BookNovelEntity bookNovelEntity = BookNovelEntity(
+          bookTitle: result.files.single.name,
+          localPath: result.files.single.path!);
       // 将文件名 文件路径存入isra
       IsarHelper.instance.isarInstance.writeTxn(() async {
-        BookNovelEntity bookNovelEntity = BookNovelEntity(
-            bookTitle: result.files.single.name,
-            localPath: result.files.single.path!);
         IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovelEntity);
       });
+      books?.add(bookNovelEntity);
+      setState(() {});
     } else {
       // User canceled the picker
     }
   }
 
-  _deleteBookNovel(int bookId) {
+  _deleteBookNovel() {
     IsarHelper.instance.isarInstance.writeTxnSync(() {
-      IsarHelper.instance.isarInstance.bookNovelEntitys.deleteSync(bookId);
+      IsarHelper.instance.isarInstance.bookNovelEntitys
+          .deleteAllSync(_selectedBookIds);
     });
-    setState(() {});
+    setState(() {
+      for (int id in _selectedBookIds) {
+        books?.removeWhere((element) => element.id == id);
+      }
+
+      _selectedBookIds = [];
+    });
   }
 
   _buildBookCover(BookNovelEntity bookNovel) {
@@ -160,18 +169,19 @@ class _BookShelfPageState extends State<BookShelfPage>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(bookNovel.bookTitle),
+                Text(bookNovel.bookTitle,maxLines: 2,),
                 Text(
                   bookNovel.localPath,
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ],
             ),
           ),
           isEditStatus
               ? Positioned(
-                  top: 0,
-                  right: 0,
+                  top: -12,
+                  right: -12,
                   child: Checkbox(
                     value: _selectedBookIds.contains(bookNovel.id!),
                     activeColor: Colors.amber,
@@ -195,6 +205,7 @@ class _BookShelfPageState extends State<BookShelfPage>
   }
 
   _buildBottomMenu() {
+    TextStyle style = TextStyle(fontSize: 10);
     return Container(
       color: Colors.white70,
       child: Column(
@@ -202,10 +213,51 @@ class _BookShelfPageState extends State<BookShelfPage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text('删除'),
-              Text('移动'),
-              Text('详情'),
-              Text('更多'),
+              InkWell(
+                onTap: _deleteBookNovel,
+                child: Column(
+                  children: [
+                    Icon(Icons.delete),
+                    Text(
+                      '删除',
+                      style: style,
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                child: Column(
+                  children: [
+                    Icon(Icons.drive_file_move),
+                    Text(
+                      '移动至',
+                      style: style,
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                child: Column(
+                  children: [
+                    Icon(Icons.details),
+                    Text(
+                      '详情',
+                      style: style,
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                child: Column(
+                  children: [
+                    Icon(Icons.more_horiz),
+                    Text(
+                      '更多',
+                      style: style,
+                    ),
+                  ],
+                ),
+              ),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -217,7 +269,7 @@ class _BookShelfPageState extends State<BookShelfPage>
                     //   menuAnimationController.forward();
                     // }
                     menuAnimationController.reverse();
-                    eventBus.fire(isEditStatus);
+                    EventBusHelper.instance.eventBus.fire(isEditStatus);
                   },
                   icon: Icon(Icons.cancel_outlined))
             ],

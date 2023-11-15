@@ -14,21 +14,29 @@ String bookNovelEntityToJson(List<BookNovelEntity> data) => json.encode(List<dyn
 class BookNovelEntity {
 
   Id? id= Isar.autoIncrement;
-  String bookTitle;
-  String localPath;
+  String bookTitle;//书名
+  String localPath;//本地路径
+  int? lastReadChapterIndex;//上次阅读章节
+  int? lastReadChapterPageIndex;//上次阅读页码
 
   BookNovelEntity({
     required this.bookTitle,
     required this.localPath,
+    this.lastReadChapterIndex,
+    this.lastReadChapterPageIndex
   });
 
   factory BookNovelEntity.fromJson(Map<String, dynamic> json) => BookNovelEntity(
     bookTitle: json["bookTitle"],
     localPath: json["localPath"],
+    lastReadChapterIndex: json["lastReadChapterIndex"],
+    lastReadChapterPageIndex: json["lastReadChapterPageIndex"],
   );
 
   Map<String, dynamic> toJson() => {
     "bookTitle": bookTitle,
     "localPath": localPath,
+    "lastReadChapterIndex": lastReadChapterIndex,
+    "lastReadChapterPageIndex": lastReadChapterPageIndex,
   };
 }

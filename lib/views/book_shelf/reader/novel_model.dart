@@ -7,20 +7,24 @@ List<ChapterModel> chapterModelFromJson(String str) => List<ChapterModel>.from(j
 String chapterModelToJson(List<ChapterModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ChapterModel {
+  int chapterIndex;
   String chapterTitle;
   String chapterContent;
 
   ChapterModel({
+    required this.chapterIndex,
     required this.chapterTitle,
     required this.chapterContent,
   });
 
   factory ChapterModel.fromJson(Map<String, dynamic> json) => ChapterModel(
+    chapterIndex: json["chapterIndex"],
     chapterTitle: json["chapterTitle"],
     chapterContent: json["chapterContent"],
   );
 
   Map<String, dynamic> toJson() => {
+    "chapterIndex": chapterIndex,
     "chapterName": chapterTitle,
     "chapterContent": chapterContent,
   };

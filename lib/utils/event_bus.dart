@@ -49,31 +49,23 @@
 
 import 'package:event_bus/event_bus.dart';
 
-EventBus eventBus = EventBus();
+class EventBusHelper{
 
-// class EventBusHelper{
-//
-//   // 静态变量
-//   static final EventBusHelper _singleton = EventBusHelper._internal();
-//
-//   // 工厂方法
-//   factory EventBusHelper() {
-//     return _singleton;
-//   }
-//
-//   late EventBus eventBus;
-//
-//   // 私有构造函数
-//   EventBusHelper._internal(){
-//     eventBus = EventBus();
-//   }
-//
-//   void fire(event){
-//     eventBus.fire(event);
-//   }
-//
-//   Stream<T> on<T>(){
-//     eventBus.on();
-//   }
-//
-// }
+  // 静态变量
+  static final EventBusHelper _singleton = EventBusHelper._internal();
+  static EventBusHelper get instance => _singleton;
+  // 工厂方法
+  factory EventBusHelper() {
+    return _singleton;
+  }
+
+  late final EventBus eventBus;
+
+  // 私有构造函数
+  EventBusHelper._internal(){
+    eventBus = EventBus();
+  }
+
+
+
+}

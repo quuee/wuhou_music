@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart';
 
-const String _defaultTag = "easy_tab_controller";
+const String _defaultTag = "LoggerTag";
 
 var _logger = Logger(
     printer: PrettyPrinter(
