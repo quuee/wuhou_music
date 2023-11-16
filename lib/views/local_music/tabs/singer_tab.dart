@@ -20,9 +20,9 @@ class _SingerTabState extends State<SingerTab> {
   Widget build(BuildContext context) {
     return Navigator(
       initialRoute: '/singer_tab',
-      onGenerateRoute: (RouteSettings settins) {
+      onGenerateRoute: (RouteSettings settings) {
         WidgetBuilder builder = (context) => SizedBox.shrink();
-        switch (settins.name) {
+        switch (settings.name) {
           case '/singer_tab':
             builder = (context) {
               return _buildSinger(context);

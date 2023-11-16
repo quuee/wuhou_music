@@ -17,26 +17,26 @@ class BookNovelEntity {
   String bookTitle;//书名
   String localPath;//本地路径
   int? lastReadChapterIndex;//上次阅读章节
-  int? lastReadChapterPageIndex;//上次阅读页码
+  double? lastReadChapterOffset;//上次阅读位置
 
   BookNovelEntity({
     required this.bookTitle,
     required this.localPath,
     this.lastReadChapterIndex,
-    this.lastReadChapterPageIndex
+    this.lastReadChapterOffset
   });
 
   factory BookNovelEntity.fromJson(Map<String, dynamic> json) => BookNovelEntity(
     bookTitle: json["bookTitle"],
     localPath: json["localPath"],
     lastReadChapterIndex: json["lastReadChapterIndex"],
-    lastReadChapterPageIndex: json["lastReadChapterPageIndex"],
+    lastReadChapterOffset: json["lastReadChapterOffset"],
   );
 
   Map<String, dynamic> toJson() => {
     "bookTitle": bookTitle,
     "localPath": localPath,
     "lastReadChapterIndex": lastReadChapterIndex,
-    "lastReadChapterPageIndex": lastReadChapterPageIndex,
+    "lastReadChapterOffset": lastReadChapterOffset,
   };
 }

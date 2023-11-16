@@ -22,8 +22,18 @@ const BookNovelEntitySchema = CollectionSchema(
       name: r'bookTitle',
       type: IsarType.string,
     ),
-    r'localPath': PropertySchema(
+    r'lastReadChapterIndex': PropertySchema(
       id: 1,
+      name: r'lastReadChapterIndex',
+      type: IsarType.long,
+    ),
+    r'lastReadChapterOffset': PropertySchema(
+      id: 2,
+      name: r'lastReadChapterOffset',
+      type: IsarType.double,
+    ),
+    r'localPath': PropertySchema(
+      id: 3,
       name: r'localPath',
       type: IsarType.string,
     )
@@ -60,7 +70,9 @@ void _bookNovelEntitySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.bookTitle);
-  writer.writeString(offsets[1], object.localPath);
+  writer.writeLong(offsets[1], object.lastReadChapterIndex);
+  writer.writeDouble(offsets[2], object.lastReadChapterOffset);
+  writer.writeString(offsets[3], object.localPath);
 }
 
 BookNovelEntity _bookNovelEntityDeserialize(
@@ -71,7 +83,9 @@ BookNovelEntity _bookNovelEntityDeserialize(
 ) {
   final object = BookNovelEntity(
     bookTitle: reader.readString(offsets[0]),
-    localPath: reader.readString(offsets[1]),
+    lastReadChapterIndex: reader.readLongOrNull(offsets[1]),
+    lastReadChapterOffset: reader.readDoubleOrNull(offsets[2]),
+    localPath: reader.readString(offsets[3]),
   );
   object.id = id;
   return object;
@@ -87,6 +101,10 @@ P _bookNovelEntityDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readLongOrNull(offset)) as P;
+    case 2:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -399,6 +417,164 @@ extension BookNovelEntityQueryFilter
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastReadChapterIndex',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastReadChapterIndex',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastReadChapterIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastReadChapterIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastReadChapterIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterIndexBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastReadChapterIndex',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastReadChapterOffset',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastReadChapterOffset',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastReadChapterOffset',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastReadChapterOffset',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastReadChapterOffset',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterOffsetBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastReadChapterOffset',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
       localPathEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -558,6 +734,34 @@ extension BookNovelEntityQuerySortBy
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterIndex', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterOffset() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterOffset', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterOffsetDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
       sortByLocalPath() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localPath', Sort.asc);
@@ -601,6 +805,34 @@ extension BookNovelEntityQuerySortThenBy
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterIndex', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterOffset() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterOffset', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterOffsetDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterOffset', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
       thenByLocalPath() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localPath', Sort.asc);
@@ -624,6 +856,20 @@ extension BookNovelEntityQueryWhereDistinct
     });
   }
 
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QDistinct>
+      distinctByLastReadChapterIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastReadChapterIndex');
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QDistinct>
+      distinctByLastReadChapterOffset() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastReadChapterOffset');
+    });
+  }
+
   QueryBuilder<BookNovelEntity, BookNovelEntity, QDistinct> distinctByLocalPath(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -643,6 +889,20 @@ extension BookNovelEntityQueryProperty
   QueryBuilder<BookNovelEntity, String, QQueryOperations> bookTitleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'bookTitle');
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, int?, QQueryOperations>
+      lastReadChapterIndexProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastReadChapterIndex');
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, double?, QQueryOperations>
+      lastReadChapterOffsetProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastReadChapterOffset');
     });
   }
 

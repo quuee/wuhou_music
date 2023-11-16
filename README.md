@@ -19,8 +19,8 @@
 - [ ] 均衡器  
 - [x] 音乐在线播放
 - [x] 视频在线播放
-- [ ] 本地阅读 支持utf8 gbk编码，记录最后一次阅读位置
-- [ ] 解析文字 使用 isolate 创建新线程，避开主线程
+- [x] 本地阅读 支持utf8 gbk编码，记录最后一次阅读位置
+- [ ] 跳到指定页面，不能往前翻
 - [ ] 本地阅读 flutter tts
 - [ ] 网络搜索 可搜歌名歌词歌手相关视频
 - [ ] 歌曲分类 语种 粤语日语 国风 戏曲 广播剧 有声书
@@ -69,6 +69,11 @@ GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
 
 //应该注册完之后 测试是否是单例
 ```
+
+## 小说页面为什么使用listview
+因为listview可以水平翻页 上下一行行翻页，pageview只能水平或垂直都只能一页页翻。  
+怎么跳转到某一章（listview controller offset按高度跳转）
+textpainter 只能在 root islote线程中使用
 
 ## flutter中 key GlobalKey
 GlobalKey：用来帮助我们确定某一个Widget、Element或者State，来访问其信息；它在整个程序中是唯一的。  

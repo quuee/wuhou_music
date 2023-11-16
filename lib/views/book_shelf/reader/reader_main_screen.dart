@@ -1,12 +1,13 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/content_parse_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/content_split_util.dart';
 
 import 'novel_model.dart';
@@ -26,8 +27,11 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
-  BookNovelEntity? bookNovel; // TODO 当前阅读章节 退出后即上次阅读位置，如何获取准确的位置，似乎pageview比listview好实现
+  BookNovelEntity? bookNovel;
 
+  late ScrollController chapterScro;
+
+  List<ChapterModel> chapterModelList = [];
 
   @override
   void initState() {
@@ -45,7 +49,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         _setIgnorePointer(false);
       }
     });
-
+    _getBookNovelInfo();
   }
 
   _setIgnorePointer(bool value) {
@@ -61,8 +65,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   @override
   void dispose() {
     //记录阅读位置
-    // IsarHelper.instance.isarInstance.bookNovelEntitys
-
+    IsarHelper.instance.isarInstance.writeTxnSync(() {
+      IsarHelper.instance.isarInstance.bookNovelEntitys.putSync(bookNovel!);
+    });
+    chapterScro.dispose();
     menuAnimationController.dispose();
     super.dispose();
   }
@@ -83,24 +89,21 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
               }
             },
             child: IgnorePointer(
-              key: _ignorePointerKey,
-              ignoring: _shouldIgnorePointer,
-              child: FutureBuilder<List<ChapterModel>>(
-                future: _getBookNovelInfo(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
-                      ),
-                    );
-                  }
-                  List<ChapterModel> list = snapshot.data!;
-                  return _buildBookNovel(list);
-                },
-              ),
-            ),
+                key: _ignorePointerKey,
+                ignoring: _shouldIgnorePointer,
+                child: Builder(
+                  builder: (context) {
+                    if (chapterModelList.isEmpty) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.grey[200],
+                          valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
+                        ),
+                      );
+                    }
+                    return _buildBookNovel(chapterModelList);
+                  },
+                )),
           )),
           // 顶部
           Positioned(
@@ -147,7 +150,24 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              InkWell(child: Text('目录'),onTap: (){},),
+              InkWell(
+                child: Text('目录'),
+                onTap: () {
+                  RDrawer.open(
+                      Drawer(
+                        child: ListView.builder(
+                            itemCount: chapterModelList.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title:
+                                    Text(chapterModelList[index].chapterTitle),
+                                subtitle: Text('第$index章'),
+                              );
+                            }),
+                      ),
+                      width: MediaQuery.of(context).size.width * 2 / 3);
+                },
+              ),
               Text('亮度'),
               Text('设置'),
               Text('更多'),
@@ -159,8 +179,8 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   }
 
   _buildBookNovel(List<ChapterModel> chapterList) {
-
     return ListView.builder(
+        controller: chapterScro,
         physics: PageScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: chapterList.length,
@@ -191,9 +211,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
       contentWidth: MediaQuery.of(context).size.width - 20,
     );
     chapterInfo.chapterTitle = chapterModel.chapterTitle;
-
-    // bookNovel?.lastReadChapterIndex = chapterModel.chapterIndex; // 记录位置到缓存
-    // bookNovel?.lastReadChapterPageIndex = chapterModel.chapterIndex; // 记录位置到缓存
 
     return ListView.builder(
         physics: PageScrollPhysics(),
@@ -235,52 +252,46 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         });
   }
 
-  Future<List<ChapterModel>> _getBookNovelInfo() async {
-    // String bookContent = await rootBundle.loadString('assets/三体.txt');
-    bookNovel = Get.arguments as BookNovelEntity;
-    File file = File(bookNovel!.localPath);
-    bool exist = await file.exists();
-    if (!exist) {
-      return [];
-    }
+  _getBookNovelInfo() {
     String bookContent = '';
-    try {
-      bookContent = file.readAsStringSync();
-    } on FileSystemException catch (e) {
-      LogE('读取book编码错误', e.message);
-      List<int> readBytes = file.readAsBytesSync().toList();
-      bookContent = CodeConvert.gbk2utf8(readBytes);
+    if (bookNovel == null) {
+      bookNovel = Get.arguments as BookNovelEntity;
+      File file = File(bookNovel!.localPath);
+      bool exist = file.existsSync();
+      if (!exist) {
+        return;
+      }
+      try {
+        bookContent = file.readAsStringSync();
+      } on FileSystemException catch (e) {
+        LogE('读取book编码错误', e.message);
+        List<int> readBytes = file.readAsBytesSync().toList();
+        bookContent = CodeConvert.gbk2utf8(readBytes);
+      }
     }
+    double? lastReadOffset = bookNovel?.lastReadChapterOffset;
+    chapterScro = ScrollController(initialScrollOffset: lastReadOffset ?? 0)
+      ..addListener(() {
+        bookNovel?.lastReadChapterOffset = chapterScro.offset;
+      });
 
-    return _parse(bookContent);
-  }
+    // ReceivePort rp = ReceivePort();
+    // Isolate.spawn(ContentParseUtil.decodeAndParseContent,
+    //     [rp.sendPort, bookContent]);
+    // rp.listen((message) {
+    //   if(message != null ){
+    //     ChapterModel c = message as ChapterModel;
+    //     // LogD('ReceivePort message', c.toJson().toString());
+    //
+    //     setState(() {
+    //       chapterModelList.add(c);
+    //     });
+    //   }
+    // });
 
-  List<ChapterModel> _parse(String bookContent) {
-    if (bookContent.isEmpty) {
-      return [];
-    }
-    //匹配规则
-    RegExp pest = RegExp(
-        '(正文){0,1}(\\s|\\n)(第)([\\u4e00-\\u9fa5a-zA-Z0-9]{1,7})[章][^\\n]{1,35}(|\\n)');
-
-    //将小说内容中的PS全部替换为""
-    bookContent = bookContent.replaceAll(RegExp('(PS|ps)(.)*(|\\n)'), '');
-    List<String> chapterContentList = bookContent.split(pest);
-
-    List<ChapterModel> chapterList = [];
-    chapterList.add(ChapterModel(
-        chapterIndex: 0,
-        chapterTitle: '正文',
-        chapterContent: chapterContentList[0]));
-
-    Iterable<Match> allMatches = pest.allMatches(bookContent);
-    for (int i = 1; i < chapterContentList.length; i++) {
-      String chapterName = allMatches.elementAt(i - 1).group(0).toString();
-      chapterList.add(ChapterModel(
-          chapterIndex: i,
-          chapterTitle: chapterName,
-          chapterContent: chapterContentList[i]));
-    }
-    return chapterList;
+    setState(() {
+      chapterModelList = ContentParseUtil.parseBookContent(bookContent);
+    });
+    // return bookContent;
   }
 }

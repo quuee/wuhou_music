@@ -19,9 +19,9 @@ class _DirectoryTabState extends State<DirectoryTab> {
   Widget build(BuildContext context) {
     return Navigator(
       initialRoute: '/directory_tab',
-      onGenerateRoute: (RouteSettings settins) {
+      onGenerateRoute: (RouteSettings settings) {
         WidgetBuilder builder = (context) => SizedBox.shrink();
-        switch (settins.name) {
+        switch (settings.name) {
           case '/directory_tab':
             builder = (context) {
               return _buildDirectory(context);
