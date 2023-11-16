@@ -7,7 +7,7 @@ const String LINE_FEED = '\n';
 
 class ContentSplitUtil {
 
-  static NovelChapterInfo calculateChapter({
+  static ChapterCacheInfo calculateChapter({
     required TextSpan chapterContent,
     required double contentHeight,
     required double contentWidth,
@@ -21,8 +21,8 @@ class ContentSplitUtil {
       paragraphSpace: paragraphSpace,
     );
 
-    NovelChapterInfo info = NovelChapterInfo();
-    info.chapterPageContentList = perPageContentInfoList;
+    ChapterCacheInfo info = ChapterCacheInfo();
+    info.chapterPageContentCacheInfoList = perPageContentInfoList;
     info.chapterIndex = math.min(currentIndex, perPageContentInfoList.length);
 
     return info;
@@ -37,13 +37,13 @@ class ContentSplitUtil {
   /// paragraphSpace ： 段落之间的间距；
   ///
   /// return ：承载每页中的内容，页码等数据的列表
-  static List<PerPageContentInfo> _calculateChapter(
+  static List<ChapterPageContentCacheInfo> _calculateChapter(
       {required TextSpan chapterContent,
       required double contentHeight,
       required double contentWidth,
       double paragraphSpace = 0}) {
 
-    List<PerPageContentInfo> perPageContentInfo = [];
+    List<ChapterPageContentCacheInfo> perPageContentInfo = [];
     int pageIndex = 0;
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
     List<TextSpan> targetList = [];
@@ -83,7 +83,7 @@ class ContentSplitUtil {
     /// 不断计算，直到指定的段落list都计算完成；
     while (paragraphs.length > 0) {
       /// 用来放一页中有多少段落，内容、页码之类的东西；
-      PerPageContentInfo info = PerPageContentInfo();
+      ChapterPageContentCacheInfo info = ChapterPageContentCacheInfo();
       info.paragraphContents = [];
       info.currentContentParagraphSpace = paragraphSpace;
       info.currentPageIndex = pageIndex;
@@ -107,7 +107,7 @@ class ContentSplitUtil {
   /// 计算一页的内容；
   /// return 剩余未处理的部分
   static _getPageInfo({
-    required PerPageContentInfo perPageContentInfo,
+    required ChapterPageContentCacheInfo perPageContentInfo,
     required List<TextSpan> sourceParagraphsList,
     required double contentHeight,
     required double contentWidth,

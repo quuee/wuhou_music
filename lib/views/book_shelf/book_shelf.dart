@@ -59,6 +59,7 @@ class _BookShelfPageState extends State<BookShelfPage>
             child: EasyRefresh(
               header: ClassicHeader(),
               onRefresh: _loadBooks,
+              // Draggable实现可拖拽GridView
               child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3, childAspectRatio: 1),

@@ -50,17 +50,17 @@ class ChapterModel {
 // }
 
 /// 章节
-class NovelChapterInfo {
+class ChapterCacheInfo {
   int chapterIndex = 0;
   String? chapterTitle;
 
-  List<PerPageContentInfo> chapterPageContentList = [];
+  List<ChapterPageContentCacheInfo> chapterPageContentCacheInfoList = [];
 
-  int get chapterPageCount => chapterPageContentList.length;
+  int get chapterPageCount => chapterPageContentCacheInfoList.length;
 }
 
 /// 章节内容的每页数据
-class PerPageContentInfo{
+class ChapterPageContentCacheInfo{
   double currentContentParagraphSpace = 0;
   int currentPageIndex = 0;
   List<InlineSpan> paragraphContents = []; // 一行行文字的集合

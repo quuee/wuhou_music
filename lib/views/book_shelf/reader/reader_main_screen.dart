@@ -31,7 +31,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
   late ScrollController chapterScro;
 
-  List<ChapterModel> chapterModelList = [];
+  Stream<ChapterCacheInfo>? chapterStream;
+  List<ChapterCacheInfo> chapterCacheInfoList = [];
+
+  int totalPage = 0;
 
   @override
   void initState() {
@@ -65,9 +68,9 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   @override
   void dispose() {
     //记录阅读位置
-    IsarHelper.instance.isarInstance.writeTxnSync(() {
-      IsarHelper.instance.isarInstance.bookNovelEntitys.putSync(bookNovel!);
-    });
+    // IsarHelper.instance.isarInstance.writeTxnSync(() {
+    //   IsarHelper.instance.isarInstance.bookNovelEntitys.putSync(bookNovel!);
+    // });
     chapterScro.dispose();
     menuAnimationController.dispose();
     super.dispose();
@@ -91,19 +94,8 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
             child: IgnorePointer(
                 key: _ignorePointerKey,
                 ignoring: _shouldIgnorePointer,
-                child: Builder(
-                  builder: (context) {
-                    if (chapterModelList.isEmpty) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.grey[200],
-                          valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
-                        ),
-                      );
-                    }
-                    return _buildBookNovel(chapterModelList);
-                  },
-                )),
+                child: _buildTest(),
+            ),
           )),
           // 顶部
           Positioned(
@@ -156,11 +148,11 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                   RDrawer.open(
                       Drawer(
                         child: ListView.builder(
-                            itemCount: chapterModelList.length,
+                            itemCount: chapterCacheInfoList.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title:
-                                    Text(chapterModelList[index].chapterTitle),
+                                    Text(chapterCacheInfoList[index].chapterTitle??''),
                                 subtitle: Text('第$index章'),
                               );
                             }),
@@ -178,20 +170,78 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
     );
   }
 
-  _buildBookNovel(List<ChapterModel> chapterList) {
-    return ListView.builder(
-        controller: chapterScro,
-        physics: PageScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemCount: chapterList.length,
-        itemBuilder: (context, index) {
-          return _buildChapter(chapterList[index]);
-        });
+
+  _buildTest(){
+    return StreamBuilder<ChapterCacheInfo>(stream: chapterStream,builder: (context,snapshot){
+      if(!snapshot.hasData){
+        return Center(
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.grey[200],
+            valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
+          ),
+        );
+      }
+      LogD('StreamBuilder', snapshot.data!.toString());
+      chapterCacheInfoList.add(snapshot.data!);
+        return ListView.builder(
+            controller: chapterScro,
+            physics: PageScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: chapterCacheInfoList.length,
+            itemBuilder: (context, index) {
+              return _buildReadScreen(chapterCacheInfoList[index]);
+            });
+
+    },);
   }
 
-  _buildChapter(ChapterModel chapterModel) {
+  _buildReadScreen(ChapterCacheInfo chapterCacheInfo) {
+      return ListView.builder(
+          physics: PageScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemCount: chapterCacheInfo.chapterPageCount,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: EdgeInsets.only(top: 30),
+              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: AlignmentDirectional.topCenter,
+                    child: Text.rich(
+                      TextSpan(
+                          children: chapterCacheInfo.chapterPageContentCacheInfoList[index]
+                              .paragraphContents),
+                      softWrap: true,
+                    ),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      right: 10,
+                      child: Text('页码:' + (index + 1).toString() + "/$totalPage",
+                          style:
+                              TextStyle(color: Colors.grey, fontSize: 12))),
+                  Positioned(
+                      bottom: 0,
+                      left: 10,
+                      child: Text(
+                        chapterCacheInfo.chapterTitle ?? '',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      )),
+                ],
+              ),
+            );
+          });
+
+  }
+  
+
+  Future<ChapterCacheInfo> _parseChapter(ChapterModel chapterModel) async{
     double fontSize = 24;
-    NovelChapterInfo chapterInfo = ContentSplitUtil.calculateChapter(
+    ChapterCacheInfo chapterInfo = ContentSplitUtil.calculateChapter(
       chapterContent: TextSpan(
           text: chapterModel.chapterTitle,
           style: TextStyle(
@@ -212,44 +262,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
     );
     chapterInfo.chapterTitle = chapterModel.chapterTitle;
 
-    return ListView.builder(
-        physics: PageScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: chapterInfo.chapterPageCount,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.only(top: 30),
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Stack(
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.topCenter,
-                  child: Text.rich(
-                    TextSpan(
-                        children: chapterInfo
-                            .chapterPageContentList[index].paragraphContents),
-                    softWrap: true,
-                  ),
-                ),
-                Positioned(
-                    bottom: 0,
-                    right: 10,
-                    child: Text('页码:' + (index + 1).toString(),
-                        style: TextStyle(color: Colors.grey, fontSize: 12))),
-                Positioned(
-                    bottom: 0,
-                    left: 10,
-                    child: Text(
-                      chapterInfo.chapterTitle ?? '',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    )),
-              ],
-            ),
-          );
-        });
+    return Future.value(chapterInfo);
   }
 
   _getBookNovelInfo() {
@@ -275,23 +288,18 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         bookNovel?.lastReadChapterOffset = chapterScro.offset;
       });
 
-    // ReceivePort rp = ReceivePort();
-    // Isolate.spawn(ContentParseUtil.decodeAndParseContent,
-    //     [rp.sendPort, bookContent]);
-    // rp.listen((message) {
-    //   if(message != null ){
-    //     ChapterModel c = message as ChapterModel;
-    //     // LogD('ReceivePort message', c.toJson().toString());
-    //
-    //     setState(() {
-    //       chapterModelList.add(c);
-    //     });
-    //   }
-    // });
+    List<ChapterModel> cList = ContentParseUtil.parseBookContent(bookContent);
+    chapterStream = _createStream(cList);
 
-    setState(() {
-      chapterModelList = ContentParseUtil.parseBookContent(bookContent);
-    });
-    // return bookContent;
+  }
+
+  Stream<ChapterCacheInfo> _createStream(List<ChapterModel> cList ) async*{
+    for(int i =0 ;i<cList.length;i++){
+      LogD('返回', i.toString());
+      await Future.delayed(Duration(seconds: 1));
+      ChapterCacheInfo parseChapter = await _parseChapter(cList[i]);
+      totalPage += parseChapter.chapterPageCount;
+      yield parseChapter;
+    }
   }
 }
