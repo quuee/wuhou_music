@@ -32,9 +32,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   late ScrollController chapterScro;
 
   Stream<ChapterCacheInfo>? chapterStream;
-  List<ChapterCacheInfo> chapterCacheInfoList = [];
+  List<ChapterCacheInfo> chapterCacheInfoList = []; // 若是调整字体 间距，重新画笔布局，清空章节集合
 
-  int totalPage = 0;
+  int totalPage = 0; // 总页数
+  int currentPage = 1; //
 
   @override
   void initState() {
@@ -94,7 +95,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
             child: IgnorePointer(
                 key: _ignorePointerKey,
                 ignoring: _shouldIgnorePointer,
-                child: _buildTest(),
+                child: _buildChapter(),
             ),
           )),
           // 顶部
@@ -170,8 +171,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
     );
   }
 
-
-  _buildTest(){
+  _buildChapter(){
     return StreamBuilder<ChapterCacheInfo>(stream: chapterStream,builder: (context,snapshot){
       if(!snapshot.hasData){
         return Center(
@@ -184,7 +184,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
       LogD('StreamBuilder', snapshot.data!.toString());
       chapterCacheInfoList.add(snapshot.data!);
         return ListView.builder(
-            controller: chapterScro,
+            controller: chapterScro, // TODO 自定义手势 收集页码
             physics: PageScrollPhysics(),
             scrollDirection: Axis.horizontal,
             itemCount: chapterCacheInfoList.length,
@@ -221,9 +221,8 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                   Positioned(
                       bottom: 0,
                       right: 10,
-                      child: Text('页码:' + (index + 1).toString() + "/$totalPage",
-                          style:
-                              TextStyle(color: Colors.grey, fontSize: 12))),
+                      child: Text('页码:$currentPage' + "/$totalPage",
+                          style: TextStyle(color: Colors.grey, fontSize: 12))),
                   Positioned(
                       bottom: 0,
                       left: 10,
@@ -235,9 +234,8 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
               ),
             );
           });
-
   }
-  
+
 
   Future<ChapterCacheInfo> _parseChapter(ChapterModel chapterModel) async{
     double fontSize = 24;
@@ -282,24 +280,26 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         bookContent = CodeConvert.gbk2utf8(readBytes);
       }
     }
-    double? lastReadOffset = bookNovel?.lastReadChapterOffset;
-    chapterScro = ScrollController(initialScrollOffset: lastReadOffset ?? 0)
-      ..addListener(() {
-        bookNovel?.lastReadChapterOffset = chapterScro.offset;
-      });
+    // double? lastReadOffset = bookNovel?.lastReadChapterOffset;
+    // chapterScro = ScrollController(initialScrollOffset: lastReadOffset ?? 0)
+    //   ..addListener(() {
+    //     bookNovel?.lastReadChapterOffset = chapterScro.offset;
+    //     LogD('chapterScro.offset', chapterScro.offset.toString());
+    //   });
 
     List<ChapterModel> cList = ContentParseUtil.parseBookContent(bookContent);
-    chapterStream = _createStream(cList);
+    chapterStream = _createChapterCacheInfoStream(cList);
 
   }
 
-  Stream<ChapterCacheInfo> _createStream(List<ChapterModel> cList ) async*{
+  Stream<ChapterCacheInfo> _createChapterCacheInfoStream(List<ChapterModel> cList ) async*{
     for(int i =0 ;i<cList.length;i++){
       LogD('返回', i.toString());
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(milliseconds: 500));
       ChapterCacheInfo parseChapter = await _parseChapter(cList[i]);
       totalPage += parseChapter.chapterPageCount;
       yield parseChapter;
+      // 如何中断
     }
   }
 }
