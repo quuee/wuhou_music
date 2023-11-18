@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-List<ChapterModel> chapterModelFromJson(String str) => List<ChapterModel>.from(json.decode(str).map((x) => ChapterModel.fromJson(x)));
+List<ChapterModel> chapterModelFromJson(String str) => List<ChapterModel>.from(
+    json.decode(str).map((x) => ChapterModel.fromJson(x)));
 
-String chapterModelToJson(List<ChapterModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String chapterModelToJson(List<ChapterModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ChapterModel {
   int chapterIndex;
@@ -18,16 +20,16 @@ class ChapterModel {
   });
 
   factory ChapterModel.fromJson(Map<String, dynamic> json) => ChapterModel(
-    chapterIndex: json["chapterIndex"],
-    chapterTitle: json["chapterTitle"],
-    chapterContent: json["chapterContent"],
-  );
+        chapterIndex: json["chapterIndex"],
+        chapterTitle: json["chapterTitle"],
+        chapterContent: json["chapterContent"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "chapterIndex": chapterIndex,
-    "chapterName": chapterTitle,
-    "chapterContent": chapterContent,
-  };
+        "chapterIndex": chapterIndex,
+        "chapterName": chapterTitle,
+        "chapterContent": chapterContent,
+      };
 }
 
 /**-------------------------------------------用于解析布局的章节模型-----------------------------------------------------------------*/
@@ -44,7 +46,7 @@ class ChapterModel {
 //     this.bookAuthor,
 //     this.lastChapterTitle
 // });
-// 
+//
 //   List<NovelChapterInfo>? chapterList;
 //   int currentChapterIndex = 0;
 // }
@@ -57,11 +59,19 @@ class ChapterCacheInfo {
   List<ChapterPageContentCacheInfo> chapterPageContentCacheInfoList = [];
 
   int get chapterPageCount => chapterPageContentCacheInfoList.length;
+
+  double getChapterHeight() {
+    double height = 0.0;
+    for (int i = 0; i < chapterPageCount; i++) {
+      height += chapterPageContentCacheInfoList[i].contentHeight;
+    }
+    return height;
+  }
 }
 
 /// 章节内容的每页数据
-class ChapterPageContentCacheInfo{
+class ChapterPageContentCacheInfo {
+  double contentHeight = 0.0;
   double currentContentParagraphSpace = 0;
-  int currentPageIndex = 0;
   List<InlineSpan> paragraphContents = []; // 一行行文字的集合
 }

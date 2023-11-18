@@ -20,7 +20,7 @@
 - [x] 音乐在线播放
 - [x] 视频在线播放
 - [x] 本地阅读 支持utf8 gbk编码，记录最后一次阅读位置
-- [ ] 跳到指定页面，不能往前翻
+- [ ] 跳到指定页面，不能往前翻 (flutter自身如此，解决不了。最多处理2-3m大小的文件，不然很卡)
 - [ ] 本地阅读 flutter tts
 - [ ] 网络搜索 可搜歌名歌词歌手相关视频
 - [ ] 歌曲分类 语种 粤语日语 国风 戏曲 广播剧 有声书
@@ -81,6 +81,16 @@ LocalKey：是Flutter增量渲染算法的核心，通过LocalKey来决定Elemen
 ValueKey：以值作为参数（数字、字符串）；  
 ObjectKey：以对象作为参数；  
 UniqueKey：创建唯一标识；  
+
+## flutter 容器设置高度没有用
+受到父容器控制。  
+ConstrainedBox：适用于需要设置最大/小宽高，组件大小以来子组件大小，但不能超过设置的界限。  
+UnconstrainedBox：用到情况不多，当作ConstrainedBox的子组件可以“突破”ConstrainedBox的限制，超出界限的部分会被截取。  
+SizedBox：适用于固定宽高的情况，常用于当作2个组件之间间隙组件。  
+AspectRatio：适用于固定宽高比的情况。  
+FractionallySizedBox：适用于占父组件百分比的情况。  
+LimitedBox：适用于没有父组件约束的情况。  
+Container：适用于不仅有尺寸的约束，还有装饰（颜色、边框、等）、内外边距等需求的情况。  
 
 ## dart try catch
 ```dart

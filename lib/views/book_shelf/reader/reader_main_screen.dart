@@ -9,6 +9,7 @@ import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/content_parse_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/content_split_util.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/reader_content_screen.dart';
 
 import 'novel_model.dart';
 
@@ -35,7 +36,6 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
   List<ChapterCacheInfo> chapterCacheInfoList = []; // 若是调整字体 间距，重新画笔布局，清空章节集合
 
   int totalPage = 0; // 总页数
-  int currentPage = 1; //
 
   @override
   void initState() {
@@ -53,6 +53,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         _setIgnorePointer(false);
       }
     });
+
+    // contentHeight = MediaQuery.of(context).size.height - 30 - 30;
+    // contentWidth = MediaQuery.of(context).size.width - 20;
+
     _getBookNovelInfo();
   }
 
@@ -68,7 +72,7 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
 
   @override
   void dispose() {
-    //记录阅读位置
+    // 记录阅读位置
     // IsarHelper.instance.isarInstance.writeTxnSync(() {
     //   IsarHelper.instance.isarInstance.bookNovelEntitys.putSync(bookNovel!);
     // });
@@ -93,9 +97,9 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
               }
             },
             child: IgnorePointer(
-                key: _ignorePointerKey,
-                ignoring: _shouldIgnorePointer,
-                child: _buildChapter(),
+              key: _ignorePointerKey,
+              ignoring: _shouldIgnorePointer,
+              child: _buildChapter(),
             ),
           )),
           // 顶部
@@ -152,9 +156,21 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                             itemCount: chapterCacheInfoList.length,
                             itemBuilder: (context, index) {
                               return ListTile(
-                                title:
-                                    Text(chapterCacheInfoList[index].chapterTitle??''),
+                                title: Text(
+                                    chapterCacheInfoList[index].chapterTitle ??
+                                        ''),
                                 subtitle: Text('第$index章'),
+                                onTap: () {
+
+                                  double height = 0.0;
+                                  var list = chapterCacheInfoList.sublist(0,index);
+                                  for(int i = 0 ;i<list.length;i++){
+                                    height+=list[i].getChapterHeight();
+                                  }
+
+                                  LogD('跳转高度', height.toString());
+                                  chapterScro.jumpTo(height);
+                                },
                               );
                             }),
                       ),
@@ -171,81 +187,51 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
     );
   }
 
-  _buildChapter(){
-    return StreamBuilder<ChapterCacheInfo>(stream: chapterStream,builder: (context,snapshot){
-      if(!snapshot.hasData){
-        return Center(
-          child: CircularProgressIndicator(
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
-          ),
-        );
-      }
-      LogD('StreamBuilder', snapshot.data!.toString());
-      chapterCacheInfoList.add(snapshot.data!);
+  _buildChapter() {
+    return StreamBuilder<ChapterCacheInfo>(
+      stream: chapterStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation(Colors.blueGrey),
+            ),
+          );
+        }
+
+        chapterCacheInfoList.add(snapshot.data!);
+        totalPage += snapshot.data!.chapterPageCount;
         return ListView.builder(
-            controller: chapterScro, // TODO 自定义手势 收集页码
+            controller: chapterScro,
             physics: PageScrollPhysics(),
             scrollDirection: Axis.horizontal,
             itemCount: chapterCacheInfoList.length,
             itemBuilder: (context, index) {
-              return _buildReadScreen(chapterCacheInfoList[index]);
+              return ReaderContentScreen(
+                chapterCacheInfo: chapterCacheInfoList[index],
+                contentHeight: MediaQuery.of(context).size.height ,
+                contentWidth: MediaQuery.of(context).size.width,
+                totalPage: totalPage,
+              );
             });
-
-    },);
+      },
+    );
   }
 
-  _buildReadScreen(ChapterCacheInfo chapterCacheInfo) {
-      return ListView.builder(
-          physics: PageScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          itemCount: chapterCacheInfo.chapterPageCount,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: EdgeInsets.only(top: 30),
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: AlignmentDirectional.topCenter,
-                    child: Text.rich(
-                      TextSpan(
-                          children: chapterCacheInfo.chapterPageContentCacheInfoList[index]
-                              .paragraphContents),
-                      softWrap: true,
-                    ),
-                  ),
-                  Positioned(
-                      bottom: 0,
-                      right: 10,
-                      child: Text('页码:$currentPage' + "/$totalPage",
-                          style: TextStyle(color: Colors.grey, fontSize: 12))),
-                  Positioned(
-                      bottom: 0,
-                      left: 10,
-                      child: Text(
-                        chapterCacheInfo.chapterTitle ?? '',
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                      )),
-                ],
-              ),
-            );
-          });
-  }
-
-
-  Future<ChapterCacheInfo> _parseChapter(ChapterModel chapterModel) async{
+  Future<ChapterCacheInfo> _parseChapter(ChapterModel chapterModel) async {
+    double contentHeight = MediaQuery.of(context).size.height - 30 - 30;
+    double contentWidth = MediaQuery.of(context).size.width - 20;
     double fontSize = 24;
+    double lineHeight = 1.3;
+
     ChapterCacheInfo chapterInfo = ContentSplitUtil.calculateChapter(
       chapterContent: TextSpan(
           text: chapterModel.chapterTitle,
           style: TextStyle(
             color: Colors.black,
-            fontSize: fontSize * 1.3,
-            height: 1.3,
+            fontSize: fontSize * lineHeight,
+            height: lineHeight,
           ),
           children: [
             TextSpan(
@@ -253,10 +239,10 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: fontSize,
-                    height: 1.3)) // height行高是倍速
+                    height: lineHeight)) // height行高是倍速
           ]),
-      contentHeight: MediaQuery.of(context).size.height - 30 - 30,
-      contentWidth: MediaQuery.of(context).size.width - 20,
+      contentHeight: contentHeight,
+      contentWidth: contentWidth,
     );
     chapterInfo.chapterTitle = chapterModel.chapterTitle;
 
@@ -280,24 +266,23 @@ class _ReaderMainScreenState extends State<ReaderMainScreen>
         bookContent = CodeConvert.gbk2utf8(readBytes);
       }
     }
-    // double? lastReadOffset = bookNovel?.lastReadChapterOffset;
-    // chapterScro = ScrollController(initialScrollOffset: lastReadOffset ?? 0)
-    //   ..addListener(() {
-    //     bookNovel?.lastReadChapterOffset = chapterScro.offset;
-    //     LogD('chapterScro.offset', chapterScro.offset.toString());
-    //   });
+    double? lastReadOffset = bookNovel?.lastReadChapterOffset;
+    chapterScro = ScrollController(initialScrollOffset: lastReadOffset ?? 0)
+      ..addListener(() {
+        bookNovel?.lastReadChapterOffset = chapterScro.offset;
+        LogD('chapterScro.offset', chapterScro.offset.toString());
+      });
 
     List<ChapterModel> cList = ContentParseUtil.parseBookContent(bookContent);
     chapterStream = _createChapterCacheInfoStream(cList);
-
   }
 
-  Stream<ChapterCacheInfo> _createChapterCacheInfoStream(List<ChapterModel> cList ) async*{
-    for(int i =0 ;i<cList.length;i++){
-      LogD('返回', i.toString());
+  Stream<ChapterCacheInfo> _createChapterCacheInfoStream(
+      List<ChapterModel> cList) async* {
+    for (int i = 0; i < cList.length; i++) {
+      LogD('返回', cList[i].chapterTitle.toString());
       await Future.delayed(Duration(milliseconds: 500));
       ChapterCacheInfo parseChapter = await _parseChapter(cList[i]);
-      totalPage += parseChapter.chapterPageCount;
       yield parseChapter;
       // 如何中断
     }

@@ -44,7 +44,7 @@ class ContentSplitUtil {
       double paragraphSpace = 0}) {
 
     List<ChapterPageContentCacheInfo> perPageContentInfo = [];
-    int pageIndex = 0;
+    // int pageIndex = 0;
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
     List<TextSpan> targetList = [];
     if (chapterContent.text != null) {
@@ -86,7 +86,7 @@ class ContentSplitUtil {
       ChapterPageContentCacheInfo info = ChapterPageContentCacheInfo();
       info.paragraphContents = [];
       info.currentContentParagraphSpace = paragraphSpace;
-      info.currentPageIndex = pageIndex;
+
 
       /// 计算一页中的内容
       _getPageInfo(
@@ -99,7 +99,7 @@ class ContentSplitUtil {
       perPageContentInfo.add(info);
 
       /// 指针+1
-      pageIndex++;
+      // pageIndex++;
     }
     return perPageContentInfo;
   }
@@ -203,6 +203,7 @@ class ContentSplitUtil {
       // 添加一个box，就增加一行，增加了高度。但是不加 样式不会换行又难看
       // perPageContentInfo.paragraphContents.add(WidgetSpan(child: SizedBox(width:double.infinity,height: perPageContentInfo.currentContentParagraphSpace,)));
       perPageContentInfo.paragraphContents.add(TextSpan(text: LINE_FEED));
+      perPageContentInfo.contentHeight = currentHeight;
 
     }
   }
