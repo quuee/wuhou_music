@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
@@ -26,6 +27,9 @@ class _BookShelfPageState extends State<BookShelfPage>
 
   late AnimationController menuAnimationController;
   late Animation<Offset> menuBottomAnimationProgress;
+
+  //平台通道––––跳转到Android页面
+  static const channel = const MethodChannel('music.wuhou.wuhoumusic.book.read.android');
 
   @override
   void initState() {
@@ -107,9 +111,14 @@ class _BookShelfPageState extends State<BookShelfPage>
     );
   }
 
-  _openBookNovel(BookNovelEntity bookNovelEntity) {
+  _openBookNovel(BookNovelEntity bookNovelEntity) async {
     if (!isEditStatus) {
-      Get.toNamed(Routes.reader, arguments: bookNovelEntity);
+      // Get.toNamed(Routes.reader, arguments: bookNovelEntity);
+
+      // 跳转到原生界面
+      final String result = await channel.invokeMethod('open');
+      // final _bookReadPlugin = BookReadPlugin();
+
     }
   }
 

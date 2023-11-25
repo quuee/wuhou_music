@@ -43,6 +43,7 @@ analysis_options.yaml
 /build/
 build/
 test/
+plugins/
 
 # Web related
 lib/generated_plugin_registrant.dart
