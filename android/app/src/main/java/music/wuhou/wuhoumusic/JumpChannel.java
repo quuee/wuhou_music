@@ -1,8 +1,11 @@
 package music.wuhou.wuhoumusic;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import java.util.Map;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -29,8 +32,16 @@ public class JumpChannel implements MethodChannel.MethodCallHandler{
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
 
         if(call.method.equals("open")){
-            Intent intent = new Intent(mActivity, ReadActivity.class);
-            mActivity.startActivity(intent);
+            boolean hasArgument = call.hasArgument("localPath");
+            Log.i("hasArgument",call.arguments().toString());
+            if(hasArgument){
+                Map<String,Object> args = (Map<String, Object>) call.arguments;
+                Log.i("onMethodCall",args.get("localPath").toString());
+                Intent intent = new Intent(mActivity, ReadActivity.class);
+                intent.putExtra("localPath",args.get("localPath").toString());
+                mActivity.startActivity(intent);
+            }
+
         }else {
             result.notImplemented();
         }

@@ -2,10 +2,8 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
-import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/event_bus.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
@@ -116,7 +114,8 @@ class _BookShelfPageState extends State<BookShelfPage>
       // Get.toNamed(Routes.reader, arguments: bookNovelEntity);
 
       // 跳转到原生界面
-      final String result = await channel.invokeMethod('open');
+      Map<String,dynamic> map = {'bookName':bookNovelEntity.bookTitle,'localPath':bookNovelEntity.localPath};
+      final String result = await channel.invokeMethod('open',map);
       // final _bookReadPlugin = BookReadPlugin();
 
     }

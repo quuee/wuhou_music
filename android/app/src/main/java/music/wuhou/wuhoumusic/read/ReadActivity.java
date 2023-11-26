@@ -1,10 +1,13 @@
 package music.wuhou.wuhoumusic.read;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -19,9 +22,13 @@ public class ReadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
         readView = findViewById(R.id.read_view);
-
+        Intent intent = getIntent();
+        String localPath = intent.getStringExtra("localPath");
         try {
-            InputStream is = getResources().openRawResource(R.raw.santi);
+//            InputStream is = getResources().openRawResource(R.raw.santi);
+            assert localPath != null;
+            File f = new File(localPath);
+            InputStream is = new FileInputStream(f);
             String text = readTextFromSDcard(is);
             readView.setText(text);
         } catch (Exception e) {
