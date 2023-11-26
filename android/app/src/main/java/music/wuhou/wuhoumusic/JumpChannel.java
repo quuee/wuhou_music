@@ -35,10 +35,8 @@ public class JumpChannel implements MethodChannel.MethodCallHandler{
             boolean hasArgument = call.hasArgument("localPath");
             Log.i("hasArgument",call.arguments().toString());
             if(hasArgument){
-                Map<String,Object> args = (Map<String, Object>) call.arguments;
-                Log.i("onMethodCall",args.get("localPath").toString());
                 Intent intent = new Intent(mActivity, ReadActivity.class);
-                intent.putExtra("localPath",args.get("localPath").toString());
+                intent.putExtra("localPath",call.argument("localPath").toString());
                 mActivity.startActivity(intent);
             }
 
