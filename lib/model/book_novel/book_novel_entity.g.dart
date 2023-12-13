@@ -30,7 +30,7 @@ const BookNovelEntitySchema = CollectionSchema(
     r'lastReadChapterOffset': PropertySchema(
       id: 2,
       name: r'lastReadChapterOffset',
-      type: IsarType.double,
+      type: IsarType.long,
     ),
     r'localPath': PropertySchema(
       id: 3,
@@ -71,7 +71,7 @@ void _bookNovelEntitySerialize(
 ) {
   writer.writeString(offsets[0], object.bookTitle);
   writer.writeLong(offsets[1], object.lastReadChapterIndex);
-  writer.writeDouble(offsets[2], object.lastReadChapterOffset);
+  writer.writeLong(offsets[2], object.lastReadChapterOffset);
   writer.writeString(offsets[3], object.localPath);
 }
 
@@ -84,7 +84,7 @@ BookNovelEntity _bookNovelEntityDeserialize(
   final object = BookNovelEntity(
     bookTitle: reader.readString(offsets[0]),
     lastReadChapterIndex: reader.readLongOrNull(offsets[1]),
-    lastReadChapterOffset: reader.readDoubleOrNull(offsets[2]),
+    lastReadChapterOffset: reader.readLongOrNull(offsets[2]),
     localPath: reader.readString(offsets[3]),
   );
   object.id = id;
@@ -103,7 +103,7 @@ P _bookNovelEntityDeserializeProp<P>(
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     default:
@@ -509,58 +509,49 @@ extension BookNovelEntityQueryFilter
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
-      lastReadChapterOffsetEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
+      lastReadChapterOffsetEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lastReadChapterOffset',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
       lastReadChapterOffsetGreaterThan(
-    double? value, {
+    int? value, {
     bool include = false,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'lastReadChapterOffset',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
       lastReadChapterOffsetLessThan(
-    double? value, {
+    int? value, {
     bool include = false,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'lastReadChapterOffset',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
       lastReadChapterOffsetBetween(
-    double? lower,
-    double? upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -569,7 +560,6 @@ extension BookNovelEntityQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        epsilon: epsilon,
       ));
     });
   }
@@ -899,7 +889,7 @@ extension BookNovelEntityQueryProperty
     });
   }
 
-  QueryBuilder<BookNovelEntity, double?, QQueryOperations>
+  QueryBuilder<BookNovelEntity, int?, QQueryOperations>
       lastReadChapterOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastReadChapterOffset');

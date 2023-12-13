@@ -65,34 +65,4 @@ class ContentParseUtil {
 
   }
 
-  static List<ChapterModel> parseBookContent(String bookContent) {
-    if (bookContent.isEmpty) {
-      return [];
-    }
-    //匹配规则
-    RegExp pest = RegExp(
-        '(正文){0,1}(\\s|\\n)(第)([\\u4e00-\\u9fa5a-zA-Z0-9]{1,7})[章][^\\n]{1,35}(|\\n)');
-
-    //将小说内容中的PS全部替换为""
-    bookContent = bookContent.replaceAll(RegExp('(PS|ps)(.)*(|\\n)'), '');
-    List<String> chapterContentList = bookContent.split(pest);
-
-    List<ChapterModel> chapterList = [];
-    chapterList.add(ChapterModel(
-        chapterIndex: 0,
-        chapterTitle: '正文',
-        chapterContent: chapterContentList[0]));
-
-    Iterable<Match> allMatches = pest.allMatches(bookContent);
-    for (int i = 1; i < chapterContentList.length; i++) {
-      String chapterName = allMatches.elementAt(i - 1).group(0).toString();
-      chapterList.add(ChapterModel(
-          chapterIndex: i,
-          chapterTitle: chapterName,
-          chapterContent: chapterContentList[i]));
-    }
-
-    return chapterList;
-    // return Future.value(chapterList);
-  }
 }

@@ -6,14 +6,14 @@ import 'dart:convert';
 class CodeConvert {
 
   static String gbk2utf8(List<int> bytes){
-    List<int> gbkun = _gbk2unicode(bytes);
-    List<int> utf8un = _unicode2utf8(gbkun);
+    List<int> gbkun = gbk2unicode(bytes);
+    List<int> utf8un = unicode2utf8(gbkun);
     return utf8.decode(utf8un);
   }
   /// gbk => unicode word array
   /// @param gbk_buf byte array
   /// @return   word array
-  static List<int> _gbk2unicode(List<int> gbkBuf) {
+  static List<int> gbk2unicode(List<int> gbkBuf) {
     int uniInd = 0, gbkInd = 0, uniNum = 0;
     int ch;
     int word; //unsigned short
@@ -47,8 +47,9 @@ class CodeConvert {
 
     return uniPtr;
   }
+
   ///Word array to utf-8
-  static List<int> _unicode2utf8(List<int> wordArray) {
+  static List<int> unicode2utf8(List<int> wordArray) {
     // a utf-8 character is 3 bytes
     List<int> list = List.generate(wordArray.length * 3, (index) => 0);
     int pos = 0;
@@ -72,5 +73,34 @@ class CodeConvert {
 
     list.length = pos;
     return list;
+  }
+
+  static int z_pos(int x) {
+    for (int i = 0; i < 5; i++, x <<= 1) {
+      if ((x & 0x80) == 0) return i;
+    }
+
+    return 4;
+  }
+
+  static List<int> mask = [0x7f, 0x3f, 0x1f, 0x0f, 0x7];
+
+  static List<int> utf82unicode(List<int> bytes) {
+    List<int> loc = [];
+
+    for (int i = 0; i < bytes.length;) {
+      int byte_cnt = z_pos(bytes[i]);
+      int sum = bytes[i] & mask[byte_cnt];
+
+      for (int j = 1; j < byte_cnt; j++) {
+        sum <<= 6;
+        sum |= bytes[i + j] & mask[1];
+      }
+
+      i += byte_cnt > 0 ? byte_cnt : 1;
+      loc.add(sum);
+    }
+
+    return loc;
   }
 }
