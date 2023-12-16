@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-import 'package:wuhoumusic/views/book_shelf/reader/reader_main_screen.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/read_screen.dart';
 import 'package:wuhoumusic/views/login/login_page.dart';
 import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
 import 'package:wuhoumusic/views/local_music/local_music_page.dart';
@@ -55,6 +56,6 @@ class Routes {
           Get.lazyPut(() => LocalMusicController());
         })),
     // 阅读页面
-    GetPage(name: reader, page: () => ReaderMainScreen(),)
+    GetPage(name: reader, page: () => ReadScreen(),binding: BindingsBuilder(() {Get.lazyPut(() => ReadController());}))
   ];
 }

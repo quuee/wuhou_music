@@ -3,7 +3,7 @@ import 'unicode.dart';
 import 'dart:convert';
 
 /// https://github.com/best-flutter/gbk2utf8.git
-class CodeConvert {
+class CodeConvertUtil {
 
   static String gbk2utf8(List<int> bytes){
     List<int> gbkun = gbk2unicode(bytes);
