@@ -74,10 +74,12 @@ class TextCompositionEffect extends CustomPainter {
 
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
-    if (index > readController.currentChapterIndex + 2 ||
-        index < readController.currentChapterIndex - 2 ) {
-      return;
-    }
+    // if (index > readController.currentChapterIndex + 2 ||
+    //     index < readController.currentChapterIndex - 2 ||
+    //     index < readController.firstIndex ||
+    //     index > readController.lastIndex) {
+    //   return;
+    // }
 
     final picture = readController.getPicture(index, size);
     if (picture == null) {
@@ -98,8 +100,10 @@ class TextCompositionEffect extends CustomPainter {
     // }
 
     if (true) {
-      canvas.clipRect(Rect.fromLTRB(0, ui.window.padding.top / ui.window.devicePixelRatio,
-          size.width, size.height));
+      canvas.clipRect(Rect.fromLTRB(0,
+          WidgetsBinding.instance.platformDispatcher.views.first.padding.top / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio,
+          size.width,
+          size.height));
     }
 
     final pos = amount.value; // 1 / 500 = 0.002 也就是500宽度相差1像素 忽略掉动画
@@ -298,7 +302,8 @@ class TextCompositionEffect extends CustomPainter {
   }
 
   toImage(ui.Picture picture, ui.Size size) {
-    if (false) {
+    bool animationHighImage = false; // [仿真苹果] 高清模式 打开后截图质量更高 关闭会更流畅
+    if (animationHighImage) {
       final r = ui.PictureRecorder();
       final size = ui.window.physicalSize;
       Canvas(r)

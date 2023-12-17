@@ -18,20 +18,24 @@ class ReadController extends GetxController
   // 当前书本所有章节
   List<BookChapterEntity> chapters = [];
 
-  // 当前阅读章节分段数据
-  List<String> currentChapterParagraph = [];
-
   // 当前章节索引
-  int currentChapterIndex = 0;
+  late int firstChapterIndex,currentChapterIndex,lastChapterIndex;
 
-  // 多个 每一页内容
+  // 一个章节中 每一页内容
   List<TextPage> textPages = <TextPage>[];
+
+  int pageIndex = 0;
 
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
-  String animation = 'curl';
+  // 动画 curl cover flip simulation simulation2L simulation2R
+  String animation = 'simulation';
   late AnimationController animationController;
+
+  // 是否向前滑动
+  bool? isForward;
+
 
   /// 获取书本信息
   _getBookNovelInfo() {
@@ -158,7 +162,7 @@ class ReadController extends GetxController
   }
 
   /// 获取该章节内容
-  List<int> _getChapterContent(BookChapterEntity chapterEntity) {
+  List<int> _getChapterBytes(BookChapterEntity chapterEntity) {
     File file = File(bookNovel!.localPath);
     RandomAccessFile randomAccessFile = file.openSync();
     randomAccessFile.setPositionSync(chapterEntity.start ?? 0);
@@ -170,12 +174,11 @@ class ReadController extends GetxController
   }
 
   /// 获取当前阅读章节，并且分割
-  _getCurrentReadChapter() {
-    List<int> chapterContentBytes =
-        _getChapterContent(chapters[currentChapterIndex]);
+  List<String> _bytes2String(List<int> bytes) {
     String chapterContent =
-        utf8.decode(chapterContentBytes, allowMalformed: true);
-    currentChapterParagraph = chapterContent
+        utf8.decode(bytes, allowMalformed: true);
+    // 当前阅读章节分段数据
+    List<String> currentChapterParagraph = chapterContent
         .replaceAll(RegExp("<br\\s?/>\\n?"), "\n")
         .replaceAll("&nbsp;", " ")
         .replaceAll("&ldquo;", "“")
@@ -188,9 +191,10 @@ class ReadController extends GetxController
         // .map((e) => "[开始${++_paragraph}]$e[结束$_paragraph]")
         .toList();
 
-    update();
+    return currentChapterParagraph;
   }
 
+  /// 获取背景图片
   Future<void> _getBackImage() async {
     try {
       final background = '#FFFFFFCC';
@@ -219,19 +223,7 @@ class ReadController extends GetxController
     } catch (e) {}
   }
 
-  ui.Picture? getPicture(int index, Size size) {
-    final textPage = textPages[index];
-    final pic = ui.PictureRecorder();
-    final c = Canvas(pic);
-    final pageRect = Rect.fromLTRB(0.0, 0.0, size.width, size.height);
-    c.drawRect(pageRect, Paint()..color = Color(0xFFFFFFCC));
-    if (_backgroundImage != null)
-      c.drawImage(_backgroundImage!, Offset.zero, Paint());
-    paintText(c, size, textPage);
-    return pic.endRecording();
-  }
-
-  paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
+  _paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
     double fontSize = 20;
     double fontHeight = 1.6;
     Color fontColor = const Color(0xFF303133);
@@ -260,20 +252,20 @@ class ReadController extends GetxController
           text: line.text,
           style: line.isTitle
               ? TextStyle(
-                  letterSpacing: line.letterSpacing,
-                  fontWeight: FontWeight.bold,
-                  fontSize: fontSize + 2,
-                  // fontFamily: config.fontFamily,
-                  color: fontColor,
-                  height: fontHeight,
-                )
+            letterSpacing: line.letterSpacing,
+            fontWeight: FontWeight.bold,
+            fontSize: fontSize + 2,
+            // fontFamily: config.fontFamily,
+            color: fontColor,
+            height: fontHeight,
+          )
               : TextStyle(
-                  letterSpacing: line.letterSpacing,
-                  fontSize: fontSize,
-                  // fontFamily: fontFamily,
-                  color: fontColor,
-                  height: fontHeight,
-                ),
+            letterSpacing: line.letterSpacing,
+            fontSize: fontSize,
+            // fontFamily: fontFamily,
+            color: fontColor,
+            height: fontHeight,
+          ),
         );
       } else {
         tp.text =
@@ -291,22 +283,20 @@ class ReadController extends GetxController
     }
   }
 
-  List<Widget> getPageWidget([int pageIndex = 0]) {
-    return [
-      for (; pageIndex <= textPages.length; pageIndex++)
-
-          CustomPaint(
-              painter: TextCompositionEffect(
-            amount: animationController,
-            index: pageIndex,
-          )
-          )
-
-    ];
+  ui.Picture? getPicture(int index, Size size) {
+    final textPage = textPages[index];
+    final pic = ui.PictureRecorder();
+    final c = Canvas(pic);
+    final pageRect = Rect.fromLTRB(0.0, 0.0, size.width, size.height);
+    c.drawRect(pageRect, Paint()..color = Color(0xFFFFFFCC));
+    if (_backgroundImage != null)
+      c.drawImage(_backgroundImage!, Offset.zero, Paint());
+    _paintText(c, size, textPage);
+    return pic.endRecording();
   }
 
-  /// 构建字体信息 布局信息
-  startX(int chapterIndex) {
+  /// 构建字体信息 布局信息  分页
+  List<TextPage> _startX(int chapterIndex) {
     double leftPadding = 16;
     double rightPadding = 16;
     double topPadding = 16;
@@ -317,6 +307,8 @@ class ReadController extends GetxController
     Color fontColor = Color(0xFF303133);
     double bottomPadding = 16;
 
+    var getChapterBytes = _getChapterBytes(chapters[chapterIndex]);
+    List<String> currentChapterParagraph = _bytes2String(getChapterBytes);
     /// 是否底栏对齐
     bool shouldJustifyHeight = true;
 
@@ -468,25 +460,109 @@ class ReadController extends GetxController
     return pages;
   }
 
+  List<Widget> getPageWidget() {
+    /// 因为是stack组件，先画上去的画面会被覆盖，从后面先画。
+    return [
+      for (pageIndex = (textPages.length - 1); pageIndex >= 0; pageIndex--)
+        CustomPaint(
+            painter: TextCompositionEffect(
+              amount: animationController,
+              index: pageIndex,
+            ))
+    ];
+  }
+
+  /// 滑动手势 页面翻转效果
+  void turnPage(DragUpdateDetails details, BoxConstraints dimens) {
+    final _ratio = details.delta.dx / dimens.maxWidth;
+    if (isForward == null) {
+      if (details.delta.dx > 0) {
+        isForward = false;
+      } else {
+        isForward = true;
+      }
+    }
+    if (isForward!) {
+      animationController.value += _ratio;
+    } else {
+      animationController.value += _ratio;
+    }
+
+  }
+
+  /// 滑动手势 结束
+  Future<void> onDragFinish() async {
+    if (isForward != null) {
+      if (isForward!) {
+        if (animationController.value <= (92 / 100 + 0.03)) {
+          nextPage();
+        } else {
+          animationController.forward();
+        }
+      } else {
+        if (animationController.value >=(8 / 100 + 0.05)) {
+          previousPage();
+        } else {
+          animationController.forward();
+        }
+      }
+    }
+    isForward = null;
+
+  }
+
+  previousPage(){
+    pageIndex--;
+    update();
+  }
+  nextPage() {
+    //检查是否该章最后一页了，如果是最后一页滑动则nextChapter
+    //检查是否全书最后一页
+    //检查是否有下一页
+
+    pageIndex++;
+    update();
+  }
+
+  // gotoPage(int index){
+  //
+  // }
+
+  previousChapter(){
+
+  }
+  nextChapter() {
+    pageIndex=0;
+    textPages.clear();
+    final pages = _startX(currentChapterIndex + 1);
+    this.textPages.addAll(pages);
+
+    update();
+  }
+
   @override
   void onInit() {
     LogI('生命周期顺序', 'onInit');
     bookNovel = Get.arguments as BookNovelEntity;
-    // 是否有上次阅读记录；没有则从头开始
-    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
+    // 是否有上次阅读记录；没有则从-1开始，后续调用时直接+1
+    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? -1;
     _getBookNovelInfo();
     _getBackImage();
 
     animationController = AnimationController(
         value: 1, duration: Duration(seconds: 1), vsync: this);
+
+    // firstIndex = chapters.first.chapterIndex;
+    // lastIndex = chapters.last.chapterIndex;
     super.onInit();
   }
 
   @override
   void onReady() {
     LogI('生命周期顺序', 'onReady');
-    _getCurrentReadChapter();
-    textPages = startX(currentChapterIndex);
+    // _getCurrentReadChapter();
+    // textPages = _startX(currentChapterIndex);
+    nextChapter();
     super.onReady();
   }
 
