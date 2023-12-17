@@ -43,9 +43,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".read.ReadActivity"
+        <activity android:name=".read.ReadActivity1"
             android:label="@string/title_activity_read"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+
+        <activity android:name=".read2.activity.ReadActivity2" android:theme="@style/Theme.AppCompat"></activity>
 
 
         <!-- Don't delete the meta-data below.

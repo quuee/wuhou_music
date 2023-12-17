@@ -2,5 +2,32 @@
 <resources>
     <string name="app_name">novel_demo</string>
     <string name="action_settings">设置</string>
-    <string name="title_activity_read">校咖阅读</string>
+    <string name="title_activity_read">阅读</string>
+
+    <!--mode-->
+    <string name="nb.mode.night">夜间</string>
+    <string name="nb.mode.morning">日间</string>
+
+    <!--read-->
+    <string name="nb.read.community">社区</string>
+    <string name="nb.read.brief">简介</string>
+    <string name="nb.read.setting">设置</string>
+    <string name="nb.read.download">缓存</string>'
+    <string name="nb.read.category">目录</string>
+    <string name="nb.read.no_chapter">第 %1$d 章(%2$d)</string>
+
+    <!--OpenCC-->
+    <string-array name="conversion_type_array">
+        <item>不轉換</item>
+        <item>臺灣正體到簡體(大陸常用詞彙)</item>
+        <item>簡體到香港繁體</item>
+        <item>簡體到繁體</item>
+        <item>簡體到臺灣正體</item>
+        <item>簡體到繁體(臺灣常用詞彙)</item>
+        <item>繁體到香港繁體</item>
+        <item>繁體到簡體</item>
+        <item>繁體臺灣正體</item>
+        <item>臺灣正體到簡體</item>
+        <item>香港繁體到簡體</item>
+    </string-array>
 </resources>

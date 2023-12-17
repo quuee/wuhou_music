@@ -5,13 +5,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.Map;
-
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import music.wuhou.wuhoumusic.read.ReadActivity;
+import music.wuhou.wuhoumusic.read2.activity.ReadActivity2;
 
 public class JumpChannel implements MethodChannel.MethodCallHandler{
     String channelName = "music.wuhou.wuhoumusic.book.read.android";
@@ -35,8 +33,10 @@ public class JumpChannel implements MethodChannel.MethodCallHandler{
             boolean hasArgument = call.hasArgument("localPath");
             Log.i("hasArgument",call.arguments().toString());
             if(hasArgument){
-                Intent intent = new Intent(mActivity, ReadActivity.class);
+                Intent intent = new Intent(mActivity, ReadActivity2.class);
                 intent.putExtra("localPath",call.argument("localPath").toString());
+                intent.putExtra("id",call.argument("id").toString());
+                intent.putExtra("bookTitle",call.argument("bookTitle").toString());
                 mActivity.startActivity(intent);
             }
 

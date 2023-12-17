@@ -13,7 +13,7 @@ String bookNovelEntityToJson(List<BookNovelEntity> data) => json.encode(List<dyn
 @Name('book_novel')
 class BookNovelEntity {
 
-  Id? id= Isar.autoIncrement;
+  Id? id = Isar.autoIncrement;
   String bookTitle;//书名
   String localPath;//本地路径
   int? lastReadChapterIndex;//上次阅读章节
@@ -34,9 +34,10 @@ class BookNovelEntity {
   );
 
   Map<String, dynamic> toJson() => {
+    "id":id,
     "bookTitle": bookTitle,
     "localPath": localPath,
-    "lastReadChapterIndex": lastReadChapterIndex,
-    "lastReadChapterOffset": lastReadChapterOffset,
+    "lastReadChapterIndex": lastReadChapterIndex??0,
+    "lastReadChapterOffset": lastReadChapterOffset??0,
   };
 }

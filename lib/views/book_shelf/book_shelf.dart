@@ -114,8 +114,8 @@ class _BookShelfPageState extends State<BookShelfPage>
       // Get.toNamed(Routes.reader, arguments: bookNovelEntity);
 
       // 跳转到原生界面
-      Map<String,dynamic> map = {'bookName':bookNovelEntity.bookTitle,'localPath':bookNovelEntity.localPath};
-      final String result = await channel.invokeMethod('open',map);
+      // Map<String,dynamic> map = {'bookName':bookNovelEntity.bookTitle,'localPath':bookNovelEntity.localPath};
+      final String result = await channel.invokeMethod('open',bookNovelEntity.toJson());
       // final _bookReadPlugin = BookReadPlugin();
 
     }
