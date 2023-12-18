@@ -6,12 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/text_compsition_effect.dart';
 
 class ReadController extends GetxController
     with GetSingleTickerProviderStateMixin {
+  // LoadingStatus _loadingStatus = LoadingStatus.loading;
+  // get loadingStatus => _loadingStatus;
   // 当前书本
   BookNovelEntity? bookNovel;
 
@@ -19,7 +23,7 @@ class ReadController extends GetxController
   List<BookChapterEntity> chapters = [];
 
   // 当前章节索引
-  late int firstChapterIndex,currentChapterIndex,lastChapterIndex;
+  late int firstChapterIndex, currentChapterIndex, lastChapterIndex;
 
   // 一个章节中 每一页内容
   List<TextPage> textPages = <TextPage>[];
@@ -30,12 +34,11 @@ class ReadController extends GetxController
   ui.Image? get backgroundImage => _backgroundImage;
 
   // 动画 curl cover flip simulation simulation2L simulation2R
-  String animation = 'simulation';
+  String animation = 'simulation2';
   late AnimationController animationController;
 
   // 是否向前滑动
   bool? isForward;
-
 
   /// 获取书本信息
   _getBookNovelInfo() {
@@ -55,10 +58,8 @@ class ReadController extends GetxController
     // 2 分章节内容，跳过章节长度，取出内容
     RandomAccessFile randomAccessFile = file.openSync();
     while ((readLength =
-            randomAccessFile.readIntoSync(buffer, 0, buffer.length)) >
-        0) {
+            randomAccessFile.readIntoSync(buffer, 0, buffer.length)) > 0) {
       ++chapterIndex;
-
       String chapterContent = "";
       try {
         // todo 默认按utf8读取，如果读取gbk编码会FileSystemException CodeConvertUtil.gbk2utf8(readBytes)转码
@@ -88,8 +89,8 @@ class ReadController extends GetxController
         if (seekPositionBytes == 0 && chapterStart != 0) {
           //表示 章节处于中间
           seekPositionBytes +=
-              utf8.encode(chapterContentSubFront).length; //设置指针偏移
-          seekPositionString += chapterContentSubFront.length; //临时偏移量
+              utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
+          seekPositionString += chapterContentSubFront.length; //字符串偏移量
           if (curOffset == 0) {
             // 说明有序章
             BookChapterEntity preChapter = BookChapterEntity(
@@ -124,12 +125,10 @@ class ReadController extends GetxController
           }
         } else {
           if (chapters.isNotEmpty) {
-            seekPositionBytes +=
-                utf8.encode(chapterContentSubFront).length; //设置指针偏移
-            seekPositionString += chapterContentSubFront.length; //临时偏移量
+            seekPositionBytes += utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
+            seekPositionString += chapterContentSubFront.length; //字符串偏移量
             BookChapterEntity lastChapter = chapters[chapters.length - 1];
-            lastChapter.end = (lastChapter.end ?? 0) +
-                utf8.encode(chapterContentSubFront).length;
+            lastChapter.end = (lastChapter.start ?? 0) + utf8.encode(chapterContentSubFront).length;
             lastChapter.content =
                 (lastChapter.content ?? "") + chapterContentSubFront;
 
@@ -175,14 +174,14 @@ class ReadController extends GetxController
 
   /// 获取当前阅读章节，并且分割
   List<String> _bytes2String(List<int> bytes) {
-    String chapterContent =
-        utf8.decode(bytes, allowMalformed: true);
+    String chapterContent = utf8.decode(bytes, allowMalformed: true);
     // 当前阅读章节分段数据
     List<String> currentChapterParagraph = chapterContent
         .replaceAll(RegExp("<br\\s?/>\\n?"), "\n")
         .replaceAll("&nbsp;", " ")
         .replaceAll("&ldquo;", "“")
         .replaceAll("&rdquo;", "”")
+        .replaceAll('\r', '\n')
         .replaceAll('\r\n', '\n')
         .replaceAll('\n\n', '\n')
         .trim()
@@ -194,10 +193,10 @@ class ReadController extends GetxController
     return currentChapterParagraph;
   }
 
-  /// 获取背景图片
-  Future<void> _getBackImage() async {
+  /// 获取背景图片 未实现
+  _getBackImage() async {
     try {
-      final background = '#FFFFFFCC';
+      final background = 'assets/bg/001.jpg';
       final size =
           WidgetsBinding.instance.platformDispatcher.views.first.physicalSize /
               WidgetsBinding
@@ -205,7 +204,7 @@ class ReadController extends GetxController
       if (background.isEmpty || background == 'null') {
         _backgroundImage = null;
         return;
-      } else if (background.startsWith("asset")) {
+      } else if (background.startsWith("assets")) {
         final data = await rootBundle.load(background);
         ui.Codec codec = await ui.instantiateImageCodec(
             data.buffer.asUint8List(),
@@ -223,80 +222,9 @@ class ReadController extends GetxController
     } catch (e) {}
   }
 
-  _paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
-    double fontSize = 20;
-    double fontHeight = 1.6;
-    Color fontColor = const Color(0xFF303133);
-
-    final lineCount = page.lines.length;
-    final tp = TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
-    final titleStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: fontSize + 2,
-      // fontFamily: config.fontFamily,
-      color: fontColor,
-      height: fontHeight,
-    );
-    final style = TextStyle(
-      fontSize: fontSize,
-      // fontFamily: config.fontFamily,
-      color: fontColor,
-      height: fontHeight,
-    );
-    final _lineHeight = fontSize * fontHeight;
-    for (var i = 0; i < lineCount; i++) {
-      final line = page.lines[i];
-      if (line.letterSpacing != null &&
-          (line.letterSpacing! < -0.1 || line.letterSpacing! > 0.1)) {
-        tp.text = TextSpan(
-          text: line.text,
-          style: line.isTitle
-              ? TextStyle(
-            letterSpacing: line.letterSpacing,
-            fontWeight: FontWeight.bold,
-            fontSize: fontSize + 2,
-            // fontFamily: config.fontFamily,
-            color: fontColor,
-            height: fontHeight,
-          )
-              : TextStyle(
-            letterSpacing: line.letterSpacing,
-            fontSize: fontSize,
-            // fontFamily: fontFamily,
-            color: fontColor,
-            height: fontHeight,
-          ),
-        );
-      } else {
-        tp.text =
-            TextSpan(text: line.text, style: line.isTitle ? titleStyle : style);
-      }
-      final offset = Offset(line.dx, line.dy);
-      tp.layout();
-      tp.paint(canvas, offset);
-
-      //underline
-      canvas.drawLine(
-          Offset(line.dx, line.dy + _lineHeight),
-          Offset(line.dx + page.column, line.dy + _lineHeight),
-          Paint()..color = Colors.grey);
-    }
-  }
-
-  ui.Picture? getPicture(int index, Size size) {
-    final textPage = textPages[index];
-    final pic = ui.PictureRecorder();
-    final c = Canvas(pic);
-    final pageRect = Rect.fromLTRB(0.0, 0.0, size.width, size.height);
-    c.drawRect(pageRect, Paint()..color = Color(0xFFFFFFCC));
-    if (_backgroundImage != null)
-      c.drawImage(_backgroundImage!, Offset.zero, Paint());
-    _paintText(c, size, textPage);
-    return pic.endRecording();
-  }
-
   /// 构建字体信息 布局信息  分页
   List<TextPage> _startX(int chapterIndex) {
+    LogD('_startX start', DateTime.now().toString());
     double leftPadding = 16;
     double rightPadding = 16;
     double topPadding = 16;
@@ -309,6 +237,7 @@ class ReadController extends GetxController
 
     var getChapterBytes = _getChapterBytes(chapters[chapterIndex]);
     List<String> currentChapterParagraph = _bytes2String(getChapterBytes);
+
     /// 是否底栏对齐
     bool shouldJustifyHeight = true;
 
@@ -321,8 +250,7 @@ class ReadController extends GetxController
     final _width = (size.width -
             leftPadding -
             rightPadding -
-            (columns - 1) * columnPadding) /
-        columns;
+            (columns - 1) * columnPadding) / columns;
     final _width2 = _width - fontSize;
     final _height = size.height - bottomPadding;
     final _height2 = _height - fontSize * fontHeight;
@@ -352,7 +280,7 @@ class ReadController extends GetxController
       height: fontHeight,
     );
 
-    var _t = chapters[chapterIndex].chapterTitle;
+    var _t = chapters[chapterIndex].chapterTitle.replaceAll('\r', '').replaceAll('\n', '');
     while (true) {
       tp.text = TextSpan(text: _t, style: titleStyle);
       tp.layout(maxWidth: _width);
@@ -456,20 +384,29 @@ class ReadController extends GetxController
       page.pageTotal = total;
       page.percent = page.pageNo / pages.length / chapters.length + basePercent;
     });
-
+    LogD('_startX end', DateTime.now().toString());
     return pages;
   }
 
-  List<Widget> getPageWidget() {
+  Widget getPageWidget(int pageIndex) {
     /// 因为是stack组件，先画上去的画面会被覆盖，从后面先画。
-    return [
-      for (pageIndex = (textPages.length - 1); pageIndex >= 0; pageIndex--)
-        CustomPaint(
-            painter: TextCompositionEffect(
-              amount: animationController,
-              index: pageIndex,
-            ))
-    ];
+    // return [
+    //   for (pageIndex = (textPages.length - 1); pageIndex >= 0; pageIndex--)
+    //     CustomPaint(
+    //         painter: TextCompositionEffect(
+    //           amount: animationController,
+    //           index: pageIndex,
+    //         ))
+    // ];
+
+    return Container(
+      child: CustomPaint(
+        painter: SimpleTextPainter(
+            textPage: textPages[pageIndex],
+            pageIndex: pageIndex,
+            backgroundImage: backgroundImage),
+      ),
+    );
   }
 
   /// 滑动手势 页面翻转效果
@@ -487,57 +424,82 @@ class ReadController extends GetxController
     } else {
       animationController.value += _ratio;
     }
-
   }
 
   /// 滑动手势 结束
   Future<void> onDragFinish() async {
     if (isForward != null) {
       if (isForward!) {
-        if (animationController.value <= (92 / 100 + 0.03)) {
-          nextPage();
-        } else {
-          animationController.forward();
-        }
+        // if (animationController.value <= (92 / 100 + 0.03)) {
+        //   // nextPage();
+        // } else {
+        //   animationController.forward();
+        // }
+        nextPage();
       } else {
-        if (animationController.value >=(8 / 100 + 0.05)) {
-          previousPage();
-        } else {
-          animationController.forward();
-        }
+        // if (animationController.value >=(8 / 100 + 0.05)) {
+        //   // previousPage();
+        // } else {
+        //   animationController.forward();
+        // }
+        previousPage();
       }
     }
     isForward = null;
+  }
+
+  previousPage() {
+    if(pageIndex <= 0){
+      previousChapter();
+    }else{
+      pageIndex--;
+      update();
+    }
 
   }
 
-  previousPage(){
-    pageIndex--;
-    update();
-  }
   nextPage() {
     //检查是否该章最后一页了，如果是最后一页滑动则nextChapter
     //检查是否全书最后一页
     //检查是否有下一页
-
-    pageIndex++;
-    update();
+    if (pageIndex >= textPages.length - 1) {
+      //进入下一章
+      nextChapter();
+    } else {
+      pageIndex++;
+      update();
+    }
   }
 
   // gotoPage(int index){
   //
   // }
 
-  previousChapter(){
+  previousChapter() {
+    if(currentChapterIndex <= 0 ){
+      currentChapterIndex = 0;
+    }else{
+      textPages.clear();
+      final pages = _startX(currentChapterIndex - 1);
+      this.textPages.addAll(pages);
+      pageIndex = textPages.length - 1;
+      currentChapterIndex--;
+      update();
+    }
 
   }
   nextChapter() {
-    pageIndex=0;
-    textPages.clear();
-    final pages = _startX(currentChapterIndex + 1);
-    this.textPages.addAll(pages);
+    if(currentChapterIndex >= chapters.length - 1){
+      pageIndex = textPages.length - 1;
+    }else{
+      pageIndex = 0;
+      textPages.clear();
+      final pages = _startX(currentChapterIndex + 1);
+      this.textPages.addAll(pages);
+      currentChapterIndex++;
+      update();
+    }
 
-    update();
   }
 
   @override
@@ -545,7 +507,7 @@ class ReadController extends GetxController
     LogI('生命周期顺序', 'onInit');
     bookNovel = Get.arguments as BookNovelEntity;
     // 是否有上次阅读记录；没有则从-1开始，后续调用时直接+1
-    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? -1;
+    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? -1; //onReady调用nextChapter，直接从最前章加载
     _getBookNovelInfo();
     _getBackImage();
 
@@ -560,8 +522,7 @@ class ReadController extends GetxController
   @override
   void onReady() {
     LogI('生命周期顺序', 'onReady');
-    // _getCurrentReadChapter();
-    // textPages = _startX(currentChapterIndex);
+
     nextChapter();
     super.onReady();
   }

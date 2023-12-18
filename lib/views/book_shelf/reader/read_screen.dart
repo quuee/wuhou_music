@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
 
 class ReadScreen extends StatelessWidget {
@@ -16,8 +17,8 @@ class ReadScreen extends StatelessWidget {
     return Material(
       child: GetBuilder<ReadController>(
         builder: (_) {
-          List<Widget> pageWidget = readController.getPageWidget();
-          if (pageWidget.isEmpty) {
+
+          if (readController.textPages.isEmpty) {
             return Center(
               child: Text('加载中'),
             );
@@ -50,6 +51,9 @@ class ReadScreen extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
+                  /// 换个思路 页面文字自己控制，动画归动画，参考bookfx项目
+                  readController.pageIndex+1 >= readController.textPages.length ?
+                  // 最底层
                   Container(
                     decoration: getDecoration(
                       '#FFFFFFCC',
@@ -67,9 +71,13 @@ class ReadScreen extends StatelessWidget {
                         Text("已读完", style: colorStyle),
                       ],
                     ),
-                  ),
-                  ...readController.getPageWidget(),
+                  ) : readController.getPageWidget(readController.pageIndex+1),
+                  readController.getPageWidget(readController.pageIndex),
 
+                  // 动画层 当前页 下一页
+                  // ...pageWidget,// 拼接数组
+
+                  // 菜单层
                   // if (widget.controller.isShowMenu && widget.controller.menuBuilder != null)
                   //   widget.controller.menuBuilder!(widget.controller),
 
