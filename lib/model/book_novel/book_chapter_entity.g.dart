@@ -32,18 +32,13 @@ const BookChapterEntitySchema = CollectionSchema(
       name: r'chapterTitle',
       type: IsarType.string,
     ),
-    r'content': PropertySchema(
-      id: 3,
-      name: r'content',
-      type: IsarType.string,
-    ),
     r'end': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'end',
       type: IsarType.long,
     ),
     r'start': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'start',
       type: IsarType.long,
     )
@@ -69,12 +64,6 @@ int _bookChapterEntityEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.chapterTitle.length * 3;
-  {
-    final value = object.content;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -87,9 +76,8 @@ void _bookChapterEntitySerialize(
   writer.writeLong(offsets[0], object.bookId);
   writer.writeLong(offsets[1], object.chapterIndex);
   writer.writeString(offsets[2], object.chapterTitle);
-  writer.writeString(offsets[3], object.content);
-  writer.writeLong(offsets[4], object.end);
-  writer.writeLong(offsets[5], object.start);
+  writer.writeLong(offsets[3], object.end);
+  writer.writeLong(offsets[4], object.start);
 }
 
 BookChapterEntity _bookChapterEntityDeserialize(
@@ -102,10 +90,9 @@ BookChapterEntity _bookChapterEntityDeserialize(
     bookId: reader.readLong(offsets[0]),
     chapterIndex: reader.readLong(offsets[1]),
     chapterTitle: reader.readString(offsets[2]),
-    content: reader.readStringOrNull(offsets[3]),
-    end: reader.readLongOrNull(offsets[4]),
+    end: reader.readLongOrNull(offsets[3]),
     id: id,
-    start: reader.readLongOrNull(offsets[5]),
+    start: reader.readLongOrNull(offsets[4]),
   );
   return object;
 }
@@ -124,10 +111,8 @@ P _bookChapterEntityDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
-    case 4:
       return (reader.readLongOrNull(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -479,160 +464,6 @@ extension BookChapterEntityQueryFilter
   }
 
   QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'content',
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'content',
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'content',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'content',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
-      contentIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'content',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterFilterCondition>
       endIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -905,20 +736,6 @@ extension BookChapterEntityQuerySortBy
     });
   }
 
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy>
-      sortByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy>
-      sortByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
   QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy> sortByEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'end', Sort.asc);
@@ -991,20 +808,6 @@ extension BookChapterEntityQuerySortThenBy
     });
   }
 
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy>
-      thenByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy>
-      thenByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
   QueryBuilder<BookChapterEntity, BookChapterEntity, QAfterSortBy> thenByEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'end', Sort.asc);
@@ -1070,13 +873,6 @@ extension BookChapterEntityQueryWhereDistinct
   }
 
   QueryBuilder<BookChapterEntity, BookChapterEntity, QDistinct>
-      distinctByContent({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'content', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, BookChapterEntity, QDistinct>
       distinctByEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'end');
@@ -1116,12 +912,6 @@ extension BookChapterEntityQueryProperty
       chapterTitleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'chapterTitle');
-    });
-  }
-
-  QueryBuilder<BookChapterEntity, String?, QQueryOperations> contentProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'content');
     });
   }
 

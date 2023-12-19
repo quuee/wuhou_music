@@ -21,7 +21,7 @@ class BookChapterEntity {
   String chapterTitle; //章节名
   int? start; //章节内容在文章中的起始位置
   int? end; //章节内容在文章中的终止位置(本地)
-  String? content;
+  // String? content;
 
   BookChapterEntity(
       {this.id,
@@ -30,7 +30,7 @@ class BookChapterEntity {
       required this.chapterTitle,
       this.start,
       this.end,
-      this.content
+      // this.content
       });
 
   factory BookChapterEntity.fromJson(Map<String, dynamic> json) =>
@@ -41,7 +41,7 @@ class BookChapterEntity {
         chapterTitle: json["chapterTitle"],
         start: json["start"],
         end: json["end"],
-        content: json["content"],
+        // content: json["content"],
 
       );
 
@@ -52,7 +52,7 @@ class BookChapterEntity {
         "chapterTitle": chapterTitle,
         "start": start,
         "end": end,
-        "content": content,
+        // "content": content,
 
       };
 }

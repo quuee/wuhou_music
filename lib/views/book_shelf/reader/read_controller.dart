@@ -103,8 +103,7 @@ class ReadController extends GetxController
                 chapterIndex: chapterIndex,
                 chapterTitle: "序章",
                 start: 0,
-                end: utf8.encode(chapterContentSubFront).length,
-                content: chapterContentSubFront);
+                end: utf8.encode(chapterContentSubFront).length,);
             chapters.add(preChapter);
 
             BookChapterEntity curChapter = BookChapterEntity(
@@ -118,8 +117,8 @@ class ReadController extends GetxController
             BookChapterEntity lastChapter = chapters[chapters.length - 1];
             lastChapter.end = (lastChapter.end ?? 0) +
                 utf8.encode(chapterContentSubFront).length;
-            lastChapter.content =
-                (lastChapter.content ?? "") + chapterContentSubFront;
+            // lastChapter.content =
+            //     (lastChapter.content ?? "") + chapterContentSubFront;
 
             BookChapterEntity curChapter = BookChapterEntity(
                 bookId: bookNovel!.id!,
@@ -134,8 +133,8 @@ class ReadController extends GetxController
             seekPositionString += chapterContentSubFront.length; //字符串偏移量
             BookChapterEntity lastChapter = chapters[chapters.length - 1];
             lastChapter.end = (lastChapter.start ?? 0) + utf8.encode(chapterContentSubFront).length;
-            lastChapter.content =
-                (lastChapter.content ?? "") + chapterContentSubFront;
+            // lastChapter.content =
+            //     (lastChapter.content ?? "") + chapterContentSubFront;
 
             BookChapterEntity curChapter = BookChapterEntity(
                 bookId: bookNovel!.id!,
