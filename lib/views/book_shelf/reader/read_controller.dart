@@ -45,7 +45,7 @@ class ReadController extends GetxController
   // 是否向前滑动
   bool? isForward;
 
-  /// 获取书本信息
+  /// 获取书本信息 并且分章节
   _getBookNovelInfo() {
     File file = File(bookNovel!.localPath);
     bool exist = file.existsSync();
@@ -413,7 +413,7 @@ class ReadController extends GetxController
     );
   }
 
-  /// 滑动手势 页面翻转效果
+  /// 滑动手势 滑动时 (未完成)
   void turnPage(DragUpdateDetails details, BoxConstraints dimens) {
     if(menuAnimationController.isDismissed){
       final _ratio = details.delta.dx / dimens.maxWidth;
@@ -432,7 +432,7 @@ class ReadController extends GetxController
     }
   }
 
-  /// 滑动手势 结束
+  /// 滑动手势 滑动结束
   Future<void> onDragFinish() async {
     if(menuAnimationController.isDismissed){
       if (isForward != null) {
@@ -559,6 +559,7 @@ class ReadController extends GetxController
     recordRead();
 
     menuAnimationController.dispose();
+    // Get.back(result: 'abc');
     super.onClose();
   }
 

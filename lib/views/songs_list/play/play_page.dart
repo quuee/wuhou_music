@@ -6,9 +6,9 @@ import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/audio_service/controlButtons.dart';
-import 'package:wuhoumusic/views/play/ui/lyric.dart';
-import 'package:wuhoumusic/views/play/ui/playing.dart';
-import 'package:wuhoumusic/views/play/ui/song_play_list.dart';
+import 'package:wuhoumusic/views/songs_list/play/ui/playing.dart';
+import 'package:wuhoumusic/views/songs_list/play/ui/song_play_list.dart';
+import 'package:wuhoumusic/views/songs_list/play/ui/lyric.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({super.key});

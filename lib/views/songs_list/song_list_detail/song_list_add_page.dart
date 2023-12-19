@@ -4,7 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
-import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
+import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_detail_controller.dart';
 
 class SongListAddPage extends StatefulWidget {
   const SongListAddPage({super.key});

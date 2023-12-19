@@ -2,9 +2,7 @@
 import 'package:get/get.dart';
 import 'package:wuhoumusic/views/home/home_controller.dart';
 import 'package:wuhoumusic/views/home/tabs/hot_tab_controller.dart';
-import 'package:wuhoumusic/views/play/play_controller.dart';
 import 'package:wuhoumusic/views/root/root_controller.dart';
-import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 import 'package:wuhoumusic/views/video/video_page_controller.dart';
 

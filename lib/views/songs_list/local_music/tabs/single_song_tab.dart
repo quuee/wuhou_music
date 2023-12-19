@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
+import 'package:wuhoumusic/views/songs_list/local_music/local_music_controller.dart';
 
 class SingleSongTab extends StatefulWidget {
   const SingleSongTab({super.key});

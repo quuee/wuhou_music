@@ -4,28 +4,27 @@ import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
+import 'package:wuhoumusic/views/songs_list/local_music/local_music_controller.dart';
 
-class SingerTab extends StatefulWidget {
-  const SingerTab({super.key});
+class DirectoryTab extends StatefulWidget {
+  const DirectoryTab({super.key});
 
   @override
-  State<SingerTab> createState() => _SingerTabState();
+  State<DirectoryTab> createState() => _DirectoryTabState();
 }
 
-class _SingerTabState extends State<SingerTab> {
+class _DirectoryTabState extends State<DirectoryTab> {
   //分组
-
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      initialRoute: '/singer_tab',
+      initialRoute: '/directory_tab',
       onGenerateRoute: (RouteSettings settings) {
         WidgetBuilder builder = (context) => SizedBox.shrink();
         switch (settings.name) {
-          case '/singer_tab':
+          case '/directory_tab':
             builder = (context) {
-              return _buildSinger(context);
+              return _buildDirectory(context);
             };
             break;
         }
@@ -34,13 +33,24 @@ class _SingerTabState extends State<SingerTab> {
     );
   }
 
-  Widget _buildSinger(BuildContext context) {
+  Widget _buildDirectory(BuildContext context) {
     return GetBuilder<LocalMusicController>(builder: (c) {
+
+      // TODO 这里计算有点慢 应该放controller里，页面搞个加载中
       Map<String, List<SongEntity>> map = Map.fromIterable(c.songs,
-          key: (e) => e.artist,
+          key: (e) => e.data!
+              .substring(0, e.data!.lastIndexOf('/'))
+              .substring(0, e.data!.lastIndexOf('/')),
           value: (value) {
             return c.songs
-                .where((element) => element.artist.compareTo(value.artist) == 0)
+                .where((element) =>
+                    element.data!
+                        .substring(0, element.data!.lastIndexOf('/'))
+                        .substring(0, element.data!.lastIndexOf('/'))
+                        .compareTo(value.data!
+                            .substring(0, element.data!.lastIndexOf('/'))
+                            .substring(0, element.data!.lastIndexOf('/'))) ==
+                    0)
                 .toList();
           });
 
@@ -61,7 +71,7 @@ class _SingerTabState extends State<SingerTab> {
               return ListTile(
                 title: Text(map.keys.elementAt(index)),
                 onTap: () {
-                  // 跳转到歌手下的歌曲
+                  // 跳转到文件下的歌曲
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
                     return Scaffold(
@@ -77,13 +87,14 @@ class _SingerTabState extends State<SingerTab> {
                                 shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
                                 physics: NeverScrollableScrollPhysics(),
                                 itemCount:
-                                map.entries.elementAt(index).value.length,
+                                    map.entries.elementAt(index).value.length,
                                 itemBuilder: (context, index2) {
                                   return InkWell(
                                     onTap: () {
                                       PlayInvoke.init(
-                                          songList:
-                                          map.entries.elementAt(index).value,
+                                          songList: map.entries
+                                              .elementAt(index)
+                                              .value,
                                           index: index2);
                                     },
                                     child: SongItem(
@@ -95,8 +106,7 @@ class _SingerTabState extends State<SingerTab> {
                                   );
                                 }),
                           ],
-                        )
-                    );
+                        ));
                   }));
                 },
               );

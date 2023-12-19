@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/play_bar.dart';
-import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
+import 'package:wuhoumusic/views/songs_list/local_music/local_music_controller.dart';
 
 class LocalMusicPage extends GetView<LocalMusicController> {
   const LocalMusicPage({super.key});

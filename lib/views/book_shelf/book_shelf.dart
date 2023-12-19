@@ -109,6 +109,7 @@ class _BookShelfPageState extends State<BookShelfPage>
 
   _openBookNovel(BookNovelEntity bookNovelEntity) {
     if (!isEditStatus) {
+      // Get.toNamed(Routes.reader, arguments: bookNovelEntity)?.then((value) => LogD('返回书架接收参数：', value.toString()));
       Get.toNamed(Routes.reader, arguments: bookNovelEntity);
     }
   }

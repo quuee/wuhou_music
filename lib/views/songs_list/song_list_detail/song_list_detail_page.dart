@@ -8,9 +8,9 @@ import 'package:wuhoumusic/resource/ali_icons.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'package:wuhoumusic/views/song_list_detail/song_list_detail_controller.dart';
-import 'package:wuhoumusic/views/song_list_detail/ui/song_list_cover.dart';
-import 'package:wuhoumusic/views/song_list_detail/ui/my_sliver_persistent_header_delegate.dart';
+import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_detail_controller.dart';
+import 'package:wuhoumusic/views/songs_list/song_list_detail/ui/my_sliver_persistent_header_delegate.dart';
+import 'package:wuhoumusic/views/songs_list/song_list_detail/ui/song_list_cover.dart';
 
 
 class SongListDetailPage extends GetView<SongListDetailController> {

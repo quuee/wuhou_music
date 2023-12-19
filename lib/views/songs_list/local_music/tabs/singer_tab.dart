@@ -4,27 +4,28 @@ import 'package:wuhoumusic/common_widgets/song_item.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'package:wuhoumusic/views/local_music/local_music_controller.dart';
+import 'package:wuhoumusic/views/songs_list/local_music/local_music_controller.dart';
 
-class DirectoryTab extends StatefulWidget {
-  const DirectoryTab({super.key});
+class SingerTab extends StatefulWidget {
+  const SingerTab({super.key});
 
   @override
-  State<DirectoryTab> createState() => _DirectoryTabState();
+  State<SingerTab> createState() => _SingerTabState();
 }
 
-class _DirectoryTabState extends State<DirectoryTab> {
+class _SingerTabState extends State<SingerTab> {
   //分组
+
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      initialRoute: '/directory_tab',
+      initialRoute: '/singer_tab',
       onGenerateRoute: (RouteSettings settings) {
         WidgetBuilder builder = (context) => SizedBox.shrink();
         switch (settings.name) {
-          case '/directory_tab':
+          case '/singer_tab':
             builder = (context) {
-              return _buildDirectory(context);
+              return _buildSinger(context);
             };
             break;
         }
@@ -33,24 +34,13 @@ class _DirectoryTabState extends State<DirectoryTab> {
     );
   }
 
-  Widget _buildDirectory(BuildContext context) {
+  Widget _buildSinger(BuildContext context) {
     return GetBuilder<LocalMusicController>(builder: (c) {
-
-      // TODO 这里计算有点慢 应该放controller里，页面搞个加载中
       Map<String, List<SongEntity>> map = Map.fromIterable(c.songs,
-          key: (e) => e.data!
-              .substring(0, e.data!.lastIndexOf('/'))
-              .substring(0, e.data!.lastIndexOf('/')),
+          key: (e) => e.artist,
           value: (value) {
             return c.songs
-                .where((element) =>
-                    element.data!
-                        .substring(0, element.data!.lastIndexOf('/'))
-                        .substring(0, element.data!.lastIndexOf('/'))
-                        .compareTo(value.data!
-                            .substring(0, element.data!.lastIndexOf('/'))
-                            .substring(0, element.data!.lastIndexOf('/'))) ==
-                    0)
+                .where((element) => element.artist.compareTo(value.artist) == 0)
                 .toList();
           });
 
@@ -71,7 +61,7 @@ class _DirectoryTabState extends State<DirectoryTab> {
               return ListTile(
                 title: Text(map.keys.elementAt(index)),
                 onTap: () {
-                  // 跳转到文件下的歌曲
+                  // 跳转到歌手下的歌曲
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
                     return Scaffold(
@@ -87,14 +77,13 @@ class _DirectoryTabState extends State<DirectoryTab> {
                                 shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
                                 physics: NeverScrollableScrollPhysics(),
                                 itemCount:
-                                    map.entries.elementAt(index).value.length,
+                                map.entries.elementAt(index).value.length,
                                 itemBuilder: (context, index2) {
                                   return InkWell(
                                     onTap: () {
                                       PlayInvoke.init(
-                                          songList: map.entries
-                                              .elementAt(index)
-                                              .value,
+                                          songList:
+                                          map.entries.elementAt(index).value,
                                           index: index2);
                                     },
                                     child: SongItem(
@@ -106,7 +95,8 @@ class _DirectoryTabState extends State<DirectoryTab> {
                                   );
                                 }),
                           ],
-                        ));
+                        )
+                    );
                   }));
                 },
               );
