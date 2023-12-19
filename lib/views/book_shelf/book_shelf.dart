@@ -171,6 +171,8 @@ class _BookShelfPageState extends State<BookShelfPage>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(bookNovel.bookTitle,maxLines: 2,),
+                // todo 阅读完返回后 上次阅读章节 不能自动更新到最新
+                Text(bookNovel.lastReadChapterTitle??"",maxLines: 2,),
                 Text(
                   bookNovel.localPath,
                   overflow: TextOverflow.ellipsis,

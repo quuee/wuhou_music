@@ -18,7 +18,6 @@ class ReadController extends GetxController
   // get loadingStatus => _loadingStatus;
   // 当前书本
   BookNovelEntity? bookNovel;
-
   // 当前书本所有章节
   List<BookChapterEntity> chapters = [];
 
@@ -27,15 +26,21 @@ class ReadController extends GetxController
 
   // 一个章节中 每一页内容
   List<TextPage> textPages = <TextPage>[];
-
+  // 章节页数
   int pageIndex = 0;
 
+  // 书页背景
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
-  // 动画 curl cover flip simulation simulation2L simulation2R
-  String animation = 'simulation2';
-  late AnimationController animationController;
+  // 菜单动画
+  late AnimationController menuAnimationController;
+  late Animation<Offset> menuTopAnimationProgress;
+  late Animation<Offset> menuBottomAnimationProgress;
+
+  // 翻页动画 curl cover flip simulation simulation2L simulation2R
+  // String animation = 'simulation2';
+  // late AnimationController animationController;
 
   // 是否向前滑动
   bool? isForward;
@@ -411,108 +416,130 @@ class ReadController extends GetxController
 
   /// 滑动手势 页面翻转效果
   void turnPage(DragUpdateDetails details, BoxConstraints dimens) {
-    final _ratio = details.delta.dx / dimens.maxWidth;
-    if (isForward == null) {
-      if (details.delta.dx > 0) {
-        isForward = false;
-      } else {
-        isForward = true;
+    if(menuAnimationController.isDismissed){
+      final _ratio = details.delta.dx / dimens.maxWidth;
+      if (isForward == null) {
+        if (details.delta.dx > 0) {
+          isForward = false;
+        } else {
+          isForward = true;
+        }
       }
-    }
-    if (isForward!) {
-      animationController.value += _ratio;
-    } else {
-      animationController.value += _ratio;
+      if (isForward!) {
+        // animationController.value += _ratio;
+      } else {
+        // animationController.value += _ratio;
+      }
     }
   }
 
   /// 滑动手势 结束
   Future<void> onDragFinish() async {
-    if (isForward != null) {
-      if (isForward!) {
-        // if (animationController.value <= (92 / 100 + 0.03)) {
-        //   // nextPage();
-        // } else {
-        //   animationController.forward();
-        // }
-        nextPage();
-      } else {
-        // if (animationController.value >=(8 / 100 + 0.05)) {
-        //   // previousPage();
-        // } else {
-        //   animationController.forward();
-        // }
-        previousPage();
+    if(menuAnimationController.isDismissed){
+      if (isForward != null) {
+        if (isForward!) {
+          // if (animationController.value <= (92 / 100 + 0.03)) {
+          //   // nextPage();
+          // } else {
+          //   animationController.forward();
+          // }
+          nextPage();
+        } else {
+          // if (animationController.value >=(8 / 100 + 0.05)) {
+          //   // previousPage();
+          // } else {
+          //   animationController.forward();
+          // }
+          previousPage();
+        }
       }
+      isForward = null;
     }
-    isForward = null;
   }
 
   previousPage() {
+    LogD('上一页', 'previousPage:$pageIndex');
     if(pageIndex <= 0){
-      previousChapter();
+      _previousChapter();
     }else{
       pageIndex--;
-      update();
     }
-
+    update();
   }
 
   nextPage() {
+    LogD('下一页', 'nextPage:$pageIndex');
     //检查是否该章最后一页了，如果是最后一页滑动则nextChapter
     //检查是否全书最后一页
     //检查是否有下一页
     if (pageIndex >= textPages.length - 1) {
       //进入下一章
-      nextChapter();
+      _nextChapter();
     } else {
       pageIndex++;
-      update();
     }
+    update();
   }
 
-  // gotoPage(int index){
-  //
-  // }
+  gotoPage(int gotoPageIndex){
+    pageIndex = gotoPageIndex;
+    update();
+  }
 
-  previousChapter() {
+  gotoChapter(int chapterIndex){
+    currentChapterIndex = chapterIndex - 1;
+    _nextChapter();
+    update();
+  }
+
+  _previousChapter() {
+    LogD('上一章', 'currentChapterIndex:$currentChapterIndex');
     if(currentChapterIndex <= 0 ){
       currentChapterIndex = 0;
     }else{
       textPages.clear();
-      final pages = _startX(currentChapterIndex - 1);
+      currentChapterIndex--;
+      final pages = _startX(currentChapterIndex);
       this.textPages.addAll(pages);
       pageIndex = textPages.length - 1;
-      currentChapterIndex--;
-      update();
     }
-
   }
-  nextChapter() {
+
+  _nextChapter() {
+    LogD('下一章', 'currentChapterIndex:$currentChapterIndex');
     if(currentChapterIndex >= chapters.length - 1){
       pageIndex = textPages.length - 1;
     }else{
       pageIndex = 0;
       textPages.clear();
-      final pages = _startX(currentChapterIndex + 1);
-      this.textPages.addAll(pages);
       currentChapterIndex++;
-      update();
+      final pages = _startX(currentChapterIndex);
+      this.textPages.addAll(pages);
     }
+  }
 
+  /// 加载上次阅读章节
+  _loadLastReadChapter(){
+    textPages.clear();
+    final pages = _startX(currentChapterIndex);
+    this.textPages.addAll(pages);
+    int gotoPageIndex = bookNovel?.lastReadChapterOffset??0;
+    gotoPage(gotoPageIndex);
   }
 
   @override
   void onInit() {
     LogI('生命周期顺序', 'onInit');
     bookNovel = Get.arguments as BookNovelEntity;
-    // 是否有上次阅读记录；没有则从-1开始，后续调用时直接+1
-    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? -1; //onReady调用nextChapter，直接从最前章加载
+    currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
     _getBookNovelInfo();
     _getBackImage();
 
-    animationController = AnimationController(
-        value: 1, duration: Duration(seconds: 1), vsync: this);
+    menuAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    menuTopAnimationProgress = menuAnimationController
+        .drive(Tween(begin: Offset(0.0, -1.0), end: Offset.zero));
+    menuBottomAnimationProgress = menuAnimationController
+        .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
 
     // firstIndex = chapters.first.chapterIndex;
     // lastIndex = chapters.last.chapterIndex;
@@ -523,18 +550,25 @@ class ReadController extends GetxController
   void onReady() {
     LogI('生命周期顺序', 'onReady');
 
-    nextChapter();
+    _loadLastReadChapter();
+
     super.onReady();
   }
 
   @override
   void onClose() {
-    // todo 记录阅读位置
-    // bookNovel?.lastReadChapterIndex = currentChapterCacheInfo?.chapterIndex;
-    // IsarHelper.instance.isarInstance.writeTxnSync(() {
-    //   IsarHelper.instance.isarInstance.bookNovelEntitys.putSync(bookNovel!);
-    // });
+    recordRead();
+
+    menuAnimationController.dispose();
     super.onClose();
+  }
+
+  /// 记录阅读位置
+  recordRead(){
+    bookNovel?.lastReadChapterIndex = currentChapterIndex;
+    bookNovel?.lastReadChapterTitle = chapters[currentChapterIndex].chapterTitle;
+    bookNovel?.lastReadChapterOffset = pageIndex;
+    IsarHelper.instance.isarInstance.writeTxn(() => IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!));
   }
 }
 

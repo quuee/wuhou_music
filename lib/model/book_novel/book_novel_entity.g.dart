@@ -32,8 +32,13 @@ const BookNovelEntitySchema = CollectionSchema(
       name: r'lastReadChapterOffset',
       type: IsarType.long,
     ),
-    r'localPath': PropertySchema(
+    r'lastReadChapterTitle': PropertySchema(
       id: 3,
+      name: r'lastReadChapterTitle',
+      type: IsarType.string,
+    ),
+    r'localPath': PropertySchema(
+      id: 4,
       name: r'localPath',
       type: IsarType.string,
     )
@@ -59,6 +64,12 @@ int _bookNovelEntityEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.bookTitle.length * 3;
+  {
+    final value = object.lastReadChapterTitle;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.localPath.length * 3;
   return bytesCount;
 }
@@ -72,7 +83,8 @@ void _bookNovelEntitySerialize(
   writer.writeString(offsets[0], object.bookTitle);
   writer.writeLong(offsets[1], object.lastReadChapterIndex);
   writer.writeLong(offsets[2], object.lastReadChapterOffset);
-  writer.writeString(offsets[3], object.localPath);
+  writer.writeString(offsets[3], object.lastReadChapterTitle);
+  writer.writeString(offsets[4], object.localPath);
 }
 
 BookNovelEntity _bookNovelEntityDeserialize(
@@ -85,7 +97,8 @@ BookNovelEntity _bookNovelEntityDeserialize(
     bookTitle: reader.readString(offsets[0]),
     lastReadChapterIndex: reader.readLongOrNull(offsets[1]),
     lastReadChapterOffset: reader.readLongOrNull(offsets[2]),
-    localPath: reader.readString(offsets[3]),
+    lastReadChapterTitle: reader.readStringOrNull(offsets[3]),
+    localPath: reader.readString(offsets[4]),
   );
   object.id = id;
   return object;
@@ -105,6 +118,8 @@ P _bookNovelEntityDeserializeProp<P>(
     case 2:
       return (reader.readLongOrNull(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -565,6 +580,160 @@ extension BookNovelEntityQueryFilter
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastReadChapterTitle',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastReadChapterTitle',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastReadChapterTitle',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'lastReadChapterTitle',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'lastReadChapterTitle',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastReadChapterTitle',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
+      lastReadChapterTitleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'lastReadChapterTitle',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterFilterCondition>
       localPathEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -752,6 +921,20 @@ extension BookNovelEntityQuerySortBy
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterTitle', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      sortByLastReadChapterTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterTitle', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
       sortByLocalPath() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localPath', Sort.asc);
@@ -823,6 +1006,20 @@ extension BookNovelEntityQuerySortThenBy
   }
 
   QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterTitle', Sort.asc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
+      thenByLastReadChapterTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadChapterTitle', Sort.desc);
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QAfterSortBy>
       thenByLocalPath() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'localPath', Sort.asc);
@@ -860,6 +1057,14 @@ extension BookNovelEntityQueryWhereDistinct
     });
   }
 
+  QueryBuilder<BookNovelEntity, BookNovelEntity, QDistinct>
+      distinctByLastReadChapterTitle({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastReadChapterTitle',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<BookNovelEntity, BookNovelEntity, QDistinct> distinctByLocalPath(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -893,6 +1098,13 @@ extension BookNovelEntityQueryProperty
       lastReadChapterOffsetProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastReadChapterOffset');
+    });
+  }
+
+  QueryBuilder<BookNovelEntity, String?, QQueryOperations>
+      lastReadChapterTitleProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastReadChapterTitle');
     });
   }
 

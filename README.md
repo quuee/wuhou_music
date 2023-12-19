@@ -19,7 +19,7 @@
 - [ ] 均衡器  
 - [x] 音乐在线播放
 - [x] 视频在线播放
-- [x] 本地阅读 支持utf8 gbk编码，随机访问，canvas直接画书页（原生写起来一打开书就闪退）
+- [x] 本地阅读 支持utf8 gbk编码，随机访问，canvas直接画书页（原生写起来一打开书就闪退，放弃。）
 - [ ] 本地阅读 flutter tts
 - [ ] 网络搜索 可搜歌名歌词歌手相关视频
 - [ ] 歌曲分类 语种 粤语日语 国风 戏曲 广播剧 有声书
@@ -69,7 +69,10 @@ GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
 //应该注册完之后 测试是否是单例
 ```
 
-## 小说页面为什么使用listview
+## 退出阅读页，进入不能翻页
+因为退出后有些对象推出前没有销毁
+
+## ~~~小说页面为什么使用listview~~~
 因为listview可以水平翻页 上下一行行翻页，pageview只能水平或垂直都只能一页页翻。  
 怎么跳转到某一章（listview controller offset按高度跳转）
 textpainter 只能在 root islote线程中使用
