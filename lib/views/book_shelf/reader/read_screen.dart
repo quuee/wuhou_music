@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +9,7 @@ class ReadScreen extends GetView<ReadController> {
 
   @override
   Widget build(BuildContext context) {
+
     return Material(
       child: GetBuilder<ReadController>(
         builder: (_) {
@@ -52,15 +52,15 @@ class ReadScreen extends GetView<ReadController> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  /// 换个思路 页面文字翻页自己控制，动画归动画，参考bookfx项目
-                  _.pageIndex + 1 >= _.textPages.length
-                      ? _buildReadOverWidget()
-                      : _.getPageWidget(_.pageIndex + 1),
+
                   _.getPageWidget(_.pageIndex),
-
-                  // 动画层 当前页 下一页
-                  // ...pageWidget,// 拼接数组
-
+                  // CustomPaint(
+                  //   size: controller.size,
+                  //   painter: BookPainter(
+                  //     _.p,
+                  //     Colors.grey,
+                  //   ),
+                  // ),
                   // 菜单层
                   // 顶部
                   Positioned(
@@ -69,7 +69,11 @@ class ReadScreen extends GetView<ReadController> {
                     right: 0,
                     child: SlideTransition(
                       position: _.menuTopAnimationProgress,
-                      child: AppBar(),
+                      child: AppBar(
+                        actions: [
+                          Icon(Icons.headset)
+                        ],
+                      ),
                     ),
                   ),
                   //底部
@@ -114,10 +118,6 @@ class ReadScreen extends GetView<ReadController> {
               InkWell(
                 child: Text('目录'),
                 onTap: () {
-                  final size = WidgetsBinding.instance.platformDispatcher.views
-                          .first.physicalSize /
-                      WidgetsBinding.instance.platformDispatcher.views.first
-                          .devicePixelRatio;
                   RDrawer.open(
                       Drawer(
                         child: ListView.builder(
@@ -134,7 +134,7 @@ class ReadScreen extends GetView<ReadController> {
                               );
                             }),
                       ),
-                      width: size.width * 2 / 3);
+                      width: controller.size.width * 2 / 3);
                 },
               ),
               Text('亮度'),
@@ -147,59 +147,5 @@ class ReadScreen extends GetView<ReadController> {
     );
   }
 
-  _buildReadOverWidget() {
-    final colorStyle = TextStyle(color: Color(0xFF303133));
-    // 放在阅读页面最底层
-    return Container(
-      decoration: getDecoration(
-        '#FFFFFFCC',
-        Color(0xFFFFFFCC),
-      ),
-      // color: widget.controller.config.backgroundColor,
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("这是底线（最后一页）", style: colorStyle),
-          SizedBox(height: 10),
-          Text("已读完", style: colorStyle),
-        ],
-      ),
-    );
-  }
 
-  Decoration getDecoration(String background, Color backgroundColor) {
-    DecorationImage? image;
-    if (background.isEmpty || background == 'null') {
-    } else if (background.startsWith("assets")) {
-      try {
-        image = DecorationImage(
-          image: AssetImage(background),
-          fit: BoxFit.fill,
-          onError: (_, __) {
-            print(_);
-            print(__);
-            image = null;
-          },
-        );
-      } catch (e) {}
-    } else {
-      final file = File(background);
-      if (file.existsSync()) {
-        try {
-          image = DecorationImage(
-            image: FileImage(file),
-            fit: BoxFit.fill,
-            onError: (_, __) => image = null,
-          );
-        } catch (e) {}
-      }
-    }
-    return BoxDecoration(
-      color: backgroundColor,
-      image: image,
-    );
-  }
 }
