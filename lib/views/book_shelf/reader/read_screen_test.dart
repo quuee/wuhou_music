@@ -23,7 +23,7 @@ class _ReadScreenTextState extends State<ReadScreenText>
   Point<double> currentA = const Point(0, 0); // a面
   late Offset downPos;
   bool isNext = false; // 是否翻页到下一页
-  bool isAlPath = true; //
+  bool isAlPath = true; // 是否剪辑画面
   bool isAnimation = false; // 是否正在执行翻页
 
   late ReadTestController readTestController;
@@ -39,7 +39,7 @@ class _ReadScreenTextState extends State<ReadScreenText>
     readTestController = Get.find<ReadTestController>();
     p = ValueNotifier(PaperPoint(const Point(0, 0), const Size(0, 0)));
     animationTurnPageController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 800))
+        AnimationController(vsync: this, duration: Duration(milliseconds: 600))
           ..addListener(() {
             if (isNext) {
               /// 翻页
@@ -68,13 +68,18 @@ class _ReadScreenTextState extends State<ReadScreenText>
           })
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
+              // 动画结束后
               isAnimation = false;
               if (isNext) {
-                LogD('翻页addStatusListener', '记录翻页动作');
-                isAlPath = true;
-                currentIndex++;
-                // widget.nextCallBack?.call(widget.controller.currentIndex + 1);
-                setState(() {});
+                if (currentIndex >= readTestController.dataList.length - 1) {
+                  return;
+                }
+                // LogD('翻页addStatusListener', '记录翻页动作');
+
+                setState(() {
+                  currentIndex++;
+                  isAlPath = true;
+                });
               }
             }
             if (status == AnimationStatus.dismissed) {
@@ -101,8 +106,17 @@ class _ReadScreenTextState extends State<ReadScreenText>
           child: Stack(
             children: [
               currentIndex == _.dataList.length - 1
-                  ? Center(
-                      child: Text('没有了'),
+                  ? ClipPath(
+                      child: Container(
+                        alignment: Alignment.center,
+                        color: Colors.green,
+                        width: size.width,
+                        height: size.height,
+                        child: Text(
+                          _.dataList[currentIndex],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
                     )
                   // 下一页
                   : ClipPath(
@@ -143,10 +157,11 @@ class _ReadScreenTextState extends State<ReadScreenText>
             downPos = d.localPosition;
           },
           onPanUpdate: (d) {
+            // LogD("onPanUpdate","onPanUpdate---${d.globalPosition}---${d.localPosition}---${d.delta}");
             if (isAnimation) {
               return;
             }
-            if (currentIndex == _.dataList.length - 1) {
+            if (currentIndex >= _.dataList.length - 1) {
               return;
             }
             var move = d.localPosition;
@@ -185,21 +200,7 @@ class _ReadScreenTextState extends State<ReadScreenText>
             if (isAnimation) {
               return;
             }
-
-            /// 手指首次触摸屏幕左侧区域
-            if (downPos.dx < size.width / 2) {
-              if (currentIndex == 0) {
-                // widget.lastCallBack?.call(widget.controller.currentIndex);
-                return;
-              }
-              // widget.lastCallBack?.call(widget.controller.currentIndex);
-              // last();
-              return;
-            }
-
-            ///下一页
-            if (currentIndex == _.dataList.length - 1) {
-              // widget.nextCallBack?.call(widget.pageCount);
+            if (currentIndex >= _.dataList.length - 1) {
               return;
             }
             setState(() {
@@ -211,6 +212,10 @@ class _ReadScreenTextState extends State<ReadScreenText>
             );
           },
           onTapUp: (details) {
+            if (isAnimation) {
+              return;
+            }
+
             final size = MediaQuery.of(context).size;
             if (details.globalPosition.dx > size.width * 1 / 3 &&
                 details.globalPosition.dx < size.width * 2 / 3 &&
@@ -220,7 +225,24 @@ class _ReadScreenTextState extends State<ReadScreenText>
               if (details.globalPosition.dx < size.width / 2) {
                 _previous();
               } else {
-                _next();
+                // if (isAlPath) {
+                //   setState(() {
+                //     isAlPath = false;
+                //   });
+                // }
+                if (currentIndex >= _.dataList.length - 1) {
+                  return;
+                }
+                currentA = Point(details.localPosition.dx, details.localPosition.dy);
+                p.value = PaperPoint(Point(details.localPosition.dx, details.localPosition.dy), size);
+                isNext = true;
+                setState(() {
+                  isAlPath = false;
+                });
+                isAnimation = true;
+                animationTurnPageController.forward(
+                  from: 0,
+                );
               }
             }
           },
@@ -236,8 +258,8 @@ class _ReadScreenTextState extends State<ReadScreenText>
     isAnimation = true;
     setState(() {
       isAlPath = false;
-      currentA = Point(-200, size.height - 100);
       isNext = false;
+      currentA = Point(-100, size.height - 100);
     });
 
     currentIndex--;
@@ -246,18 +268,19 @@ class _ReadScreenTextState extends State<ReadScreenText>
     );
   }
 
-  _next() {
-    if (currentIndex >= readTestController.dataList.length - 1) {
-      return;
-    }
-    setState(() {
-      isAlPath = false;
-      isNext = true;
-      currentA = Point(size.width - 50, size.height - 50);
-    });
-    isAnimation = true;
-    animationTurnPageController.forward(
-      from: 0,
-    );
-  }
+  // 短时间连续点击，只能翻一页，不能点几下翻几页
+  // _next() {
+  //   if (currentIndex >= readTestController.dataList.length - 1) {
+  //     return;
+  //   }
+  //   isAnimation = true;
+  //   setState(() {
+  //     isAlPath = false;
+  //     isNext = true;
+  //     currentA = Point(size.width - 50, size.height - 50);
+  //   });
+  //   animationTurnPageController.forward(
+  //     from: 0,
+  //   );
+  // }
 }

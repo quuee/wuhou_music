@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'line.dart';
 
-// 求直线方程
+/// 两点求求直线方程
 Line calculateLineEquation(Point<double> p1, Point<double> p2) {
   double slope = 0;
   double intercept = 0;
