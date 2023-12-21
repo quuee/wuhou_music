@@ -9,7 +9,6 @@ import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
-import 'package:wuhoumusic/views/book_shelf/reader/text_composition/papter_point.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 
 class ReadController extends GetxController
@@ -37,11 +36,6 @@ class ReadController extends GetxController
   late AnimationController menuAnimationController;
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
-
-  // 翻页动画 curl cover flip simulation simulation2L simulation2R
-  // String animation = 'simulation2';
-  // late AnimationController animationTurnPageController;
-  // late ValueNotifier<PaperPoint> p;
 
   // 是否向前滑动
   bool? isForward;
@@ -544,13 +538,6 @@ class ReadController extends GetxController
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
 
-    // animationTurnPageController = AnimationController(vsync: this, duration: Duration(milliseconds: 800))
-    //   ..addListener(() {
-    //
-    // });
-    // p = ValueNotifier(PaperPoint(Point(size.width, size.height), size));
-    // firstIndex = chapters.first.chapterIndex;
-    // lastIndex = chapters.last.chapterIndex;
     super.onInit();
   }
 

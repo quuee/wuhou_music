@@ -110,13 +110,20 @@ class _BookShelfPageState extends State<BookShelfPage>
   _openBookNovel(BookNovelEntity bookNovelEntity) {
     if (!isEditStatus) {
       // Get.toNamed(Routes.reader, arguments: bookNovelEntity)?.then((value) => LogD('返回书架接收参数：', value.toString())); // null
-      Get.toNamed(Routes.reader, arguments: bookNovelEntity);
+      if(bookNovelEntity.bookTitle == '测试翻页'){
+        Get.toNamed(Routes.readerTest, arguments: bookNovelEntity);
+      }else{
+        Get.toNamed(Routes.reader, arguments: bookNovelEntity);
+      }
+
     }
   }
 
   _loadBooks() async {
     books =
         await IsarHelper.instance.isarInstance.bookNovelEntitys.where().findAll();
+    BookNovelEntity test = BookNovelEntity(bookTitle: '测试翻页', localPath: '测试翻页');
+    books?.insert(0,test);
     setState(() {});
   }
 

@@ -54,13 +54,7 @@ class ReadScreen extends GetView<ReadController> {
                 children: <Widget>[
 
                   _.getPageWidget(_.pageIndex),
-                  // CustomPaint(
-                  //   size: controller.size,
-                  //   painter: BookPainter(
-                  //     _.p,
-                  //     Colors.grey,
-                  //   ),
-                  // ),
+
                   // 菜单层
                   // 顶部
                   Positioned(
@@ -76,7 +70,7 @@ class ReadScreen extends GetView<ReadController> {
                       ),
                     ),
                   ),
-                  //底部
+                  // 底部
                   Positioned(
                     bottom: 0,
                     left: 0,
