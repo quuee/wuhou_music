@@ -1,11 +1,95 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
+import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/text_composition/book_painter.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/text_composition/current_paper.dart';
+import 'package:wuhoumusic/views/book_shelf/reader/text_composition/papter_point.dart';
 
-class ReadScreen extends GetView<ReadController> {
+// class ReadScreen extends GetView<ReadController> {
+//   const ReadScreen({super.key});
+// }
+
+class ReadScreen extends StatefulWidget {
   const ReadScreen({super.key});
+
+  @override
+  State<ReadScreen> createState() => _ReadScreenState();
+}
+
+class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
+
+  late ReadController readController;
+  late var size;
+
+  // 翻页控制点
+  late ValueNotifier<PaperPoint> p;
+  Point<double> currentA = const Point(0, 0); // a面
+  late Offset downPos;
+  bool isNext = false; // 是否翻页到下一页
+  bool isAlPath = true; // 是否剪辑画面
+  bool isAnimation = false; // 是否正在执行翻页
+  late AnimationController animationTurnPageController;
+
+  @override
+  void initState() {
+
+    readController = Get.find<ReadController>();
+    size = readController.size;
+    p = ValueNotifier(PaperPoint(const Point(0, 0), const Size(0, 0)));
+    animationTurnPageController =
+    AnimationController(vsync: this, duration: Duration(milliseconds: 600))
+      ..addListener(() {
+        if (isNext) {
+          /// 翻页
+          p.value = PaperPoint(
+              Point(
+                  currentA.x -
+                      (currentA.x + size.width) *
+                          animationTurnPageController.value,
+                  currentA.y +
+                      (size.height - currentA.y) *
+                          animationTurnPageController.value),
+              size);
+        } else {
+          /// 不翻页 回到原始位置
+          p.value = PaperPoint(
+              Point(
+                currentA.x +
+                    (size.width - currentA.x) *
+                        animationTurnPageController.value,
+                currentA.y +
+                    (size.height - currentA.y) *
+                        animationTurnPageController.value,
+              ),
+              size);
+        }
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          // 动画结束后
+          isAnimation = false;
+          if (isNext) {
+            LogD('翻页addStatusListener', '记录翻页动作');
+            isAlPath = true;
+            readController.nextPage();
+          }
+        }
+
+      });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationTurnPageController.dispose();
+    readController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +105,10 @@ class ReadScreen extends GetView<ReadController> {
           return LayoutBuilder(builder: (context, dimens) {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              //手指水平滑动取消时的回调函数
-              onHorizontalDragCancel: () => _.isForward = null,
-              //手指水平滑动时的回调函数
-              onHorizontalDragUpdate: (details) => _.turnPage(details, dimens),
-              //手指水平滑动结束时的回调函数
-              onHorizontalDragEnd: (details) => _.onDragFinish(),
               onTapUp: (details) {
-                final size = MediaQuery.of(context).size;
+                if (isAnimation) {
+                  return;
+                }
                 if (details.globalPosition.dx > size.width * 1 / 3 &&
                     details.globalPosition.dx < size.width * 2 / 3 &&
                     details.globalPosition.dy > size.height * 3 / 8 &&
@@ -42,9 +122,28 @@ class ReadScreen extends GetView<ReadController> {
                   // 如果上下栏菜单呼出，点击无效
                   if (_.menuAnimationController.isDismissed) {
                     if (details.globalPosition.dx < size.width / 2) {
+                      isAnimation = true;
+                      setState(() {
+                        isAlPath = false;
+                        isNext = false;
+                        currentA = Point(-100, size.height - 100);
+                      });
                       _.previousPage();
+                      animationTurnPageController.forward(
+                        from: 0,
+                      );
                     } else {
-                      _.nextPage();
+
+                      currentA = Point(details.localPosition.dx, details.localPosition.dy);
+                      p.value = PaperPoint(Point(details.localPosition.dx, details.localPosition.dy), size);
+                      isNext = true;
+                      setState(() {
+                        isAlPath = false;
+                      });
+                      isAnimation = true;
+                      animationTurnPageController.forward(
+                        from: 0,
+                      );
                     }
                   }
                 }
@@ -53,8 +152,25 @@ class ReadScreen extends GetView<ReadController> {
                 fit: StackFit.expand,
                 children: <Widget>[
 
-                  _.getPageWidget(_.pageIndex),
-
+                  // todo 章节最后一张翻页时应该显示下一章第一页
+                  _.pageIndex == _.textPages.length - 1
+                      ? ClipPath(
+                    child: _.getPageWidget(_.pageIndex)
+                  )
+                  // 下一页
+                      : ClipPath(
+                    child: _.getPageWidget(_.pageIndex+1)
+                  ),
+                  // 当前页
+                  ClipPath(
+                    child: _.getPageWidget(_.pageIndex),
+                    clipper: isAlPath ? null : CurrentPaperClipPath(p, isNext),
+                  ),
+                // 最上面只绘制B区域和阴影
+                  CustomPaint(
+                    size: size,
+                    painter: BookPainter(p, Colors.white70),
+                  ),
                   // 菜单层
                   // 顶部
                   Positioned(
@@ -82,6 +198,59 @@ class ReadScreen extends GetView<ReadController> {
                   )
                 ],
               ),
+              onPanDown: (d) {
+                downPos = d.localPosition;
+              },
+              onPanUpdate: (d) {
+                // LogD("onPanUpdate","onPanUpdate---${d.globalPosition}---${d.localPosition}---${d.delta}");
+                if (isAnimation) {
+                  return;
+                }
+                var move = d.localPosition;
+                // 临界值取消更新
+                if (move.dx >= size.width ||
+                    move.dx < 0 ||
+                    move.dy >= size.height ||
+                    move.dy < 0) {
+                  return;
+                }
+                if (downPos.dx < size.width / 2) {
+                  return;
+                }
+                if (isAlPath) {
+                  setState(() {
+                    isAlPath = false;
+                  });
+                }
+                if (downPos.dy > size.height / 3 &&
+                    downPos.dy < size.height * 2 / 3) {
+                  // 横向翻页
+                  currentA = Point(move.dx, size.height - 1);
+                  p.value = PaperPoint(Point(move.dx, size.height - 1), size);
+                } else {
+                  // 右下角翻页
+                  currentA = Point(move.dx, move.dy);
+                  p.value = PaperPoint(Point(move.dx, move.dy), size);
+                }
+                if ((size.width - move.dx) / size.width > 1 / 3) {
+                  isNext = true;
+                } else {
+                  isNext = false;
+                }
+              },
+              onPanEnd: (d) {
+                if (isAnimation) {
+                  return;
+                }
+                setState(() {
+                  isAlPath = false;
+                });
+                isAnimation = true;
+                animationTurnPageController.forward(
+                  from: 0,
+                );
+              },
+
             );
           });
         },
@@ -115,20 +284,20 @@ class ReadScreen extends GetView<ReadController> {
                   RDrawer.open(
                       Drawer(
                         child: ListView.builder(
-                            itemCount: controller.chapters.length,
+                            itemCount: readController.chapters.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(
-                                    controller.chapters[index].chapterTitle ??
+                                    readController.chapters[index].chapterTitle ??
                                         ''),
                                 subtitle: Text('第$index章'),
                                 onTap: () {
-                                  controller.gotoChapter(index);
+                                  readController.gotoChapter(index);
                                 },
                               );
                             }),
                       ),
-                      width: controller.size.width * 2 / 3);
+                      width: size.width * 2 / 3);
                 },
               ),
               Text('亮度'),
@@ -140,6 +309,5 @@ class ReadScreen extends GetView<ReadController> {
       ),
     );
   }
-
-
 }
+

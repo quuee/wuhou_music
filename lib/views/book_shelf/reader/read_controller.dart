@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +11,7 @@ import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 
 class ReadController extends GetxController
-    with GetSingleTickerProviderStateMixin {
+    with GetTickerProviderStateMixin {
   // LoadingStatus _loadingStatus = LoadingStatus.loading;
   // get loadingStatus => _loadingStatus;
   // 当前书本
@@ -37,11 +36,10 @@ class ReadController extends GetxController
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
-  // 是否向前滑动
-  bool? isForward;
-
-  var size = WidgetsBinding.instance.platformDispatcher.views .first.physicalSize
+  var size = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize
       / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+
 
   /// 获取书本信息 并且分章节
   _getBookNovelInfo() {
@@ -199,10 +197,6 @@ class ReadController extends GetxController
   _getBackImage() async {
     try {
       final background = 'assets/bg/001.jpg';
-      final size =
-          WidgetsBinding.instance.platformDispatcher.views.first.physicalSize /
-              WidgetsBinding
-                  .instance.platformDispatcher.views.first.devicePixelRatio;
       if (background.isEmpty || background == 'null') {
         _backgroundImage = null;
         return;
@@ -229,7 +223,8 @@ class ReadController extends GetxController
     LogD('_startX start', DateTime.now().toString());
     double leftPadding = 16;
     double rightPadding = 16;
-    double topPadding = 16;
+    double topPadding = WidgetsBinding.instance.platformDispatcher.views.first.padding.top
+        / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     double columnPadding = 30;
 
     double fontSize = 20;
@@ -244,9 +239,6 @@ class ReadController extends GetxController
     bool shouldJustifyHeight = true;
 
     final pages = <TextPage>[];
-    final size = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     // final columns = config.columns > 0 ? config.columns : size.width > 580 ? 2 : 1;
     final columns = 1;
     final _width = (size.width -
@@ -411,49 +403,6 @@ class ReadController extends GetxController
     );
   }
 
-  /// 滑动手势 滑动时 (未完成)
-  void turnPage(DragUpdateDetails details, BoxConstraints dimens) {
-    if(menuAnimationController.isDismissed){
-      final _ratio = details.delta.dx / dimens.maxWidth;
-      if (isForward == null) {
-        if (details.delta.dx > 0) {
-          isForward = false;
-        } else {
-          isForward = true;
-        }
-      }
-      if (isForward!) {
-        // animationTurnPageController.value += _ratio;
-      } else {
-        // animationTurnPageController.value += _ratio;
-      }
-    }
-  }
-
-  /// 滑动手势 滑动结束
-  Future<void> onDragFinish() async {
-    if(menuAnimationController.isDismissed){
-      if (isForward != null) {
-        if (isForward!) {
-          // if (animationController.value <= (92 / 100 + 0.03)) {
-          //   // nextPage();
-          // } else {
-          //   animationController.forward();
-          // }
-          nextPage();
-        } else {
-          // if (animationController.value >=(8 / 100 + 0.05)) {
-          //   // previousPage();
-          // } else {
-          //   animationController.forward();
-          // }
-          previousPage();
-        }
-      }
-      isForward = null;
-    }
-  }
-
   previousPage() {
     LogD('上一页', 'previousPage:$pageIndex');
     if(pageIndex <= 0){
@@ -538,6 +487,8 @@ class ReadController extends GetxController
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
 
+
+
     super.onInit();
   }
 
@@ -555,6 +506,7 @@ class ReadController extends GetxController
     recordRead();
 
     menuAnimationController.dispose();
+
     // Get.back(result: 'abc');
     super.onClose();
   }
@@ -566,6 +518,7 @@ class ReadController extends GetxController
     bookNovel?.lastReadChapterOffset = pageIndex;
     IsarHelper.instance.isarInstance.writeTxn(() => IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!));
   }
+
 }
 
 /// 每一页内容
