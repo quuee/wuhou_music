@@ -6,14 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 
-class ReadController extends GetxController
-    with GetTickerProviderStateMixin {
-  // LoadingStatus _loadingStatus = LoadingStatus.loading;
-  // get loadingStatus => _loadingStatus;
+class ReadController extends GetxController with GetTickerProviderStateMixin {
+  LoadingStatus _loadingStatus = LoadingStatus.loading;
+  get loadingStatus => _loadingStatus;
   // 当前书本
   BookNovelEntity? bookNovel;
   // 当前书本所有章节
@@ -24,6 +24,8 @@ class ReadController extends GetxController
 
   // 一个章节中 每一页内容
   List<TextPage> textPages = <TextPage>[];
+  // 预加载下一章内容
+  List<TextPage> nextTextPages = <TextPage>[];
   // 章节页数
   int pageIndex = 0;
 
@@ -36,25 +38,26 @@ class ReadController extends GetxController
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
-  var size = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize
-      / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
+  var size = WidgetsBinding
+          .instance.platformDispatcher.views.first.physicalSize /
+      WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
   /// 是否剪辑A区画面
   RxBool isAlPath = RxBool(true); //使用setState不会抖；用obx会抖，必须整个页面刷新才不会抖。
 
-  updateAlPath(bool val){
+  updateAlPath(bool val) {
     isAlPath.value = val;
     update();
   }
 
   /// 获取书本信息 并且分章节
-  _getBookNovelInfo() {
+  Future<List<BookChapterEntity>> _getBookNovelInfo() async {
     File file = File(bookNovel!.localPath);
     bool exist = file.existsSync();
     if (!exist) {
-      return;
+      return Future.value([]);
     }
+    List<BookChapterEntity> tempChapters = [];
     // RandomAccessFile重写小说阅读
     List<int> buffer = List.generate(128 * 1024, (index) => 0);
     int curOffset = 0; // 文件游标位置
@@ -66,7 +69,8 @@ class ReadController extends GetxController
     // 2 分章节内容，跳过章节长度，取出内容
     RandomAccessFile randomAccessFile = file.openSync();
     while ((readLength =
-            randomAccessFile.readIntoSync(buffer, 0, buffer.length)) > 0) {
+            randomAccessFile.readIntoSync(buffer, 0, buffer.length)) >
+        0) {
       ++chapterIndex;
       String chapterContent = "";
       try {
@@ -102,22 +106,23 @@ class ReadController extends GetxController
           if (curOffset == 0) {
             // 说明有序章
             BookChapterEntity preChapter = BookChapterEntity(
-                bookId: bookNovel!.id!,
-                chapterIndex: chapterIndex,
-                chapterTitle: "序章",
-                start: 0,
-                end: utf8.encode(chapterContentSubFront).length,);
-            chapters.add(preChapter);
+              bookId: bookNovel!.id!,
+              chapterIndex: chapterIndex,
+              chapterTitle: "序章",
+              start: 0,
+              end: utf8.encode(chapterContentSubFront).length,
+            );
+            tempChapters.add(preChapter);
 
             BookChapterEntity curChapter = BookChapterEntity(
                 bookId: bookNovel!.id!,
                 chapterIndex: chapterIndex,
                 chapterTitle: allMatches.elementAt(i).group(0).toString(),
                 start: preChapter.end);
-            chapters.add(curChapter);
+            tempChapters.add(curChapter);
           } else {
             // 将当前段落添加到上一章中
-            BookChapterEntity lastChapter = chapters[chapters.length - 1];
+            BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
             lastChapter.end = (lastChapter.end ?? 0) +
                 utf8.encode(chapterContentSubFront).length;
             // lastChapter.content =
@@ -128,14 +133,16 @@ class ReadController extends GetxController
                 chapterIndex: chapterIndex,
                 chapterTitle: allMatches.elementAt(i).group(0).toString(),
                 start: lastChapter.end);
-            chapters.add(curChapter);
+            tempChapters.add(curChapter);
           }
         } else {
-          if (chapters.isNotEmpty) {
-            seekPositionBytes += utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
+          if (tempChapters.isNotEmpty) {
+            seekPositionBytes +=
+                utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
             seekPositionString += chapterContentSubFront.length; //字符串偏移量
-            BookChapterEntity lastChapter = chapters[chapters.length - 1];
-            lastChapter.end = (lastChapter.start ?? 0) + utf8.encode(chapterContentSubFront).length;
+            BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
+            lastChapter.end = (lastChapter.start ?? 0) +
+                utf8.encode(chapterContentSubFront).length;
             // lastChapter.content =
             //     (lastChapter.content ?? "") + chapterContentSubFront;
 
@@ -144,14 +151,14 @@ class ReadController extends GetxController
                 chapterIndex: chapterIndex,
                 chapterTitle: allMatches.elementAt(i).group(0).toString(),
                 start: lastChapter.end);
-            chapters.add(curChapter);
+            tempChapters.add(curChapter);
           } else {
             BookChapterEntity curChapter = BookChapterEntity(
                 bookId: bookNovel!.id!,
                 chapterIndex: chapterIndex,
                 chapterTitle: allMatches.elementAt(i).group(0).toString(),
                 start: 0);
-            chapters.add(curChapter);
+            tempChapters.add(curChapter);
           }
         }
       }
@@ -160,11 +167,11 @@ class ReadController extends GetxController
 
       curOffset += readLength;
       // 如果有正则章节
-      BookChapterEntity lastChapter = chapters[chapters.length - 1];
+      BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
       lastChapter.end = curOffset;
     }
-
     randomAccessFile.closeSync();
+    return Future.value(tempChapters);
   }
 
   /// 获取该章节内容
@@ -225,13 +232,14 @@ class ReadController extends GetxController
     } catch (e) {}
   }
 
-  /// 构建字体信息 布局信息  分页
-  List<TextPage> _startX(int chapterIndex) {
+  /// 构建字体信息 布局信息  分页。 改成异步
+  Future<List<TextPage>> _startX(int chapterIndex) async {
     LogD('_startX start', DateTime.now().toString());
     double leftPadding = 16;
     double rightPadding = 16;
-    double topPadding = WidgetsBinding.instance.platformDispatcher.views.first.padding.top
-        / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double topPadding = WidgetsBinding
+            .instance.platformDispatcher.views.first.padding.top /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     double columnPadding = 30;
 
     double fontSize = 20;
@@ -251,7 +259,8 @@ class ReadController extends GetxController
     final _width = (size.width -
             leftPadding -
             rightPadding -
-            (columns - 1) * columnPadding) / columns;
+            (columns - 1) * columnPadding) /
+        columns;
     final _width2 = _width - fontSize;
     final _height = size.height - bottomPadding;
     final _height2 = _height - fontSize * fontHeight;
@@ -281,7 +290,10 @@ class ReadController extends GetxController
       height: fontHeight,
     );
 
-    var _t = chapters[chapterIndex].chapterTitle.replaceAll('\r', '').replaceAll('\n', '');
+    var _t = chapters[chapterIndex]
+        .chapterTitle
+        .replaceAll('\r', '')
+        .replaceAll('\n', '');
     while (true) {
       tp.text = TextSpan(text: _t, style: titleStyle);
       tp.layout(maxWidth: _width);
@@ -386,20 +398,10 @@ class ReadController extends GetxController
       page.percent = page.pageNo / pages.length / chapters.length + basePercent;
     });
     LogD('_startX end', DateTime.now().toString());
-    return pages;
+    return Future.value(pages);
   }
 
   Widget getPageWidget(int pageIndex) {
-    /// 因为是stack组件，先画上去的画面会被覆盖，从后面先画。
-    // return [
-    //   for (pageIndex = (textPages.length - 1); pageIndex >= 0; pageIndex--)
-    //     CustomPaint(
-    //         painter: TextCompositionEffect(
-    //           amount: animationController,
-    //           index: pageIndex,
-    //         ))
-    // ];
-
     return Container(
       child: CustomPaint(
         painter: SimpleTextPainter(
@@ -410,11 +412,33 @@ class ReadController extends GetxController
     );
   }
 
+  /// 用于展示翻页时 最后一页 至 下一章第一页
+  Widget getNextPageWidget() {
+    if (nextTextPages.isEmpty) {
+      // 最后一章
+      return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text('已读完')],
+        ),
+        color: Colors.yellow,
+      );
+    } else {
+      return CustomPaint(
+        painter: SimpleTextPainter(
+            textPage: nextTextPages[0],
+            pageIndex: 0,
+            backgroundImage: backgroundImage),
+      );
+    }
+  }
+
   previousPage() {
     LogD('上一页', 'previousPage:$pageIndex');
-    if(pageIndex <= 0){
+    if (pageIndex <= 0) {
       _previousChapter();
-    }else{
+    } else {
       pageIndex--;
     }
     update();
@@ -434,66 +458,83 @@ class ReadController extends GetxController
     update();
   }
 
-  gotoPage(int gotoPageIndex){
+  gotoPage(int gotoPageIndex) {
     pageIndex = gotoPageIndex;
     update();
   }
 
-  gotoChapter(int chapterIndex){
+  gotoChapter(int chapterIndex) {
     currentChapterIndex = chapterIndex - 1;
     _nextChapter();
     update();
   }
 
-  _previousChapter() {
+  _previousChapter() async {
     LogD('上一章', 'currentChapterIndex:$currentChapterIndex');
-    if(currentChapterIndex <= 0 ){
+    if (currentChapterIndex <= 0) {
       currentChapterIndex = 0;
-    }else{
+    } else {
       textPages.clear();
       currentChapterIndex--;
-      final pages = _startX(currentChapterIndex);
+      final pages = await _startX(currentChapterIndex);
       this.textPages.addAll(pages);
       pageIndex = textPages.length - 1;
     }
   }
 
-  _nextChapter() {
+  _nextChapter() async{
     LogD('下一章', 'currentChapterIndex:$currentChapterIndex');
-    if(currentChapterIndex >= chapters.length - 1){
+    if (currentChapterIndex >= chapters.length - 1) {
       pageIndex = textPages.length - 1;
-    }else{
+    } else {
       pageIndex = 0;
       textPages.clear();
+      nextTextPages.clear();
       currentChapterIndex++;
-      final pages = _startX(currentChapterIndex);
+      final pages = await _startX(currentChapterIndex);
       this.textPages.addAll(pages);
+      _prepareNextChapter();
+    }
+  }
+
+  // 多读取一章内容
+  _prepareNextChapter() async {
+    nextTextPages.clear();
+    if (currentChapterIndex + 1 <= lastChapterIndex) {
+      final pages2 = await _startX(currentChapterIndex + 1);
+      nextTextPages.addAll(pages2);
     }
   }
 
   /// 加载上次阅读章节
-  _loadLastReadChapter(){
+  _loadLastReadChapter() async {
     textPages.clear();
-    final pages = _startX(currentChapterIndex);
-    this.textPages.addAll(pages);
-    int gotoPageIndex = bookNovel?.lastReadChapterOffset??0;
+    final pages = await _startX(currentChapterIndex);
+    textPages.addAll(pages);
+    _prepareNextChapter();
+    int gotoPageIndex = bookNovel?.lastReadChapterOffset ?? 0;
     gotoPage(gotoPageIndex);
   }
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     LogI('生命周期顺序', 'onInit');
     bookNovel = Get.arguments as BookNovelEntity;
     currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
-    _getBookNovelInfo();
-    _getBackImage();
 
-    menuAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    await _getBackImage();
+
+    List<BookChapterEntity> temp = await _getBookNovelInfo();
+    chapters.addAll(temp);
+    firstChapterIndex = chapters.first.chapterIndex;
+    lastChapterIndex = chapters.last.chapterIndex;
+
+    menuAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     menuTopAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, -1.0), end: Offset.zero));
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
-
 
 
     super.onInit();
@@ -504,6 +545,7 @@ class ReadController extends GetxController
     LogI('生命周期顺序', 'onReady');
 
     _loadLastReadChapter();
+    _loadingStatus = LoadingStatus.success;
 
     super.onReady();
   }
@@ -518,13 +560,14 @@ class ReadController extends GetxController
   }
 
   /// 记录阅读位置
-  _recordRead(){
+  _recordRead() {
     bookNovel?.lastReadChapterIndex = currentChapterIndex;
-    bookNovel?.lastReadChapterTitle = chapters[currentChapterIndex].chapterTitle;
+    bookNovel?.lastReadChapterTitle =
+        chapters[currentChapterIndex].chapterTitle;
     bookNovel?.lastReadChapterOffset = pageIndex;
-    IsarHelper.instance.isarInstance.writeTxn(() => IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!));
+    IsarHelper.instance.isarInstance.writeTxn(() =>
+        IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!));
   }
-
 }
 
 /// 每一页内容

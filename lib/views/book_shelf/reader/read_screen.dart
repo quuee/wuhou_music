@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
+import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/book_painter.dart';
@@ -92,7 +93,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     return Material(
       child: GetBuilder<ReadController>(
         builder: (_) {
-          if (_.textPages.isEmpty) {
+          if (_.loadingStatus == LoadingStatus.loading) {
             return Center(
               child: Text('加载中'),
             );
@@ -143,10 +144,9 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  // todo 章节最后一张翻页时应该显示下一章第一页，需要做预加载
-                  _.pageIndex == _.textPages.length - 1
-                      ? Center(child: Text('继续翻页，展示下章内容'),)
-                      // 下一页
+                  // 下一页
+                  _.pageIndex >= _.textPages.length - 1
+                      ? ClipPath(child: _.getNextPageWidget())
                       : ClipPath(child: _.getPageWidget(_.pageIndex + 1)),
                   // 当前页 A区，根据路径会被剪裁，露出下一页的内容
                   ClipPath(
