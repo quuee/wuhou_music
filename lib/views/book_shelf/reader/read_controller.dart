@@ -40,6 +40,13 @@ class ReadController extends GetxController
       / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
 
+  /// 是否剪辑A区画面
+  RxBool isAlPath = RxBool(true); //使用setState不会抖；用obx会抖，必须整个页面刷新才不会抖。
+
+  updateAlPath(bool val){
+    isAlPath.value = val;
+    update();
+  }
 
   /// 获取书本信息 并且分章节
   _getBookNovelInfo() {
@@ -503,8 +510,7 @@ class ReadController extends GetxController
 
   @override
   void onClose() {
-    recordRead();
-
+    _recordRead();
     menuAnimationController.dispose();
 
     // Get.back(result: 'abc');
@@ -512,7 +518,7 @@ class ReadController extends GetxController
   }
 
   /// 记录阅读位置
-  recordRead(){
+  _recordRead(){
     bookNovel?.lastReadChapterIndex = currentChapterIndex;
     bookNovel?.lastReadChapterTitle = chapters[currentChapterIndex].chapterTitle;
     bookNovel?.lastReadChapterOffset = pageIndex;

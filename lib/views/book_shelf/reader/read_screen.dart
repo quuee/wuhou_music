@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ class ReadScreen extends StatefulWidget {
 }
 
 class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
-
   late ReadController readController;
   late var size;
 
@@ -31,56 +29,54 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   Point<double> currentA = const Point(0, 0); // a面
   late Offset downPos;
   bool isNext = false; // 是否翻页到下一页
-  bool isAlPath = true; // 是否剪辑画面
   bool isAnimation = false; // 是否正在执行翻页
   late AnimationController animationTurnPageController;
 
   @override
   void initState() {
-
     readController = Get.find<ReadController>();
     size = readController.size;
     p = ValueNotifier(PaperPoint(const Point(0, 0), const Size(0, 0)));
     animationTurnPageController =
-    AnimationController(vsync: this, duration: Duration(milliseconds: 600))
-      ..addListener(() {
-        if (isNext) {
-          /// 翻页
-          p.value = PaperPoint(
-              Point(
-                  currentA.x -
-                      (currentA.x + size.width) *
-                          animationTurnPageController.value,
-                  currentA.y +
-                      (size.height - currentA.y) *
-                          animationTurnPageController.value),
-              size);
-        } else {
-          /// 不翻页 回到原始位置
-          p.value = PaperPoint(
-              Point(
-                currentA.x +
-                    (size.width - currentA.x) *
-                        animationTurnPageController.value,
-                currentA.y +
-                    (size.height - currentA.y) *
-                        animationTurnPageController.value,
-              ),
-              size);
-        }
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          // 动画结束后
-          isAnimation = false;
-          if (isNext) {
-            LogD('翻页addStatusListener', '记录翻页动作');
-            isAlPath = true;
-            readController.nextPage();
-          }
-        }
+        AnimationController(vsync: this, duration: Duration(milliseconds: 600))
+          ..addListener(() {
+            if (isNext) {
+              /// 翻页
+              p.value = PaperPoint(
+                  Point(
+                      currentA.x -
+                          (currentA.x + size.width) *
+                              animationTurnPageController.value,
+                      currentA.y +
+                          (size.height - currentA.y) *
+                              animationTurnPageController.value),
+                  size);
+            } else {
+              /// 不翻页 回到原始位置
+              p.value = PaperPoint(
+                  Point(
+                    currentA.x +
+                        (size.width - currentA.x) *
+                            animationTurnPageController.value,
+                    currentA.y +
+                        (size.height - currentA.y) *
+                            animationTurnPageController.value,
+                  ),
+                  size);
+            }
+          })
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              // 动画结束后
+              isAnimation = false;
+              if (isNext) {
+                LogD('翻页addStatusListener', '记录翻页动作');
+                readController.isAlPath.value = true;
+                readController.nextPage();
 
-      });
+              }
+            }
+          });
     super.initState();
   }
 
@@ -93,7 +89,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
     return Material(
       child: GetBuilder<ReadController>(
         builder: (_) {
@@ -102,6 +97,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
               child: Text('加载中'),
             );
           }
+
           return LayoutBuilder(builder: (context, dimens) {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -123,24 +119,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   if (_.menuAnimationController.isDismissed) {
                     if (details.globalPosition.dx < size.width / 2) {
                       isAnimation = true;
-                      setState(() {
-                        isAlPath = false;
-                        isNext = false;
-                        currentA = Point(-100, size.height - 100);
-                      });
+                      isNext = false;
+                      currentA = Point(-100, size.height - 100);
+                      readController.updateAlPath(false);
                       _.previousPage();
                       animationTurnPageController.forward(
                         from: 0,
                       );
-                    } else {
 
-                      currentA = Point(details.localPosition.dx, details.localPosition.dy);
-                      p.value = PaperPoint(Point(details.localPosition.dx, details.localPosition.dy), size);
-                      isNext = true;
-                      setState(() {
-                        isAlPath = false;
-                      });
+                    } else {
                       isAnimation = true;
+                      currentA = Point(details.localPosition.dx, details.localPosition.dy);
+                      p.value = PaperPoint(Point(details.localPosition.dx,details.localPosition.dy), size);
+                      isNext = true;
+                      readController.updateAlPath(false);
                       animationTurnPageController.forward(
                         from: 0,
                       );
@@ -151,25 +143,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-
-                  // todo 章节最后一张翻页时应该显示下一章第一页
+                  // todo 章节最后一张翻页时应该显示下一章第一页，需要做预加载
                   _.pageIndex == _.textPages.length - 1
-                      ? ClipPath(
-                    child: _.getPageWidget(_.pageIndex)
-                  )
-                  // 下一页
-                      : ClipPath(
-                    child: _.getPageWidget(_.pageIndex+1)
-                  ),
-                  // 当前页
+                      ? Center(child: Text('继续翻页，展示下章内容'),)
+                      // 下一页
+                      : ClipPath(child: _.getPageWidget(_.pageIndex + 1)),
+                  // 当前页 A区，根据路径会被剪裁，露出下一页的内容
                   ClipPath(
                     child: _.getPageWidget(_.pageIndex),
-                    clipper: isAlPath ? null : CurrentPaperClipPath(p, isNext),
-                  ),
-                // 最上面只绘制B区域和阴影
+                    clipper: _.isAlPath.value ? null : CurrentPaperClipPath(p, isNext),
+                  ), // 使用setState不会抖，用obx会抖，又重新刷新了一遍的感觉
+                  // 最上面只绘制B区域和阴影
                   CustomPaint(
                     size: size,
-                    painter: BookPainter(p, Colors.white70),
+                    painter: BookPainter(p, Colors.grey),
                   ),
                   // 菜单层
                   // 顶部
@@ -180,9 +167,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     child: SlideTransition(
                       position: _.menuTopAnimationProgress,
                       child: AppBar(
-                        actions: [
-                          Icon(Icons.headset)
-                        ],
+                        actions: [Icon(Icons.headset)],
                       ),
                     ),
                   ),
@@ -217,10 +202,9 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 if (downPos.dx < size.width / 2) {
                   return;
                 }
-                if (isAlPath) {
-                  setState(() {
-                    isAlPath = false;
-                  });
+
+                if (readController.isAlPath.value) {
+                  readController.updateAlPath(false);
                 }
                 if (downPos.dy > size.height / 3 &&
                     downPos.dy < size.height * 2 / 3) {
@@ -242,15 +226,12 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 if (isAnimation) {
                   return;
                 }
-                setState(() {
-                  isAlPath = false;
-                });
+                readController.updateAlPath(false);
                 isAnimation = true;
                 animationTurnPageController.forward(
                   from: 0,
                 );
               },
-
             );
           });
         },
@@ -287,9 +268,9 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                             itemCount: readController.chapters.length,
                             itemBuilder: (context, index) {
                               return ListTile(
-                                title: Text(
-                                    readController.chapters[index].chapterTitle ??
-                                        ''),
+                                title: Text(readController
+                                        .chapters[index].chapterTitle ??
+                                    ''),
                                 subtitle: Text('第$index章'),
                                 onTap: () {
                                   readController.gotoChapter(index);
@@ -310,4 +291,3 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     );
   }
 }
-
