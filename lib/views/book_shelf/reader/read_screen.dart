@@ -74,7 +74,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 LogD('翻页addStatusListener', '记录翻页动作');
                 readController.isAlPath.value = true;
                 readController.nextPage();
-
               }
             }
           });
@@ -127,11 +126,14 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                       animationTurnPageController.forward(
                         from: 0,
                       );
-
                     } else {
                       isAnimation = true;
-                      currentA = Point(details.localPosition.dx, details.localPosition.dy);
-                      p.value = PaperPoint(Point(details.localPosition.dx,details.localPosition.dy), size);
+                      currentA = Point(
+                          details.localPosition.dx, details.localPosition.dy);
+                      p.value = PaperPoint(
+                          Point(details.localPosition.dx,
+                              details.localPosition.dy),
+                          size);
                       isNext = true;
                       readController.updateAlPath(false);
                       animationTurnPageController.forward(
@@ -200,7 +202,9 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   // 当前页 A区，根据路径会被剪裁，露出下一页的内容
                   ClipPath(
                     child: _.getPageWidget(_.pageIndex),
-                    clipper: _.isAlPath.value ? null : CurrentPaperClipPath(p, isNext),
+                    clipper: _.isAlPath.value
+                        ? null
+                        : CurrentPaperClipPath(p, isNext),
                   ), // 使用setState不会抖，用obx会抖，又重新刷新了一遍的感觉
                   // 最上面只绘制B区域和阴影
                   CustomPaint(
@@ -232,7 +236,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   )
                 ],
               ),
-
             );
           });
         },
@@ -242,7 +245,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
 
   _buildBottomMenu() {
     return Container(
-      // color: ,
+      color: Colors.grey,
       height: readController.size.height / 8,
       child: Column(
         children: [
@@ -284,7 +287,57 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 },
               ),
               Text('亮度'),
-              Text('设置'),
+              InkWell(
+                child: Text('设置'),
+                onTap: () {
+                  readController.menuAnimationController.reverse();
+                  Get.bottomSheet(GetBuilder<ReadController>(builder: (_) {
+                    return Container(
+                      height: size.height / 5,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text('字号大小'),
+                              IconButton(
+                                  onPressed: () {
+                                    double fsize = double.parse(
+                                        _.fontSizeController.value.text);
+                                    fsize--;
+                                    _.updateFontSize(fsize);
+                                  },
+                                  icon: Icon(Icons.remove)),
+                              Text(_.fontSizeController.text),
+                              IconButton(
+                                  onPressed: () {
+                                    double fsize = double.parse(
+                                        _.fontSizeController.value.text);
+                                    fsize++;
+                                    _.updateFontSize(fsize);
+                                  },
+                                  icon: Icon(Icons.add))
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [Text('行距大小'), Text('小'), Text('大')],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text('背景色'),
+                              Text('黑'),
+                              Text('白'),
+                              Text('灰')
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }), backgroundColor: Colors.grey);
+                },
+              ),
               Text('更多'),
             ],
           )

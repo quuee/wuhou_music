@@ -50,6 +50,13 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     update();
   }
 
+  late TextEditingController fontSizeController;
+
+  updateFontSize(double fontSize) {
+    fontSizeController.text = fontSize.toString();
+    _loadLastReadChapter();
+  }
+
   /// 获取书本信息 并且分章节
   Future<List<BookChapterEntity>> _getBookNovelInfo() async {
     File file = File(bookNovel!.localPath);
@@ -122,7 +129,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             tempChapters.add(curChapter);
           } else {
             // 将当前段落添加到上一章中
-            BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
+            BookChapterEntity lastChapter =
+                tempChapters[tempChapters.length - 1];
             lastChapter.end = (lastChapter.end ?? 0) +
                 utf8.encode(chapterContentSubFront).length;
             // lastChapter.content =
@@ -140,7 +148,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             seekPositionBytes +=
                 utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
             seekPositionString += chapterContentSubFront.length; //字符串偏移量
-            BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
+            BookChapterEntity lastChapter =
+                tempChapters[tempChapters.length - 1];
             lastChapter.end = (lastChapter.start ?? 0) +
                 utf8.encode(chapterContentSubFront).length;
             // lastChapter.content =
@@ -240,9 +249,9 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     double topPadding = WidgetsBinding
             .instance.platformDispatcher.views.first.padding.top /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    double columnPadding = 30;
+    double columnPadding = 20;
 
-    double fontSize = 20;
+    double fontSize = double.parse(fontSizeController.value.text);
     double fontHeight = 1.6;
     Color fontColor = Color(0xFF303133);
     double bottomPadding = 16;
@@ -261,9 +270,11 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             rightPadding -
             (columns - 1) * columnPadding) /
         columns;
-    final _width2 = _width - fontSize;
+    // final _width2 = _width - fontSize;
+    final _width2 = _width;
     final _height = size.height - bottomPadding;
-    final _height2 = _height - fontSize * fontHeight;
+    // final _height2 = _height - fontSize * fontHeight;
+    final _height2 = _height;
 
     final tp = TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
     final offset = Offset(_width, 1);
@@ -407,7 +418,9 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         painter: SimpleTextPainter(
             textPage: textPages[pageIndex],
             pageIndex: pageIndex,
-            backgroundImage: backgroundImage),
+            backgroundImage: backgroundImage,
+            fontSize: double.parse(fontSizeController.value.text),
+            fontHeight: 1.6),
       ),
     );
   }
@@ -429,7 +442,9 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         painter: SimpleTextPainter(
             textPage: nextTextPages[0],
             pageIndex: 0,
-            backgroundImage: backgroundImage),
+            backgroundImage: backgroundImage,
+            fontSize: double.parse(fontSizeController.value.text),
+            fontHeight: 1.6),
       );
     }
   }
@@ -460,6 +475,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
 
   gotoPage(int gotoPageIndex) {
     pageIndex = gotoPageIndex;
+    bookNovel?.lastReadChapterOffset = pageIndex;
     update();
   }
 
@@ -482,7 +498,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  _nextChapter() async{
+  _nextChapter() async {
     LogD('下一章', 'currentChapterIndex:$currentChapterIndex');
     if (currentChapterIndex >= chapters.length - 1) {
       pageIndex = textPages.length - 1;
@@ -519,6 +535,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   @override
   Future<void> onInit() async {
     LogI('生命周期顺序', 'onInit');
+    fontSizeController = TextEditingController(text: '20');
     bookNovel = Get.arguments as BookNovelEntity;
     currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
 
@@ -535,7 +552,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         .drive(Tween(begin: Offset(0.0, -1.0), end: Offset.zero));
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
-
 
     super.onInit();
   }

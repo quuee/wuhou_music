@@ -158,14 +158,15 @@ class SongsListController extends GetxController {
             createOrUpdateSongList(songListEntity?.apslid);
             Get.back();
           },
-          child: Text('确认')),
+          // style: ButtonStyle(),
+          child: Text('确认',style: TextStyle(fontSize: 16),)),
       cancel: ElevatedButton(
           onPressed: () {
             songListNameContro.clear();
             songListImagePath = null;
             Get.back();
           },
-          child: Text('取消')),
+          child: Text('取消',style: TextStyle(fontSize: 16))),
     );
   }
 

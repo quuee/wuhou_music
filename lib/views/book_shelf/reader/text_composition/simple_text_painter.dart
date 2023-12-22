@@ -9,8 +9,10 @@ class SimpleTextPainter extends CustomPainter{
   final int pageIndex;
 
   ui.Image? backgroundImage;
+  double fontSize;
+  double fontHeight;
 
-  SimpleTextPainter({required this.textPage,required this.pageIndex,this.backgroundImage});
+  SimpleTextPainter({required this.textPage,required this.pageIndex,this.backgroundImage,required this.fontSize,required this.fontHeight});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -26,8 +28,8 @@ class SimpleTextPainter extends CustomPainter{
 
 
   _paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
-    double fontSize = 20;
-    double fontHeight = 1.6;
+    // double fontSize = 20;
+    // double fontHeight = 1.6;
     Color fontColor = const Color(0xFF303133);
 
     final lineCount = page.lines.length;

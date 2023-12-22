@@ -13,9 +13,15 @@ class CreateSongListDialog extends StatefulWidget {
 
 class _CreateSongListDialogState extends State<CreateSongListDialog> {
 
-  final ImagePicker _picker = ImagePicker();
+  late SongsListController songsListController;
 
-  SongsListController songsListController = Get.find<SongsListController>();
+  @override
+  void initState() {
+    songsListController = Get.find<SongsListController>();
+    super.initState();
+  }
+
+  final ImagePicker _picker = ImagePicker();
 
   _chooseImage() async {
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -34,8 +40,8 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
     if (songsListController.songListImagePath == null ||
         songsListController.songListImagePath?.trim().compareTo('') == 0) {
       imageChild = Container(
-        width: 150,
-        height: 150,
+        width: 120,
+        height: 120,
         child: IconButton(
           onPressed: () async {
             _chooseImage();
@@ -48,8 +54,8 @@ class _CreateSongListDialogState extends State<CreateSongListDialog> {
       // 判断 网络 本地
       imageChild = Image.file(
         File(songsListController.songListImagePath!),
-        width: 150,
-        height: 150,
+        width: 120,
+        height: 120,
       );
     }
 
