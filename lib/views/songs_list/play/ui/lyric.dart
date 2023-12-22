@@ -26,7 +26,7 @@ class _LyricState extends State<Lyric> {
     return [
       Positioned.fill(
         child: Image.asset(
-          R.images.bg1,
+          R.images.bg008,
           fit: BoxFit.cover,
         ),
       ),

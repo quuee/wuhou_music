@@ -12,10 +12,19 @@ class _Fonts {
 }
 
 class _Images {
-  static const path = 'assets/images';
-  final logo = '$path/logo.png';
-  final bg1 = '$path/bg1.jpg';
-  final tom = '$path/tom.jpeg';
+  static const image_path = 'assets/images';
+  final logo = '$image_path/logo.png';
+  final tom = '$image_path/tom.jpeg';
+
+  static const bg_path = 'assets/bg';
+  final bg001 = '$bg_path/001.jpg';
+  final bg002 = '$bg_path/002.jpg';
+  final bg003 = '$bg_path/003.png';
+  final bg004 = '$bg_path/004.jpg';
+  final bg005 = '$bg_path/005.jpg';
+  final bg006 = '$bg_path/006.jpg';
+  final bg007 = '$bg_path/007.jpg';
+  final bg008 = '$bg_path/008.png';
 
 }
 

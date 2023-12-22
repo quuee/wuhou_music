@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
+import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/book_painter.dart';
@@ -205,8 +206,8 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     clipper: _.isAlPath.value
                         ? null
                         : CurrentPaperClipPath(p, isNext),
-                  ), // 使用setState不会抖，用obx会抖，又重新刷新了一遍的感觉
-                  // 最上面只绘制B区域和阴影
+                  ),
+                  // 最上面只绘制B区域和阴影(就是翻页的特效)
                   CustomPaint(
                     size: size,
                     painter: BookPainter(p, Colors.grey),
@@ -244,6 +245,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   }
 
   _buildBottomMenu() {
+    var bottomMenuStyle= TextStyle(fontSize: 18);
     return Container(
       color: Colors.grey,
       height: readController.size.height / 8,
@@ -265,7 +267,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               InkWell(
-                child: Text('目录'),
+                child: Text('目录',style: bottomMenuStyle,),
                 onTap: () {
                   RDrawer.open(
                       Drawer(
@@ -279,33 +281,38 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                                 subtitle: Text('第$index章'),
                                 onTap: () {
                                   readController.gotoChapter(index);
+                                  RDrawer.close();
                                 },
                               );
                             }),
                       ),
-                      width: size.width * 2 / 3);
+                      width: size.width * 3 / 4);
                 },
               ),
-              Text('亮度'),
+              Text('亮度',style: bottomMenuStyle,),
               InkWell(
-                child: Text('设置'),
+                child: Text('设置',style: bottomMenuStyle,),
                 onTap: () {
                   readController.menuAnimationController.reverse();
                   Get.bottomSheet(GetBuilder<ReadController>(builder: (_) {
                     return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       height: size.height / 5,
                       child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Text('字号大小'),
+                              SizedBox(
+                                width: 80,
+                                child: Text('字号大小'),
+                              ),
                               IconButton(
                                   onPressed: () {
                                     double fsize = double.parse(
                                         _.fontSizeController.value.text);
                                     fsize--;
-                                    _.updateFontSize(fsize);
+                                    _.updateFontSizeOrFontHeight(fsize, -1);
                                   },
                                   icon: Icon(Icons.remove)),
                               Text(_.fontSizeController.text),
@@ -314,22 +321,48 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                                     double fsize = double.parse(
                                         _.fontSizeController.value.text);
                                     fsize++;
-                                    _.updateFontSize(fsize);
+                                    _.updateFontSizeOrFontHeight(fsize, -1);
+                                  },
+                                  icon: Icon(Icons.add)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SizedBox(
+                                width: 80,
+                                child: Text('字间距'),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    double fHeight = double.parse(
+                                        _.fontHeightController.value.text);
+                                    fHeight -= 0.1;
+                                    _.updateFontSizeOrFontHeight(-1, fHeight);
+                                  },
+                                  icon: Icon(Icons.remove)),
+                              Text(_.fontHeightController.text.substring(0, 3)),
+                              IconButton(
+                                  onPressed: () {
+                                    double fHeight = double.parse(
+                                        _.fontHeightController.value.text);
+                                    fHeight += 0.1;
+                                    _.updateFontSizeOrFontHeight(-1, fHeight);
                                   },
                                   icon: Icon(Icons.add))
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [Text('行距大小'), Text('小'), Text('大')],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Text('背景色'),
-                              Text('黑'),
-                              Text('白'),
-                              Text('灰')
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(
+                                  width: 60,
+                                  child: Text('背景色'),
+                                ),
+                              ),
+                              Expanded(flex: 3, child: _buildBackgroundList())
                             ],
                           ),
                         ],
@@ -338,11 +371,105 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   }), backgroundColor: Colors.grey);
                 },
               ),
-              Text('更多'),
+              Text('更多',style: bottomMenuStyle,),
             ],
           )
         ],
       ),
+    );
+  }
+
+  _buildBackgroundList() {
+    double height = size.height / 5 / 3;
+    // double width = 40;
+    var mfit = BoxFit.scaleDown;
+    List<Widget> bgs = [
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg001,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg002,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg003,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg004,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg005,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg006,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg007,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Image.asset(
+          R.images.bg008,
+          height: height,
+          // width: width,
+          fit: mfit,
+        ),
+      ),
+    ];
+    return SizedBox(
+      height: size.height / 5 / 3,
+      child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: bgs.length,
+          itemBuilder: (c, index) {
+            return bgs[index];
+          },
+          separatorBuilder: (c, i) {
+            return SizedBox(
+              width: 20,
+            );
+          }),
     );
   }
 }

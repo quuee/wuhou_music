@@ -1,22 +1,26 @@
-
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
 
-class SimpleTextPainter extends CustomPainter{
+class SimpleTextPainter extends CustomPainter {
   final TextPage textPage;
   final int pageIndex;
 
   ui.Image? backgroundImage;
   double fontSize;
   double fontHeight;
+  Color fontColor = const Color(0xFF303133);
 
-  SimpleTextPainter({required this.textPage,required this.pageIndex,this.backgroundImage,required this.fontSize,required this.fontHeight});
+  SimpleTextPainter(
+      {required this.textPage,
+      required this.pageIndex,
+      this.backgroundImage,
+      required this.fontSize,
+      required this.fontHeight});
 
   @override
   void paint(Canvas canvas, Size size) {
-
     var picture = getPicture(size);
     canvas.drawPicture(picture!);
   }
@@ -26,11 +30,7 @@ class SimpleTextPainter extends CustomPainter{
     return oldDelegate.pageIndex != pageIndex;
   }
 
-
   _paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
-    // double fontSize = 20;
-    // double fontHeight = 1.6;
-    Color fontColor = const Color(0xFF303133);
 
     final lineCount = page.lines.length;
     final tp = TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
@@ -56,20 +56,20 @@ class SimpleTextPainter extends CustomPainter{
           text: line.text,
           style: line.isTitle
               ? TextStyle(
-            letterSpacing: line.letterSpacing,
-            fontWeight: FontWeight.bold,
-            fontSize: fontSize + 2,
-            // fontFamily: config.fontFamily,
-            color: fontColor,
-            height: fontHeight,
-          )
+                  letterSpacing: line.letterSpacing,
+                  fontWeight: FontWeight.bold,
+                  fontSize: fontSize + 2,
+                  // fontFamily: config.fontFamily,
+                  color: fontColor,
+                  height: fontHeight,
+                )
               : TextStyle(
-            letterSpacing: line.letterSpacing,
-            fontSize: fontSize,
-            // fontFamily: fontFamily,
-            color: fontColor,
-            height: fontHeight,
-          ),
+                  letterSpacing: line.letterSpacing,
+                  fontSize: fontSize,
+                  // fontFamily: fontFamily,
+                  color: fontColor,
+                  height: fontHeight,
+                ),
         );
       } else {
         tp.text =
@@ -93,7 +93,7 @@ class SimpleTextPainter extends CustomPainter{
     final c = Canvas(pic);
     final pageRect = Rect.fromLTRB(0.0, 0.0, size.width, size.height);
     c.drawRect(pageRect, Paint()..color = Color(0xFFFFFFCC));
-    if(backgroundImage!=null){
+    if (backgroundImage != null) {
       c.drawImage(backgroundImage!, Offset.zero, Paint());
     }
     _paintText(c, size, textPage);
