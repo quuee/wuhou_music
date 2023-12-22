@@ -15,7 +15,19 @@ class SongsListPage extends StatefulWidget {
 }
 
 class _MinePageState extends State<SongsListPage> {
-  SongsListController controller = Get.find<SongsListController>();
+  late SongsListController songsListController;
+
+  @override
+  void initState() {
+    songsListController = Get.find<SongsListController>();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    songsListController.dispose();
+    super.dispose();
+  }
 
   /// 创建顶部四个功能按钮
   Widget _buildIconButton() {
@@ -34,7 +46,7 @@ class _MinePageState extends State<SongsListPage> {
         ),
         GestureDetector(
           onTap: () {
-            controller.createOrUpdateSongListDialog(null);
+            songsListController.createOrUpdateSongListDialog(null);
           },
           behavior: HitTestBehavior.opaque,
           child: Column(

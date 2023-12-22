@@ -16,7 +16,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  LoginController controller = Get.find<LoginController>();
+
+  late LoginController loginController;
 
   static const Color loginGradientStart = Colors.cyanAccent;
   static const Color loginGradientEnd = Colors.deepPurple;
@@ -56,6 +57,7 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   void initState() {
+    loginController = Get.find<LoginController>();
     tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -63,6 +65,7 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     tabController.dispose();
+    loginController.dispose();
     super.dispose();
   }
 
@@ -162,7 +165,7 @@ class _LoginPageState extends State<LoginPage>
         children: [
           TextFormField(
             autofocus: false,
-            controller: controller.accountCtro,
+            controller: loginController.accountCtro,
             decoration: InputDecoration(
                 labelText: "用户名",
                 labelStyle: TextStyle(color: Colors.black54),
@@ -181,7 +184,7 @@ class _LoginPageState extends State<LoginPage>
             color: Colors.grey[600],
           ),
           TextFormField(
-            controller: controller.passwdCtro,
+            controller: loginController.passwdCtro,
             decoration: InputDecoration(
                 labelText: "密码",
                 labelStyle: TextStyle(color: Colors.black54),
@@ -256,7 +259,7 @@ class _LoginPageState extends State<LoginPage>
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.number,
           autofocus: false,
-          controller: controller.phonedCtro,
+          controller: loginController.phonedCtro,
           decoration: InputDecoration(
               border: InputBorder.none,
               labelText: '请输入手机号',
@@ -275,7 +278,7 @@ class _LoginPageState extends State<LoginPage>
             Expanded(
               //大坑，row不能直接包括TextField控件，需要用Expanded包裹一下
               child: TextFormField(
-                controller: controller.validCodeCtro,
+                controller: loginController.validCodeCtro,
                 autofocus: false,
                 decoration: InputDecoration(
                   border: InputBorder.none,

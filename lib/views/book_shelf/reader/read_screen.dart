@@ -141,48 +141,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   }
                 }
               },
-              child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  // 下一页
-                  _.pageIndex >= _.textPages.length - 1
-                      ? ClipPath(child: _.getNextPageWidget())
-                      : ClipPath(child: _.getPageWidget(_.pageIndex + 1)),
-                  // 当前页 A区，根据路径会被剪裁，露出下一页的内容
-                  ClipPath(
-                    child: _.getPageWidget(_.pageIndex),
-                    clipper: _.isAlPath.value ? null : CurrentPaperClipPath(p, isNext),
-                  ), // 使用setState不会抖，用obx会抖，又重新刷新了一遍的感觉
-                  // 最上面只绘制B区域和阴影
-                  CustomPaint(
-                    size: size,
-                    painter: BookPainter(p, Colors.grey),
-                  ),
-                  // 菜单层
-                  // 顶部
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: SlideTransition(
-                      position: _.menuTopAnimationProgress,
-                      child: AppBar(
-                        actions: [Icon(Icons.headset)],
-                      ),
-                    ),
-                  ),
-                  // 底部
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: SlideTransition(
-                      position: _.menuBottomAnimationProgress,
-                      child: _buildBottomMenu(),
-                    ),
-                  )
-                ],
-              ),
               onPanDown: (d) {
                 downPos = d.localPosition;
               },
@@ -232,6 +190,49 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   from: 0,
                 );
               },
+              child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  // 下一页
+                  _.pageIndex >= _.textPages.length - 1
+                      ? ClipPath(child: _.getNextPageWidget())
+                      : ClipPath(child: _.getPageWidget(_.pageIndex + 1)),
+                  // 当前页 A区，根据路径会被剪裁，露出下一页的内容
+                  ClipPath(
+                    child: _.getPageWidget(_.pageIndex),
+                    clipper: _.isAlPath.value ? null : CurrentPaperClipPath(p, isNext),
+                  ), // 使用setState不会抖，用obx会抖，又重新刷新了一遍的感觉
+                  // 最上面只绘制B区域和阴影
+                  CustomPaint(
+                    size: size,
+                    painter: BookPainter(p, Colors.grey),
+                  ),
+                  // 菜单层
+                  // 顶部
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: SlideTransition(
+                      position: _.menuTopAnimationProgress,
+                      child: AppBar(
+                        actions: [Icon(Icons.headset)],
+                      ),
+                    ),
+                  ),
+                  // 底部
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: SlideTransition(
+                      position: _.menuBottomAnimationProgress,
+                      child: _buildBottomMenu(),
+                    ),
+                  )
+                ],
+              ),
+
             );
           });
         },
@@ -241,7 +242,8 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
 
   _buildBottomMenu() {
     return Container(
-      color: Colors.white70,
+      // color: ,
+      height: readController.size.height / 8,
       child: Column(
         children: [
           //第一行

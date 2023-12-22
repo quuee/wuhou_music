@@ -16,18 +16,24 @@ class SongListAddPage extends StatefulWidget {
 class _SongListAddPageState extends State<SongListAddPage> {
   final List<SongEntity> _selectedItems = [];
   //从歌单页面进入 添加歌曲页面，SongListDetailController还在，因为没有退出歌单详情页。
-  SongListDetailController songListDetailController =
-      Get.find<SongListDetailController>();
+  late SongListDetailController songListDetailController;
 
   late TextEditingController _searchTextContro;
 
   String? _searchWord;
   List<SongEntity>? songs;
   @override
+  void dispose() {
+    songListDetailController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    super.initState();
+    songListDetailController = Get.find<SongListDetailController>();
     _searchTextContro = TextEditingController();
     songs = IsarHelper.instance.isarInstance.songEntitys.where().findAllSync();
+    super.initState();
   }
 
   _searchSongs(String keyWord) {
@@ -56,16 +62,18 @@ class _SongListAddPageState extends State<SongListAddPage> {
                 textInputAction: TextInputAction.search,
                 decoration: //装饰
                     InputDecoration(
-                      contentPadding: EdgeInsets.zero,
-                      isDense: true,//特殊属性isDense,作用是在较小空间时，使组件正常渲染（包括文本垂直居中）
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      fillColor: Colors.transparent,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true, //特殊属性isDense,作用是在较小空间时，使组件正常渲染（包括文本垂直居中）
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  fillColor: Colors.transparent,
                   hintText: '搜索当前歌曲',
-                  hintStyle: TextStyle(fontSize: 14,),
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
                 style: TextStyle(
                   fontSize: 14,
@@ -83,7 +91,9 @@ class _SongListAddPageState extends State<SongListAddPage> {
     if (_searchWord != null) {
       filterSongs = songs
           .where((element) =>
-              element.title.toLowerCase().contains(_searchWord!.toLowerCase()) ||
+              element.title
+                  .toLowerCase()
+                  .contains(_searchWord!.toLowerCase()) ||
               element.artist.toLowerCase().contains(_searchWord!.toLowerCase()))
           .toList();
     }

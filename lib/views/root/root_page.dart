@@ -17,6 +17,7 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage>
     with SingleTickerProviderStateMixin {
+
   List bodyPage = [
     HomePage(),
     SongsListPage(),
@@ -33,19 +34,27 @@ class _RootPageState extends State<RootPage>
       label: '首页',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.queue_music_sharp),
+      icon: Icon(
+        Icons.queue_music_sharp,
+      ),
       label: '歌单',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.ondemand_video),
+      icon: Icon(
+        Icons.ondemand_video,
+      ),
       label: '视频',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.menu_book_outlined),
+      icon: Icon(
+        Icons.menu_book_outlined,
+      ),
       label: '书架',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(AliIcons.mine),
+      icon: Icon(
+        AliIcons.mine,
+      ),
       label: '我',
     ),
   ];
@@ -53,11 +62,13 @@ class _RootPageState extends State<RootPage>
   int bottomBarIndex = 0;
 
   late AnimationController animationController;
+
   @override
   void initState() {
     super.initState();
     animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300))..forward();
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300))
+          ..forward();
 
     EventBusHelper.instance.eventBus.on<bool>().listen((event) {
       LogD('eventBus', event.toString());
@@ -87,6 +98,9 @@ class _RootPageState extends State<RootPage>
           sizeFactor: animationController,
           axisAlignment: -1.0,
           child: BottomNavigationBar(
+
+              unselectedItemColor: Colors.grey,
+              unselectedLabelStyle: TextStyle(color: Colors.grey),
               items: barList,
               currentIndex: bottomBarIndex,
               onTap: (index) => changeBottomBarIndex(index))),

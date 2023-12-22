@@ -34,9 +34,14 @@ class _PlayPageState extends State<PlayPage> {
               position, bufferedPosition, duration ?? Duration.zero));
   @override
   void initState() {
-    super.initState();
-
     _pageController = PageController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override

@@ -1,8 +1,6 @@
-import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
-import 'package:wuhoumusic/theme/app_theme.dart';
 
 import 'isar_helper.dart';
 
@@ -19,7 +17,7 @@ class Config {
     if (a == null) {
       a = new AnyEntity(keyName: Keys.isDarkMode, anything: '0');
     } else {
-      int.parse(a.anything) == 0 ? Get.changeTheme(lightTheme) : Get.changeTheme(darkTheme);
+      // int.parse(a.anything) == 0 ? Get.changeTheme(lightTheme) : Get.changeTheme(darkTheme);
 
     }
     IsarHelper.instance.isarInstance.writeTxn(

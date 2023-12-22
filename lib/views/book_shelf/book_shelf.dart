@@ -168,7 +168,7 @@ class _BookShelfPageState extends State<BookShelfPage>
         children: [
           Positioned.fill(
             child: Container(
-              color: Colors.yellow,
+              color: Colors.black38,
             ),
           ),
           Positioned(

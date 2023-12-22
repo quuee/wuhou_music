@@ -56,10 +56,20 @@ class Routes {
         page: () => SongListAddPage(),
         binding: BindingsBuilder(() {
           Get.lazyPut(() => SongListDetailController());
-          Get.lazyPut(() => LocalMusicController());
+          // Get.lazyPut(() => LocalMusicController());
         })),
     // 阅读页面
-    GetPage(name: reader, page: () => ReadScreen(),binding: BindingsBuilder(() {Get.lazyPut(() => ReadController());})),
-    GetPage(name: readerTest, page: () => ReadScreenText(),binding: BindingsBuilder(() {Get.lazyPut(() => ReadTestController());}))
+    GetPage(
+        name: reader,
+        page: () => ReadScreen(),
+        binding: BindingsBuilder(() {
+          Get.lazyPut(() => ReadController());
+        })),
+    GetPage(
+        name: readerTest,
+        page: () => ReadScreenText(),
+        binding: BindingsBuilder(() {
+          Get.lazyPut(() => ReadTestController());
+        }))
   ];
 }

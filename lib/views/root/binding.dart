@@ -10,10 +10,8 @@ class RootBinding implements Bindings{
   @override
   void dependencies() {
 
-    Get.lazyPut<RootController>(() => RootController());
-
     // 找不到HomeController
-    // 因为只有Get.toNamed('/root')，bindings才会生效；切换选项卡对这没有任何影响。
+    // 因为只有Get.toNamed('/root')，bindings才会生效；切换选项卡对这没有任何影响。所以需要先绑定上去
     Get.lazyPut<HomeController>(() => HomeController());
     Get.lazyPut<SongsListController>(() => SongsListController());
     Get.lazyPut<VideoPageController>(() => VideoPageController());

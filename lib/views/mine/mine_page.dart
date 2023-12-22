@@ -4,7 +4,6 @@ import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/any_entity.dart';
 import 'package:wuhoumusic/resource/constant.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
-import 'package:wuhoumusic/theme/app_theme.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/views/mine/user_info.dart';
 
@@ -71,11 +70,11 @@ class _MinePageState extends State<MinePage> {
                       setState(() {
                         darkMode = v;
                       });
-                      if (v) {
-                        Get.changeTheme(darkTheme);
-                      } else {
-                        Get.changeTheme(lightTheme);
-                      }
+                      // if (v) {
+                      //   Get.changeTheme(darkTheme);
+                      // } else {
+                      //   Get.changeTheme(lightTheme);
+                      // }
                       var anyEntity = new AnyEntity(
                           keyName: Keys.isDarkMode,
                           anything: darkMode ? '1' : '0');

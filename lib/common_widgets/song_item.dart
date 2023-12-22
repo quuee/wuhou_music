@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
+import 'package:wuhoumusic/model/audio/songs_list_entity.dart';
+import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_detail_controller.dart';
-import 'package:wuhoumusic/views/songs_list/songs_list_controller.dart';
 
 class SongItem extends StatelessWidget {
-  SongItem(
+  const SongItem(
       {super.key,
       required this.index,
       required this.songEntity,
-      this.fileExist = true});
+      this.fileExist = true,});
 
   final int index;
   final SongEntity songEntity;
@@ -18,11 +20,8 @@ class SongItem extends StatelessWidget {
   // final String? singer;
   // final String? album;
 
-  final SongsListController songsListController =
-      Get.find<SongsListController>();
-
   /// 本地音乐底部弹窗
-  _bottomSheet() {
+  _buildBottomSheet() {
     Get.bottomSheet(
         Container(
           // 加点样式
@@ -57,7 +56,9 @@ class SongItem extends StatelessWidget {
 
   /// 收藏到歌单
   _collectBottomSheet() {
-    List<Widget> list = songsListController.songsList
+    List<SongsListEntity> songsList =
+        IsarHelper.instance.isarInstance.songsListEntitys.where().findAllSync();
+    List<Widget> list = songsList
         .map((e) => ListTile(
               leading: Icon(Icons.ac_unit),
               title: Text(e.listTitle),
@@ -185,10 +186,9 @@ class SongItem extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 Icons.more_vert,
-                color: Colors.grey,
               ),
               onPressed: () {
-                _bottomSheet();
+                _buildBottomSheet();
               },
             ))
 
