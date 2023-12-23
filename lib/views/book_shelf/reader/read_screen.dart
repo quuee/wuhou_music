@@ -34,6 +34,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   bool isAnimation = false; // 是否正在执行翻页
   late AnimationController animationTurnPageController;
 
+
   @override
   void initState() {
     readController = Get.find<ReadController>();
@@ -245,7 +246,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   }
 
   _buildBottomMenu() {
-    var bottomMenuStyle= TextStyle(fontSize: 18);
+    var bottomMenuStyle = TextStyle(fontSize: 18);
     return Container(
       color: Colors.grey,
       height: readController.size.height / 8,
@@ -266,116 +267,146 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              InkWell(
-                child: Text('目录',style: bottomMenuStyle,),
-                onTap: () {
-                  RDrawer.open(
-                      Drawer(
-                        child: ListView.builder(
-                            itemCount: readController.chapters.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(readController
-                                        .chapters[index].chapterTitle ??
-                                    ''),
-                                subtitle: Text('第$index章'),
-                                onTap: () {
-                                  readController.gotoChapter(index);
-                                  RDrawer.close();
-                                },
-                              );
-                            }),
-                      ),
-                      width: size.width * 3 / 4);
-                },
+              _buildChapterList(bottomMenuStyle),
+              Text(
+                '亮度',
+                style: bottomMenuStyle,
               ),
-              Text('亮度',style: bottomMenuStyle,),
-              InkWell(
-                child: Text('设置',style: bottomMenuStyle,),
-                onTap: () {
-                  readController.menuAnimationController.reverse();
-                  Get.bottomSheet(GetBuilder<ReadController>(builder: (_) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      height: size.height / 5,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Text('字号大小'),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    double fsize = double.parse(
-                                        _.fontSizeController.value.text);
-                                    fsize--;
-                                    _.updateFontSizeOrFontHeight(fsize, -1);
-                                  },
-                                  icon: Icon(Icons.remove)),
-                              Text(_.fontSizeController.text),
-                              IconButton(
-                                  onPressed: () {
-                                    double fsize = double.parse(
-                                        _.fontSizeController.value.text);
-                                    fsize++;
-                                    _.updateFontSizeOrFontHeight(fsize, -1);
-                                  },
-                                  icon: Icon(Icons.add)),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Text('字间距'),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    double fHeight = double.parse(
-                                        _.fontHeightController.value.text);
-                                    fHeight -= 0.1;
-                                    _.updateFontSizeOrFontHeight(-1, fHeight);
-                                  },
-                                  icon: Icon(Icons.remove)),
-                              Text(_.fontHeightController.text.substring(0, 3)),
-                              IconButton(
-                                  onPressed: () {
-                                    double fHeight = double.parse(
-                                        _.fontHeightController.value.text);
-                                    fHeight += 0.1;
-                                    _.updateFontSizeOrFontHeight(-1, fHeight);
-                                  },
-                                  icon: Icon(Icons.add))
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: SizedBox(
-                                  width: 60,
-                                  child: Text('背景色'),
-                                ),
-                              ),
-                              Expanded(flex: 3, child: _buildBackgroundList())
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }), backgroundColor: Colors.grey);
-                },
+              _buildSetting(bottomMenuStyle),
+              Text(
+                '更多',
+                style: bottomMenuStyle,
               ),
-              Text('更多',style: bottomMenuStyle,),
             ],
           )
         ],
       ),
+    );
+  }
+
+  _buildChapterList(TextStyle bottomMenuStyle){
+    return InkWell(
+      child: Text(
+        '目录',
+        style: bottomMenuStyle,
+      ),
+      onTap: () {
+        double boxHeight =40.0;
+        RDrawer.open(
+            Drawer(
+              child: ListView.builder(
+                  controller: ScrollController(initialScrollOffset: readController.currentChapterIndex*boxHeight), // 打开目录 滚到当前阅读章节 ListView需要撑满高度
+                  itemCount: readController.chapters.length,
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      height: boxHeight,
+                      child: InkWell(
+                          onTap: () {
+                            readController.gotoChapter(index);
+                            RDrawer.close();
+                          },
+                          child: Text(
+                            readController
+                                .chapters[index].chapterTitle ??
+                                '',
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                    );
+                  }),
+            ),
+            width: size.width * 3 / 4);
+
+
+      },
+    );
+  }
+
+  _buildSetting(TextStyle bottomMenuStyle){
+    return InkWell(
+      child: Text(
+        '设置',
+        style: bottomMenuStyle,
+      ),
+      onTap: () {
+        readController.menuAnimationController.reverse();
+        Get.bottomSheet(GetBuilder<ReadController>(builder: (_) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            height: size.height / 5,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      child: Text('字号大小'),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          double fsize = double.parse(
+                              _.fontSizeController.value.text);
+                          fsize--;
+                          _.updateFontSizeOrFontHeight(fsize, -1);
+                        },
+                        icon: Icon(Icons.remove)),
+                    Text(_.fontSizeController.text),
+                    IconButton(
+                        onPressed: () {
+                          double fsize = double.parse(
+                              _.fontSizeController.value.text);
+                          fsize++;
+                          _.updateFontSizeOrFontHeight(fsize, -1);
+                        },
+                        icon: Icon(Icons.add)),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      child: Text('字间距'),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          double fHeight = double.parse(
+                              _.fontHeightController.value.text);
+                          fHeight -= 0.1;
+                          _.updateFontSizeOrFontHeight(-1, fHeight);
+                        },
+                        icon: Icon(Icons.remove)),
+                    Text(_.fontHeightController.text.substring(0, 3)),
+                    IconButton(
+                        onPressed: () {
+                          double fHeight = double.parse(
+                              _.fontHeightController.value.text);
+                          fHeight += 0.1;
+                          _.updateFontSizeOrFontHeight(-1, fHeight);
+                        },
+                        icon: Icon(Icons.add))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        width: 60,
+                        child: Text('背景色'),
+                      ),
+                    ),
+                    Expanded(flex: 3, child: _buildBackgroundList())
+                  ],
+                ),
+              ],
+            ),
+          );
+        }), backgroundColor: Colors.grey);
+      },
     );
   }
 

@@ -88,7 +88,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     while ((readLength =
             randomAccessFile.readIntoSync(buffer, 0, buffer.length)) >
         0) {
-      ++chapterIndex;
+
       String chapterContent = "";
       try {
         // todo 默认按utf8读取，如果读取gbk编码会FileSystemException CodeConvertUtil.gbk2utf8(readBytes)转码
@@ -111,6 +111,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       Iterable<RegExpMatch> allMatches = pest.allMatches(chapterContent);
       //如果存在章节（符合正则匹配），则具体分章；否则创建虚拟章节
       for (int i = 0; i < allMatches.length; i++) {
+        chapterIndex++;
         int chapterStart = allMatches.elementAt(i).start;
         String chapterContentSubFront = chapterContent.substring(
             seekPositionString, chapterStart); // 截取章节前部内容
@@ -444,7 +445,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [Text('已读完')],
         ),
-        color: Colors.yellow,
+        color: Colors.black45,
       );
     } else {
       return CustomPaint(
@@ -563,6 +564,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         .drive(Tween(begin: Offset(0.0, -1.0), end: Offset.zero));
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
+
+
 
     super.onInit();
   }
