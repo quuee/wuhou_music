@@ -10,7 +10,7 @@ class SimpleTextPainter extends CustomPainter {
   ui.Image? backgroundImage;
   double fontSize;
   double fontHeight;
-  Color fontColor = const Color(0xFF303133);
+  Color fontColor = Colors.black87;
 
   SimpleTextPainter(
       {required this.textPage,

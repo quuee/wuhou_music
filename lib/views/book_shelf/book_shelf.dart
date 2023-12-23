@@ -110,20 +110,21 @@ class _BookShelfPageState extends State<BookShelfPage>
   _openBookNovel(BookNovelEntity bookNovelEntity) {
     if (!isEditStatus) {
       // Get.toNamed(Routes.reader, arguments: bookNovelEntity)?.then((value) => LogD('返回书架接收参数：', value.toString())); // null
-      if(bookNovelEntity.bookTitle == '测试翻页'){
+      if (bookNovelEntity.bookTitle == '测试翻页') {
         Get.toNamed(Routes.readerTest, arguments: bookNovelEntity);
-      }else{
+      } else {
         Get.toNamed(Routes.reader, arguments: bookNovelEntity);
       }
-
     }
   }
 
   _loadBooks() async {
-    books =
-        await IsarHelper.instance.isarInstance.bookNovelEntitys.where().findAll();
-    BookNovelEntity test = BookNovelEntity(bookTitle: '测试翻页', localPath: '测试翻页');
-    books?.insert(0,test);
+    books = await IsarHelper.instance.isarInstance.bookNovelEntitys
+        .where()
+        .findAll();
+    BookNovelEntity test =
+        BookNovelEntity(bookTitle: '测试翻页', localPath: '测试翻页');
+    books?.insert(0, test);
     setState(() {});
   }
 
@@ -178,9 +179,15 @@ class _BookShelfPageState extends State<BookShelfPage>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(bookNovel.bookTitle,maxLines: 2,),
+                Text(
+                  bookNovel.bookTitle,
+                  maxLines: 2,
+                ),
                 // todo 阅读完返回后 上次阅读章节 不能自动更新到最新
-                Text(bookNovel.lastReadChapterTitle??"",maxLines: 2,),
+                Text(
+                  bookNovel.lastReadChapterTitle ?? "",
+                  maxLines: 2,
+                ),
                 Text(
                   bookNovel.localPath,
                   overflow: TextOverflow.ellipsis,

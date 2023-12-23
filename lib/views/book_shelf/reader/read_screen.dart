@@ -414,79 +414,15 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     double height = size.height / 5 / 3;
     // double width = 40;
     var mfit = BoxFit.scaleDown;
-    List<Widget> bgs = [
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg001,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg002,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg003,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg004,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg005,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg006,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg007,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
-      AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Image.asset(
-          R.images.bg008,
-          height: height,
-          // width: width,
-          fit: mfit,
-        ),
-      ),
+    List<String> bgs = [
+      R.images.bg001,
+      R.images.bg002,
+      R.images.bg003,
+      R.images.bg004,
+      R.images.bg005,
+      R.images.bg006,
+      R.images.bg007,
+      R.images.bg008,
     ];
     return SizedBox(
       height: size.height / 5 / 3,
@@ -494,7 +430,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
           scrollDirection: Axis.horizontal,
           itemCount: bgs.length,
           itemBuilder: (c, index) {
-            return bgs[index];
+            return InkWell(
+              child: AspectRatio(
+                aspectRatio: 9 / 16,
+                child: Image.asset(
+                  bgs[index],
+                  height: height,
+                  // width: width,
+                  fit: mfit,
+                ),
+              ),
+              onTap: (){
+                readController.updateBackground(bgs[index]);
+              },
+            );
           },
           separatorBuilder: (c, i) {
             return SizedBox(

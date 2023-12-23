@@ -35,6 +35,13 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
+  updateBackground(String selectBackground) async {
+
+    background = selectBackground;
+    await _getBackImage(background);
+    update();
+  }
+
   // 菜单动画
   late AnimationController menuAnimationController;
   late Animation<Offset> menuTopAnimationProgress;
@@ -111,7 +118,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       Iterable<RegExpMatch> allMatches = pest.allMatches(chapterContent);
       //如果存在章节（符合正则匹配），则具体分章；否则创建虚拟章节
       for (int i = 0; i < allMatches.length; i++) {
-        chapterIndex++;
+        chapterIndex++;// 其实这里分章节也不是太准，但一般字数不多的情况可以用
         int chapterStart = allMatches.elementAt(i).start;
         String chapterContentSubFront = chapterContent.substring(
             seekPositionString, chapterStart); // 截取章节前部内容
