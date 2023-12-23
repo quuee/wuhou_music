@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/model/book_novel/read_config_entity.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
@@ -30,14 +31,18 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   // 章节页数
   int pageIndex = 0;
 
+  ReadConfigEntity? readConfigEntity;
+
   // 书页背景
   late String background;
+  late int fontColor;
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
-  updateBackground(String selectBackground) async {
+  updateBackground(Map<String,int> backgroundAndFontColor) async {
 
-    background = selectBackground;
+    background = backgroundAndFontColor.keys.first;
+    fontColor = backgroundAndFontColor.values.first;
     await _getBackImage(background);
     update();
   }
@@ -437,7 +442,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             pageIndex: pageIndex,
             backgroundImage: backgroundImage,
             fontSize: double.parse(fontSizeController.value.text),
-            fontHeight: double.parse(fontHeightController.value.text)),
+            fontHeight: double.parse(fontHeightController.value.text),
+        fontColor: Color(fontColor)),
       ),
     );
   }
@@ -461,7 +467,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             pageIndex: 0,
             backgroundImage: backgroundImage,
             fontSize: double.parse(fontSizeController.value.text),
-            fontHeight: double.parse(fontHeightController.value.text)),
+            fontHeight: double.parse(fontHeightController.value.text),
+        fontColor: Color(fontColor)),
       );
     }
   }
@@ -552,12 +559,24 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   @override
   Future<void> onInit() async {
     LogI('生命周期顺序', 'onInit');
-    fontSizeController = TextEditingController(text: '20');
-    fontHeightController = TextEditingController(text: '1.2');
+
     bookNovel = Get.arguments as BookNovelEntity;
     currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
 
-    background = R.images.bg001;
+    // 读取阅读配置
+    readConfigEntity = IsarHelper.instance.isarInstance.readConfigEntitys.getSync(1);
+    if(readConfigEntity == null){
+      fontSizeController = TextEditingController(text:'20');
+      fontHeightController = TextEditingController(text: '1.2');
+      background = R.images.bg001;
+      fontColor = 0xdd000000;
+    }else{
+      fontSizeController = TextEditingController(text: readConfigEntity?.fontSize.toString());
+      fontHeightController = TextEditingController(text: readConfigEntity?.fontHeight.toString());
+      background = readConfigEntity!.background;
+      fontColor = readConfigEntity!.fontColor;
+    }
+
     await _getBackImage(background);
 
     List<BookChapterEntity> temp = await _getBookNovelInfo();
@@ -604,10 +623,19 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     bookNovel?.lastReadChapterTitle =
         chapters[currentChapterIndex].chapterTitle;
     bookNovel?.lastReadChapterOffset = pageIndex;
-    IsarHelper.instance.isarInstance.writeTxn(() =>
-        IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!));
 
     // 记录阅读配置
+    readConfigEntity = ReadConfigEntity(
+        fontSize: double.parse(fontSizeController.value.text),
+        fontHeight: double.parse(fontHeightController.value.text),
+        background: background,
+        fontColor: fontColor
+    );
+
+    IsarHelper.instance.isarInstance.writeTxn(() async {
+        IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!);
+        IsarHelper.instance.isarInstance.readConfigEntitys.put(readConfigEntity!);
+    });
   }
 }
 

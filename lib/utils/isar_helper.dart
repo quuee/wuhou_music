@@ -6,6 +6,7 @@ import 'package:wuhoumusic/model/audio/sl_songs_entity.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/model/audio/songs_list_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
+import 'package:wuhoumusic/model/book_novel/read_config_entity.dart';
 
 class IsarHelper {
   IsarHelper._privateConstructor();
@@ -23,7 +24,8 @@ class IsarHelper {
         AnyEntitySchema,
         CacheSongEntitySchema,
         SLSongsEntitySchema,
-        BookNovelEntitySchema
+        BookNovelEntitySchema,
+        ReadConfigEntitySchema
       ],
       directory: dir.path,
     );

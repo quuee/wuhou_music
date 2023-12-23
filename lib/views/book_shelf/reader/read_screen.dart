@@ -34,7 +34,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   bool isAnimation = false; // 是否正在执行翻页
   late AnimationController animationTurnPageController;
 
-
   @override
   void initState() {
     readController = Get.find<ReadController>();
@@ -284,18 +283,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     );
   }
 
-  _buildChapterList(TextStyle bottomMenuStyle){
+  _buildChapterList(TextStyle bottomMenuStyle) {
     return InkWell(
       child: Text(
         '目录',
         style: bottomMenuStyle,
       ),
       onTap: () {
-        double boxHeight =40.0;
+        double boxHeight = 40.0;
         RDrawer.open(
             Drawer(
               child: ListView.builder(
-                  controller: ScrollController(initialScrollOffset: readController.currentChapterIndex*boxHeight), // 打开目录 滚到当前阅读章节 ListView需要撑满高度
+                  controller: ScrollController(
+                      initialScrollOffset: readController.currentChapterIndex *
+                          boxHeight), // 打开目录 滚到当前阅读章节 ListView需要撑满高度
                   itemCount: readController.chapters.length,
                   itemBuilder: (context, index) {
                     return SizedBox(
@@ -306,9 +307,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                             RDrawer.close();
                           },
                           child: Text(
-                            readController
-                                .chapters[index].chapterTitle ??
-                                '',
+                            readController.chapters[index].chapterTitle ?? '',
                             style: TextStyle(
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -317,13 +316,12 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   }),
             ),
             width: size.width * 3 / 4);
-
-
       },
     );
   }
 
-  _buildSetting(TextStyle bottomMenuStyle){
+  _buildSetting(TextStyle bottomMenuStyle) {
+    double textWidth = 80;
     return InkWell(
       child: Text(
         '设置',
@@ -337,95 +335,98 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
             height: size.height / 5,
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: Text('字号大小'),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          double fsize = double.parse(
-                              _.fontSizeController.value.text);
-                          fsize--;
-                          _.updateFontSizeOrFontHeight(fsize, -1);
-                        },
-                        icon: Icon(Icons.remove)),
-                    Text(_.fontSizeController.text),
-                    IconButton(
-                        onPressed: () {
-                          double fsize = double.parse(
-                              _.fontSizeController.value.text);
-                          fsize++;
-                          _.updateFontSizeOrFontHeight(fsize, -1);
-                        },
-                        icon: Icon(Icons.add)),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: Text('字间距'),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          double fHeight = double.parse(
-                              _.fontHeightController.value.text);
-                          fHeight -= 0.1;
-                          _.updateFontSizeOrFontHeight(-1, fHeight);
-                        },
-                        icon: Icon(Icons.remove)),
-                    Text(_.fontHeightController.text.substring(0, 3)),
-                    IconButton(
-                        onPressed: () {
-                          double fHeight = double.parse(
-                              _.fontHeightController.value.text);
-                          fHeight += 0.1;
-                          _.updateFontSizeOrFontHeight(-1, fHeight);
-                        },
-                        icon: Icon(Icons.add))
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        width: 60,
-                        child: Text('背景色'),
+                SizedBox(
+                  height: size.height / 5 / 5,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: textWidth,
+                        child: Text('字号大小'),
                       ),
-                    ),
-                    Expanded(flex: 3, child: _buildBackgroundList())
-                  ],
+                      IconButton(
+                          onPressed: () {
+                            double fsize =
+                                double.parse(_.fontSizeController.value.text);
+                            fsize--;
+                            _.updateFontSizeOrFontHeight(fsize, -1);
+                          },
+                          icon: Icon(Icons.remove)),
+                      Text(_.fontSizeController.text),
+                      IconButton(
+                          onPressed: () {
+                            double fsize =
+                                double.parse(_.fontSizeController.value.text);
+                            fsize++;
+                            _.updateFontSizeOrFontHeight(fsize, -1);
+                          },
+                          icon: Icon(Icons.add)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: size.height / 5 / 5,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: textWidth,
+                        child: Text('字间距'),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            double fHeight =
+                                double.parse(_.fontHeightController.value.text);
+                            fHeight -= 0.1;
+                            _.updateFontSizeOrFontHeight(-1, fHeight);
+                          },
+                          icon: Icon(Icons.remove)),
+                      Text(_.fontHeightController.text.substring(0, 3)),
+                      IconButton(
+                          onPressed: () {
+                            double fHeight =
+                                double.parse(_.fontHeightController.value.text);
+                            fHeight += 0.1;
+                            _.updateFontSizeOrFontHeight(-1, fHeight);
+                          },
+                          icon: Icon(Icons.add))
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: size.height / 5 / 5 * 3,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(child: _buildBackgroundList()),
+                    ],
+                  ),
                 ),
               ],
             ),
           );
-        }), backgroundColor: Colors.grey);
+        }), backgroundColor: Colors.grey, barrierColor: Colors.transparent);
       },
     );
   }
 
   _buildBackgroundList() {
-    double height = size.height / 5 / 3;
+    double height = size.height / 5 / 5 * 3 - 20;
     // double width = 40;
     var mfit = BoxFit.scaleDown;
-    List<String> bgs = [
-      R.images.bg001,
-      R.images.bg002,
-      R.images.bg003,
-      R.images.bg004,
-      R.images.bg005,
-      R.images.bg006,
-      R.images.bg007,
-      R.images.bg008,
+    // {背景色：字体颜色}
+    List<Map<String, int>> bgs = [
+      {R.images.bg001: 0xdd000000},
+      {R.images.bg002: 0xdd000000},
+      {R.images.bg003: 0xdd000000},
+      {R.images.bg004: 0xdd000000},
+      {R.images.bg005: 0xB3FFFFFF},
+      {R.images.bg006: 0xdd000000},
+      {R.images.bg007: 0xB3FFFFFF},
+      {R.images.bg008: 0xdd000000},
     ];
-    return SizedBox(
-      height: size.height / 5 / 3,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: bgs.length,
@@ -434,13 +435,13 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
               child: AspectRatio(
                 aspectRatio: 9 / 16,
                 child: Image.asset(
-                  bgs[index],
+                  bgs[index].keys.first,
                   height: height,
                   // width: width,
                   fit: mfit,
                 ),
               ),
-              onTap: (){
+              onTap: () {
                 readController.updateBackground(bgs[index]);
               },
             );

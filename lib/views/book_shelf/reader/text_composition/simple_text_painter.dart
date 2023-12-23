@@ -10,14 +10,15 @@ class SimpleTextPainter extends CustomPainter {
   ui.Image? backgroundImage;
   double fontSize;
   double fontHeight;
-  Color fontColor = Colors.black87;
+  Color fontColor;
 
   SimpleTextPainter(
       {required this.textPage,
       required this.pageIndex,
       this.backgroundImage,
       required this.fontSize,
-      required this.fontHeight});
+      required this.fontHeight,
+      required this.fontColor});
 
   @override
   void paint(Canvas canvas, Size size) {
