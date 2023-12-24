@@ -32,7 +32,6 @@ class SimpleTextPainter extends CustomPainter {
   }
 
   _paintText(ui.Canvas canvas, ui.Size size, TextPage page) {
-
     final lineCount = page.lines.length;
     final tp = TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
     final titleStyle = TextStyle(
@@ -51,6 +50,7 @@ class SimpleTextPainter extends CustomPainter {
 
     for (var i = 0; i < lineCount; i++) {
       final line = page.lines[i];
+      // letterSpacing 控制两端对齐
       if (line.letterSpacing != null &&
           (line.letterSpacing! < -0.1 || line.letterSpacing! > 0.1)) {
         tp.text = TextSpan(
@@ -72,6 +72,11 @@ class SimpleTextPainter extends CustomPainter {
                   height: fontHeight,
                 ),
         );
+      } else if (i == lineCount - 1) {
+        // 页面最底下 显示当前章节名称
+        tp.text = TextSpan(
+            text: line.text,
+            style: TextStyle(color: Colors.grey, fontSize: 14));
       } else {
         tp.text =
             TextSpan(text: line.text, style: line.isTitle ? titleStyle : style);

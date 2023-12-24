@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
 import 'package:wuhoumusic/model/book_novel/read_config_entity.dart';
@@ -39,8 +40,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
-  updateBackground(Map<String,int> backgroundAndFontColor) async {
-
+  updateBackground(Map<String, int> backgroundAndFontColor) async {
     background = backgroundAndFontColor.keys.first;
     fontColor = backgroundAndFontColor.values.first;
     await _getBackImage(background);
@@ -67,12 +67,11 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   late TextEditingController fontSizeController; // 字号
   late TextEditingController fontHeightController; // 间距
 
-
-  updateFontSizeOrFontHeight(double fontSize,double fontHeight) {
-    if(fontSize>0){
+  updateFontSizeOrFontHeight(double fontSize, double fontHeight) {
+    if (fontSize > 0) {
       fontSizeController.text = fontSize.toString();
     }
-    if(fontHeight>0){
+    if (fontHeight > 0) {
       fontHeightController.text = fontHeight.toString();
     }
 
@@ -100,7 +99,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     while ((readLength =
             randomAccessFile.readIntoSync(buffer, 0, buffer.length)) >
         0) {
-
       String chapterContent = "";
       try {
         // todo 默认按utf8读取，如果读取gbk编码会FileSystemException CodeConvertUtil.gbk2utf8(readBytes)转码
@@ -123,7 +121,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       Iterable<RegExpMatch> allMatches = pest.allMatches(chapterContent);
       //如果存在章节（符合正则匹配），则具体分章；否则创建虚拟章节
       for (int i = 0; i < allMatches.length; i++) {
-        chapterIndex++;// 其实这里分章节也不是太准，但一般字数不多的情况可以用
+        chapterIndex++; // 其实这里分章节也不是太准，但一般字数不多的情况可以用
         int chapterStart = allMatches.elementAt(i).start;
         String chapterContentSubFront = chapterContent.substring(
             seekPositionString, chapterStart); // 截取章节前部内容
@@ -260,7 +258,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         ui.FrameInfo fi = await codec.getNextFrame();
         _backgroundImage = fi.image;
       }
-    } catch(e){}
+    } catch (e) {}
   }
 
   /// 构建字体信息 布局信息  分页。 改成异步
@@ -276,7 +274,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     double fontSize = double.parse(fontSizeController.value.text);
     double fontHeight = double.parse(fontHeightController.value.text);
     Color fontColor = Color(0xFF303133);
-    double bottomPadding = 16;
+    double bottomPadding = 16 + 16;
 
     var getChapterBytes = _getChapterBytes(chapters[chapterIndex]);
     List<String> currentChapterParagraph = _bytes2String(getChapterBytes);
@@ -400,7 +398,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
           if (dy > _height2) {
             newPage();
           } else {
-            dy += 18; // + paragraphPadding
+            dy += 10; // 段间距 paragraphPadding = 18
           }
           break;
         } else {
@@ -426,10 +424,20 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
 
     final basePercent = chapterIndex / chapters.length;
     final total = pages.length;
-    pages.forEach((page) {
-      page.pageTotal = total;
-      page.percent = page.pageNo / pages.length / chapters.length + basePercent;
-    });
+    for (int j = 0; j < pages.length; j++) {
+      pages[j].pageTotal = total;
+      pages[j].percent =
+          pages[j].pageNo / pages.length / chapters.length + basePercent;
+      // 页面最底下 显示当前章节名称
+      pages[j].lines.add(TextLine(
+          chapters[chapterIndex]
+              .chapterTitle
+              .replaceAll('\n', '')
+              .replaceAll('\r', ''),
+          dx,
+          size.height - bottomPadding));
+    }
+
     LogD('_startX end', DateTime.now().toString());
     return Future.value(pages);
   }
@@ -443,7 +451,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             backgroundImage: backgroundImage,
             fontSize: double.parse(fontSizeController.value.text),
             fontHeight: double.parse(fontHeightController.value.text),
-        fontColor: Color(fontColor)),
+            fontColor: Color(fontColor)),
       ),
     );
   }
@@ -468,7 +476,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             backgroundImage: backgroundImage,
             fontSize: double.parse(fontSizeController.value.text),
             fontHeight: double.parse(fontHeightController.value.text),
-        fontColor: Color(fontColor)),
+            fontColor: Color(fontColor)),
       );
     }
   }
@@ -564,22 +572,36 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     currentChapterIndex = bookNovel?.lastReadChapterIndex ?? 0;
 
     // 读取阅读配置
-    readConfigEntity = IsarHelper.instance.isarInstance.readConfigEntitys.getSync(1);
-    if(readConfigEntity == null){
-      fontSizeController = TextEditingController(text:'20');
+    readConfigEntity =
+        IsarHelper.instance.isarInstance.readConfigEntitys.getSync(1);
+    if (readConfigEntity == null) {
+      fontSizeController = TextEditingController(text: '20');
       fontHeightController = TextEditingController(text: '1.2');
       background = R.images.bg001;
       fontColor = 0xdd000000;
-    }else{
-      fontSizeController = TextEditingController(text: readConfigEntity?.fontSize.toString());
-      fontHeightController = TextEditingController(text: readConfigEntity?.fontHeight.toString());
+    } else {
+      fontSizeController =
+          TextEditingController(text: readConfigEntity?.fontSize.toString());
+      fontHeightController =
+          TextEditingController(text: readConfigEntity?.fontHeight.toString());
       background = readConfigEntity!.background;
       fontColor = readConfigEntity!.fontColor;
     }
 
     await _getBackImage(background);
 
-    List<BookChapterEntity> temp = await _getBookNovelInfo();
+    // 从数据库中查询章节
+    List<BookChapterEntity> temp = IsarHelper
+        .instance.isarInstance.bookChapterEntitys
+        .filter()
+        .bookIdEqualTo(bookNovel!.id!)
+        .findAllSync();
+    if (temp.isEmpty) {
+      temp = await _getBookNovelInfo();
+      IsarHelper.instance.isarInstance.writeTxn(() async {
+        IsarHelper.instance.isarInstance.bookChapterEntitys.putAll(temp);
+      });
+    }
     chapters.addAll(temp);
     firstChapterIndex = chapters.first.chapterIndex;
     lastChapterIndex = chapters.last.chapterIndex;
@@ -590,8 +612,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         .drive(Tween(begin: Offset(0.0, -1.0), end: Offset.zero));
     menuBottomAnimationProgress = menuAnimationController
         .drive(Tween(begin: Offset(0.0, 1.0), end: Offset.zero));
-
-
 
     super.onInit();
   }
@@ -616,7 +636,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     super.onClose();
   }
 
-
   _recordRead() {
     // 记录阅读位置
     bookNovel?.lastReadChapterIndex = currentChapterIndex;
@@ -629,12 +648,11 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         fontSize: double.parse(fontSizeController.value.text),
         fontHeight: double.parse(fontHeightController.value.text),
         background: background,
-        fontColor: fontColor
-    );
+        fontColor: fontColor);
 
     IsarHelper.instance.isarInstance.writeTxn(() async {
-        IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!);
-        IsarHelper.instance.isarInstance.readConfigEntitys.put(readConfigEntity!);
+      IsarHelper.instance.isarInstance.bookNovelEntitys.put(bookNovel!);
+      IsarHelper.instance.isarInstance.readConfigEntitys.put(readConfigEntity!);
     });
   }
 }
