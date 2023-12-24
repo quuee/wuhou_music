@@ -1,15 +1,17 @@
+import 'dart:io';
+
 import 'gbk.dart';
 import 'unicode.dart';
 import 'dart:convert';
 
 /// https://github.com/best-flutter/gbk2utf8.git
 class CodeConvertUtil {
-
-  static String gbk2utf8(List<int> bytes){
+  static String gbk2utf8(List<int> bytes) {
     List<int> gbkun = gbk2unicode(bytes);
     List<int> utf8un = unicode2utf8(gbkun);
     return utf8.decode(utf8un);
   }
+
   /// gbk => unicode word array
   /// @param gbk_buf byte array
   /// @return   word array
@@ -102,5 +104,26 @@ class CodeConvertUtil {
     }
 
     return loc;
+  }
+
+  static String getFileCharsetName(File file) {
+    RandomAccessFile rf = file.openSync();
+    rf.readSync(3);
+    List<int> head = List.generate(3, (index) => 0);
+    rf.readIntoSync(head);
+
+    String charsetName = 'GBK';
+    if (head[0] == -1 && head[1] == -2)
+      charsetName = 'UTF-16'; //0xFFFE
+    else if (head[0] == -2 && head[1] == -1)
+      charsetName = "Unicode"; //0xFEFF//包含两种编码格式：UCS2-Big-Endian和UCS2-Little-Endian
+    else if (head[0] == -27 && head[1] == -101 && head[2] == -98)
+      charsetName = "UTF-8"; //UTF-8(不含BOM)
+    else if (head[0] == -17 && head[1] == -69 && head[2] == -65)
+      charsetName = "UTF-8"; //UTF-8-BOM
+
+    rf.closeSync();
+
+    return charsetName;
   }
 }

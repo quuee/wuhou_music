@@ -68,6 +68,13 @@ GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
 
 //应该注册完之后 测试是否是单例
 ```
+## 判断文本文件编码格式
+| Java中的编码字符串 | Text编码                                               | 字节标志                                     |
+|-------------|------------------------------------------------------|------------------------------------------|
+| GBK         | ANSI                                                 | 无格式定义                                    |
+| UTF-8       | UTF-8包含两种规格：UTF-8 UTF-8-BOM                          | 需判断前三个字节：前三个字节为：0xE59B9E 前三个字节为：0xEFBBBF |
+| UTF-16      | UTF-16                                               | 前两个字节为：0xFEFF                            |
+| UNICODE     | Unicode包含两种规格：1、UCS2 Little Endian 2、UCS2 Big Endian | 前两个字节为：0xFFFE                            |
 
 ## 退出阅读页，进入不能翻页
 因为退出后有些对象推出前没有销毁

@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
@@ -12,6 +13,7 @@ import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
+import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 
 class ReadController extends GetxController with GetTickerProviderStateMixin {
@@ -85,6 +87,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     if (!exist) {
       return Future.value([]);
     }
+    // String fileCharsetName = CodeConvertUtil.getFileCharsetName(file);
+    String fileCharsetName = 'UTF-8';
     List<BookChapterEntity> tempChapters = [];
     // RandomAccessFile重写小说阅读
     List<int> buffer = List.generate(128 * 1024, (index) => 0);
@@ -100,16 +104,30 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             randomAccessFile.readIntoSync(buffer, 0, buffer.length)) >
         0) {
       String chapterContent = "";
-      try {
-        // todo 默认按utf8读取，如果读取gbk编码会FileSystemException CodeConvertUtil.gbk2utf8(readBytes)转码
 
-        // allowMalformed: true 避免数据拆包后无法转码，但是截取处个别字乱码
-        chapterContent = utf8.decode(buffer.sublist(0, readLength),
-            allowMalformed: true); // 当前章节内容  Unfinished UTF-8 octet sequence问题
-      } on FormatException catch (e) {
-        LogE('utf8拆包错误', e.message);
+      switch (fileCharsetName) {
+        case 'GBK':
+          chapterContent =
+              CodeConvertUtil.gbk2utf8(buffer.sublist(0, readLength));
+          break;
+        case 'UTF-8':
+          chapterContent =
+              utf8.decode(buffer.sublist(0, readLength), allowMalformed: true);
+          break;
       }
+
+      // try {
+      //   // 默认按utf8读取，如果读取gbk编码会FileSystemException CodeConvertUtil.gbk2utf8(readBytes)转码
+      //   // allowMalformed: true 避免数据拆包后无法转码，但是截取处个别字乱码
+      //    // 当前章节内容  Unfinished UTF-8 octet sequence问题
+      // } on FormatException catch (e) {
+      //   LogE('utf8拆包错误', e.message);
+      // } on FileSystemException catch (e) {
+      //    LogE('解码错误，尝试GBK解码', e.message);
+      //
+      // }
       // chapterContent.replaceAll(RegExp('(PS|ps)(.)*(|\\n)'), '');
+
       // 匹配规则
       // "(第)([0-9零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]{1,10})([章节回集卷])(.*)"
       RegExp pest = RegExp(
@@ -120,85 +138,127 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       // 匹配章节
       Iterable<RegExpMatch> allMatches = pest.allMatches(chapterContent);
       //如果存在章节（符合正则匹配），则具体分章；否则创建虚拟章节
-      for (int i = 0; i < allMatches.length; i++) {
-        chapterIndex++; // 其实这里分章节也不是太准，但一般字数不多的情况可以用
-        int chapterStart = allMatches.elementAt(i).start;
-        String chapterContentSubFront = chapterContent.substring(
-            seekPositionString, chapterStart); // 截取章节前部内容
+      if (allMatches.isNotEmpty) {
+        for (int i = 0; i < allMatches.length; i++) {
+          chapterIndex++; // 其实这里分章节也不是太准，但一般字数不多的情况可以用
+          int chapterStart = allMatches.elementAt(i).start;
+          String chapterContentSubFront = chapterContent.substring(
+              seekPositionString, chapterStart); // 截取章节前部内容
 
-        if (seekPositionBytes == 0 && chapterStart != 0) {
-          //表示 章节处于中间
-          seekPositionBytes +=
-              utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
-          seekPositionString += chapterContentSubFront.length; //字符串偏移量
-          if (curOffset == 0) {
-            // 说明有序章
-            BookChapterEntity preChapter = BookChapterEntity(
-              bookId: bookNovel!.id!,
-              chapterIndex: chapterIndex,
-              chapterTitle: "序章",
-              start: 0,
-              end: utf8.encode(chapterContentSubFront).length,
-            );
-            tempChapters.add(preChapter);
-
-            BookChapterEntity curChapter = BookChapterEntity(
-                bookId: bookNovel!.id!,
-                chapterIndex: chapterIndex,
-                chapterTitle: allMatches.elementAt(i).group(0).toString(),
-                start: preChapter.end);
-            tempChapters.add(curChapter);
-          } else {
-            // 将当前段落添加到上一章中
-            BookChapterEntity lastChapter =
-                tempChapters[tempChapters.length - 1];
-            lastChapter.end = (lastChapter.end ?? 0) +
-                utf8.encode(chapterContentSubFront).length;
-            // lastChapter.content =
-            //     (lastChapter.content ?? "") + chapterContentSubFront;
-
-            BookChapterEntity curChapter = BookChapterEntity(
-                bookId: bookNovel!.id!,
-                chapterIndex: chapterIndex,
-                chapterTitle: allMatches.elementAt(i).group(0).toString(),
-                start: lastChapter.end);
-            tempChapters.add(curChapter);
-          }
-        } else {
-          if (tempChapters.isNotEmpty) {
+          if (seekPositionBytes == 0 && chapterStart != 0) {
+            //表示 章节处于中间
             seekPositionBytes +=
                 utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
             seekPositionString += chapterContentSubFront.length; //字符串偏移量
-            BookChapterEntity lastChapter =
-                tempChapters[tempChapters.length - 1];
-            lastChapter.end = (lastChapter.start ?? 0) +
-                utf8.encode(chapterContentSubFront).length;
-            // lastChapter.content =
-            //     (lastChapter.content ?? "") + chapterContentSubFront;
+            if (curOffset == 0) {
+              // 说明有序章
+              BookChapterEntity preChapter = BookChapterEntity(
+                bookId: bookNovel!.id!,
+                chapterIndex: chapterIndex,
+                chapterTitle: "序章",
+                start: 0,
+                end: utf8.encode(chapterContentSubFront).length,
+              );
+              tempChapters.add(preChapter);
 
-            BookChapterEntity curChapter = BookChapterEntity(
-                bookId: bookNovel!.id!,
-                chapterIndex: chapterIndex,
-                chapterTitle: allMatches.elementAt(i).group(0).toString(),
-                start: lastChapter.end);
-            tempChapters.add(curChapter);
+              BookChapterEntity curChapter = BookChapterEntity(
+                  bookId: bookNovel!.id!,
+                  chapterIndex: chapterIndex,
+                  chapterTitle: allMatches.elementAt(i).group(0).toString(),
+                  start: preChapter.end);
+              tempChapters.add(curChapter);
+            } else {
+              // 将当前段落添加到上一章中
+              BookChapterEntity lastChapter =
+                  tempChapters[tempChapters.length - 1];
+              lastChapter.end = (lastChapter.end ?? 0) +
+                  utf8.encode(chapterContentSubFront).length;
+              // lastChapter.content =
+              //     (lastChapter.content ?? "") + chapterContentSubFront;
+
+              BookChapterEntity curChapter = BookChapterEntity(
+                  bookId: bookNovel!.id!,
+                  chapterIndex: chapterIndex,
+                  chapterTitle: allMatches.elementAt(i).group(0).toString(),
+                  start: lastChapter.end);
+              tempChapters.add(curChapter);
+            }
           } else {
-            BookChapterEntity curChapter = BookChapterEntity(
+            if (tempChapters.isNotEmpty) {
+              seekPositionBytes +=
+                  utf8.encode(chapterContentSubFront).length; //设置字节指针偏移
+              seekPositionString += chapterContentSubFront.length; //字符串偏移量
+              BookChapterEntity lastChapter =
+                  tempChapters[tempChapters.length - 1];
+              lastChapter.end = (lastChapter.start ?? 0) +
+                  utf8.encode(chapterContentSubFront).length;
+              // lastChapter.content =
+              //     (lastChapter.content ?? "") + chapterContentSubFront;
+
+              BookChapterEntity curChapter = BookChapterEntity(
+                  bookId: bookNovel!.id!,
+                  chapterIndex: chapterIndex,
+                  chapterTitle: allMatches.elementAt(i).group(0).toString(),
+                  start: lastChapter.end);
+              tempChapters.add(curChapter);
+            } else {
+              BookChapterEntity curChapter = BookChapterEntity(
+                  bookId: bookNovel!.id!,
+                  chapterIndex: chapterIndex,
+                  chapterTitle: allMatches.elementAt(i).group(0).toString(),
+                  start: 0);
+              tempChapters.add(curChapter);
+            }
+          }
+        }
+        // 正则章节
+        BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
+        lastChapter.end = curOffset;
+      } else {
+        // 没有匹配章节目录则进行虚拟分章
+        //章节在buffer的偏移量
+        int chapterOffset = 0;
+        //当前剩余可分配的长度
+        int strLength = readLength;
+
+        while (strLength > 0) {
+          ++chapterIndex;
+          if (strLength > 16 * 1024) {
+            //是否长度超过一章
+            //在buffer中一章的终止点
+            int end = readLength;
+            //寻找换行符作为终止点
+            for (int i = chapterOffset + 16 * 1024; i < readLength; ++i) {
+              if (buffer[i] == CharCode.LF) {
+                end = i;
+                break;
+              }
+            }
+            BookChapterEntity chapterEntity = BookChapterEntity(
                 bookId: bookNovel!.id!,
                 chapterIndex: chapterIndex,
-                chapterTitle: allMatches.elementAt(i).group(0).toString(),
-                start: 0);
-            tempChapters.add(curChapter);
+                chapterTitle: '第' + chapterIndex.toString() + '章',
+                start: curOffset + chapterOffset + 1,
+                end: curOffset + end);
+            tempChapters.add(chapterEntity);
+            //减去已经被分配的长度
+            strLength = strLength - (end - chapterOffset);
+            //设置偏移的位置
+            chapterOffset = end;
+          } else {
+            BookChapterEntity chapterEntity = BookChapterEntity(
+                bookId: bookNovel!.id!,
+                chapterIndex: chapterIndex,
+                chapterTitle: '第' + chapterIndex.toString() + '章',
+                start: curOffset + chapterOffset + 1,
+                end: curOffset + readLength);
+            tempChapters.add(chapterEntity);
+            strLength = 0;
           }
         }
       }
 
-      // TODO 没有匹配则进行虚拟分章
-
       curOffset += readLength;
-      // 如果有正则章节
-      BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
-      lastChapter.end = curOffset;
     }
     randomAccessFile.closeSync();
     return Future.value(tempChapters);
@@ -385,6 +445,9 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         tp.text = TextSpan(text: p, style: style);
         tp.layout(maxWidth: _width);
         final textCount = tp.getPositionForOffset(offset).offset;
+        if(textCount <= 0){
+          break;
+        }
         double? spacing;
         final text = p.substring(0, textCount);
         if (tp.width > _width2) {

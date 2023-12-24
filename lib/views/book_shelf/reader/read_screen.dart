@@ -26,8 +26,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   late ReadController readController;
   late var size;
 
-  // 翻页控制点
-  late ValueNotifier<PaperPoint> p;
+  late ValueNotifier<PaperPoint> p;// 翻页控制点
   Point<double> currentA = const Point(0, 0); // a面
   late Offset downPos;
   bool isNext = false; // 是否翻页到下一页
