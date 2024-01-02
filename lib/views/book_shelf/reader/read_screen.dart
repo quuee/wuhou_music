@@ -109,14 +109,16 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     details.globalPosition.dx < size.width * 2 / 3 &&
                     details.globalPosition.dy > size.height * 3 / 8 &&
                     details.globalPosition.dy < size.height * 5 / 8) {
-                  if (_.menuAnimationController.isCompleted) {
+                  if(_.menuShowStatus){
                     _.menuAnimationController.reverse();
-                  } else {
+                    _.menuShowStatus= false;
+                  }else{
                     _.menuAnimationController.forward();
+                    _.menuShowStatus= true;
                   }
                 } else {
                   // 如果上下栏菜单呼出，点击无效
-                  if (_.menuAnimationController.isDismissed) {
+                  if (!_.menuShowStatus) {
                     if (details.globalPosition.dx < size.width / 2) {
                       isAnimation = true;
                       isNext = false;
@@ -144,10 +146,11 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 }
               },
               onPanDown: (d) {
+                if(_.menuShowStatus){return;}
                 downPos = d.localPosition;
               },
               onPanUpdate: (d) {
-                // LogD("onPanUpdate","onPanUpdate---${d.globalPosition}---${d.localPosition}---${d.delta}");
+                if(_.menuShowStatus){return;}
                 if (isAnimation) {
                   return;
                 }
@@ -183,6 +186,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 }
               },
               onPanEnd: (d) {
+                if(_.menuShowStatus){return;}
                 if (isAnimation) {
                   return;
                 }
@@ -252,13 +256,14 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
         children: [
           //第一行
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Expanded(flex: 1, child: Text('上一章')),
+              Expanded(flex: 1, child: Center(child: Text('上一章'),)),
               Expanded(
-                flex: 6,
+                flex: 5,
                 child: Slider(max: 100, value: 1, onChanged: (v) {}),
               ),
-              Expanded(flex: 1, child: Text('下一章')),
+              Expanded(flex: 1, child: Center(child: Text('下一章'),)),
             ],
           ),
           // 第二行

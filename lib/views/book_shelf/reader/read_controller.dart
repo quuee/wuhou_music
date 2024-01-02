@@ -50,6 +50,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   }
 
   // 菜单动画
+  bool menuShowStatus = false; //在菜单栏弹出时 状态判断
   late AnimationController menuAnimationController;
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
@@ -211,9 +212,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             }
           }
         }
-        // 正则章节
-        BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
-        lastChapter.end = curOffset;
+
       } else {
         // 没有匹配章节目录则进行虚拟分章
         //章节在buffer的偏移量
@@ -237,7 +236,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             BookChapterEntity chapterEntity = BookChapterEntity(
                 bookId: bookNovel!.id!,
                 chapterIndex: chapterIndex,
-                chapterTitle: '第' + chapterIndex.toString() + '章',
+                chapterTitle: '虚拟章节 第' + chapterIndex.toString() + '章',
                 start: curOffset + chapterOffset + 1,
                 end: curOffset + end);
             tempChapters.add(chapterEntity);
@@ -249,7 +248,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
             BookChapterEntity chapterEntity = BookChapterEntity(
                 bookId: bookNovel!.id!,
                 chapterIndex: chapterIndex,
-                chapterTitle: '第' + chapterIndex.toString() + '章',
+                chapterTitle: '虚拟章节 第' + chapterIndex.toString() + '章',
                 start: curOffset + chapterOffset + 1,
                 end: curOffset + readLength);
             tempChapters.add(chapterEntity);
@@ -259,6 +258,10 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       }
 
       curOffset += readLength;
+      // 如果是符合正则章节
+      BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
+      lastChapter.end = curOffset;
+
     }
     randomAccessFile.closeSync();
     return Future.value(tempChapters);
@@ -339,9 +342,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     var getChapterBytes = _getChapterBytes(chapters[chapterIndex]);
     List<String> currentChapterParagraph = _bytes2String(getChapterBytes);
 
-    /// 是否底栏对齐
-    bool shouldJustifyHeight = true;
-
     final pages = <TextPage>[];
     // final columns = config.columns > 0 ? config.columns : size.width > 580 ? 2 : 1;
     final columns = 1;
@@ -411,9 +411,12 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
 
     var pageIndex = 1;
 
+    /// 是否底栏对齐
+    bool shouldJustifyHeight = true;
+    bool configJustifyHeight = true; // 用户配置
     /// 下一页 判断分页 依据: `_boxHeight` `_boxHeight2`是否可以容纳下一行
     void newPage([bool shouldJustifyHeight = true, bool lastPage = false]) {
-      if (shouldJustifyHeight && shouldJustifyHeight) {
+      if (shouldJustifyHeight && configJustifyHeight ) {
         final len = lines.length - startLine;
         double justify = (_height - dy) / (len - 1);
         for (var i = 0; i < len; i++) {
@@ -602,6 +605,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       pageIndex = 0;
       textPages.clear();
       currentChapterIndex++;
+      // 反正有预加载章节，应该直接用预加载的数据。用了预加载章节数据，数据不对，可能是异步 或 直接引用的原因（浅拷贝）
       final pages = await _startX(currentChapterIndex);
       textPages.addAll(pages);
       _prepareNextChapter();

@@ -21,6 +21,7 @@ class BookNovelEntity {
   int? lastReadChapterIndex; //上次阅读章节
   String? lastReadChapterTitle;
   int? lastReadChapterOffset; //上次阅读位置
+  int? spendTime; // 阅读花费的时间
 
   BookNovelEntity(
       {required this.bookTitle,
