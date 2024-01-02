@@ -106,6 +106,7 @@ class CodeConvertUtil {
     return loc;
   }
 
+  /// 判断文件编码  TODO 目前判断不了
   static String getFileCharsetName(File file) {
     RandomAccessFile rf = file.openSync();
     rf.readSync(3);

@@ -4,9 +4,9 @@ int gbk_buf_size = 20902;
 
 // 这个表是unicode映射gbk
 // 中文 "一" 的 unicode编码为: 19968/0x4e00
-//              gbk编码为: 0xd288
+// gbk编码为: 0xd288
 List<int> gbkTables = [
-  0xD2BB,   // 一
+  0xD2BB, // 一
   0xB6A1,
   0x8140, //33088
   0xC6DF,

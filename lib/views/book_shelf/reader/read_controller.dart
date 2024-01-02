@@ -124,8 +124,8 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       //   LogE('utf8拆包错误', e.message);
       // } on FileSystemException catch (e) {
       //    LogE('解码错误，尝试GBK解码', e.message);
-      //
       // }
+
       // chapterContent.replaceAll(RegExp('(PS|ps)(.)*(|\\n)'), '');
 
       // 匹配规则
