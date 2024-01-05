@@ -182,7 +182,7 @@ class _BookShelfPageState extends State<BookShelfPage>
                 Text(
                   bookNovel.bookTitle,
                   maxLines: 2,
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16),
                 ),
                 // todo 阅读完返回后 上次阅读章节 不能自动更新到最新
                 Text(
