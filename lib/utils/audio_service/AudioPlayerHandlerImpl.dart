@@ -10,60 +10,21 @@ import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/utils/mediaitem_converter.dart';
 
-class QueueState {
-  static const QueueState empty =
-      QueueState([], 0, [], AudioServiceRepeatMode.none);
 
-  final List<MediaItem> queue;
-  final int? queueIndex;
-  final List<int>? shuffleIndices;
-  final AudioServiceRepeatMode repeatMode;
-
-  const QueueState(
-      this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
-
-  bool get hasPrevious =>
-      repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
-  bool get hasNext =>
-      repeatMode != AudioServiceRepeatMode.none ||
-      (queueIndex ?? 0) + 1 < queue.length;
-
-  List<int> get indices =>
-      shuffleIndices ?? List.generate(queue.length, (i) => i);
-}
-
-/// An [AudioHandler] for playing a list of podcast episodes.
-///
-/// This class exposes the interface and not the implementation.
-abstract class AudioPlayerHandler implements AudioHandler {
-  Stream<QueueState> get queueState;
-  Future<void> moveQueueItem(int currentIndex, int newIndex);
-  ValueStream<double> get volume;
-  Future<void> setVolume(double volume);
-  ValueStream<double> get speed;
-}
-
-/// The implementation of [AudioPlayerHandler].
-///
 /// This handler is backed by a just_audio player. The player's effective
 /// sequence is mapped onto the handler's queue, and the player's state is
 /// mapped onto the handler's state.
 class AudioPlayerHandlerImpl extends BaseAudioHandler
-    with SeekHandler
-    implements AudioPlayerHandler {
-  // final BehaviorSubject<List<MediaItem>> _recentSubject =
-  //     BehaviorSubject.seeded(<MediaItem>[]);
+    with QueueHandler, SeekHandler {
 
-  // final _mediaLibrary = MediaLibrary();
   final _player = AudioPlayer();
   final _playlist = ConcatenatingAudioSource(children: []);
 
-  @override
-  // ignore: close_sinks
-  final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
-
-  @override
-  final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
+  // 缓存最新一次事件的广播流控制器：BehaviorSubject
+  // @override
+  // final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
+  // @override
+  // final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
 
   final _mediaItemExpando = Expando<MediaItem>();
 
@@ -98,22 +59,22 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   /// A stream reporting the combined state of the current queue and the current
   /// media item within that queue.
-  @override
-  Stream<QueueState> get queueState =>
-      Rx.combineLatest3<List<MediaItem>, PlaybackState, List<int>, QueueState>(
-          queue,
-          playbackState,
-          _player.shuffleIndicesStream.whereType<List<int>>(),
-          (queue, playbackState, shuffleIndices) => QueueState(
-                queue,
-                playbackState.queueIndex,
-                playbackState.shuffleMode == AudioServiceShuffleMode.all
-                    ? shuffleIndices
-                    : null,
-                playbackState.repeatMode,
-              )).where((state) =>
-          state.shuffleIndices == null ||
-          state.queue.length == state.shuffleIndices!.length);
+  // @override
+  // Stream<QueueState> get queueState =>
+  //     Rx.combineLatest3<List<MediaItem>, PlaybackState, List<int>, QueueState>(
+  //         queue,
+  //         playbackState,
+  //         _player.shuffleIndicesStream.whereType<List<int>>(),
+  //         (queue, playbackState, shuffleIndices) => QueueState(
+  //               queue,
+  //               playbackState.queueIndex,
+  //               playbackState.shuffleMode == AudioServiceShuffleMode.all
+  //                   ? shuffleIndices
+  //                   : null,
+  //               playbackState.repeatMode,
+  //             )).where((state) =>
+  //         state.shuffleIndices == null ||
+  //         state.queue.length == state.shuffleIndices!.length);
 
   @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
@@ -131,17 +92,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await _player.setLoopMode(LoopMode.values[repeatMode.index]);
   }
 
-  @override
-  Future<void> setSpeed(double speed) async {
-    this.speed.add(speed);
-    await _player.setSpeed(speed);
-  }
 
-  @override
-  Future<void> setVolume(double volume) async {
-    this.volume.add(volume);
-    await _player.setVolume(volume);
-  }
+  // @override
+  // Future<void> setVolume(double volume) async {
+  //   this.volume.add(volume);
+  //   await _player.setVolume(volume);
+  // }
 
   AudioPlayerHandlerImpl() {
     _init();
@@ -150,11 +106,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> _init() async {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
-    // Broadcast speed changes. Debounce so that we don't flood the notification
-    // with updates.
-    speed.debounceTime(const Duration(milliseconds: 250)).listen((speed) {
-      playbackState.add(playbackState.value.copyWith(speed: speed));
-    });
+
+    // speed.debounceTime(const Duration(milliseconds: 250)).listen((speed) {
+    //   playbackState.add(playbackState.value.copyWith(speed: speed));
+    // });
 
     // For Android 11, record the most recent item so it can be resumed.
     // mediaItem
@@ -188,7 +143,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     _player.loopModeStream
         .listen((event) => _broadcastState(_player.playbackEvent));
 
-    // In this example, the service stops when reaching the end.
+    // In this example, the service stops when reaching the end. 在本例中，服务到达终点时停止。
     _player.processingStateStream.listen((state) {
       if (state == ProcessingState.completed) {
         stop();
@@ -203,17 +158,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
     // Load the playlist.
     if (queue.value.isEmpty) {
-      // 从hive恢复最近一次的队列
+      // 从本地缓存中恢复最近一次的队列
       List<CacheSongEntity> cacheList = IsarHelper
           .instance.isarInstance.cacheSongEntitys
           .where(distinct: true, sort: Sort.asc)
           .findAllSync();
-      // final List lastSongEntityList = await Hive.box(Keys.hiveCache)
-      //     .get(Keys.lastQueue, defaultValue: [])?.toList() as List;
-      // final int lastIndex = await Hive.box(Keys.hiveCache)
-      //     .get(Keys.lastIndex, defaultValue: 0) as int;
-      // final int lastPos = await Hive.box(Keys.hiveCache)
-      //     .get(Keys.lastPos, defaultValue: 0) as int;
 
       if (cacheList.isNotEmpty) {
         List<SongEntity> temp = songEntityFromJson(jsonEncode(cacheList));
@@ -254,34 +203,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) =>
       mediaItems.map(_itemToSource).toList();
 
-  // @override
-  // Future<List<MediaItem>> getChildren(String parentMediaId,
-  //     [Map<String, dynamic>? options]) async {
-  //   switch (parentMediaId) {
-  //     case AudioService.recentRootId:
-  //       // When the user resumes a media session, tell the system what the most
-  //       // recently played item was.
-  //       return _recentSubject.value;
-  //     default:
-  //       // Allow client to browse the media library.
-  //       return _mediaLibrary.items[parentMediaId]!;
-  //   }
-  // }
-
-  // @override
-  // ValueStream<Map<String, dynamic>> subscribeToChildren(String parentMediaId) {
-  //   switch (parentMediaId) {
-  //     case AudioService.recentRootId:
-  //       final stream = _recentSubject.map((_) => <String, dynamic>{});
-  //       return _recentSubject.hasValue
-  //           ? stream.shareValueSeeded(<String, dynamic>{})
-  //           : stream.shareValue();
-  //     default:
-  //       return Stream.value(_mediaLibrary.items[parentMediaId])
-  //           .map((_) => <String, dynamic>{})
-  //           .shareValue();
-  //   }
-  // }
 
   Future<void> addLastQueue(List<MediaItem> queue) async {
     if (queue.isNotEmpty) {
@@ -341,11 +262,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   @override
-  Future<void> moveQueueItem(int currentIndex, int newIndex) async {
-    await _playlist.move(currentIndex, newIndex);
-  }
-
-  @override
   Future<void> skipToNext() => _player.seekToNext();
 
   @override
@@ -362,6 +278,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     play();
   }
 
+  Future<void> moveQueueItem(int currentIndex, int newIndex) async {
+    await _playlist.move(currentIndex, newIndex);
+  }
+
   @override
   Future<void> play() async {
     _player.play();
@@ -370,9 +290,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> pause() async {
     _player.pause();
-    // await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
-    // await Hive.box(Keys.hiveCache)
-    //     .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
   }
 
@@ -385,9 +302,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
 
-    // await Hive.box(Keys.hiveCache).put(Keys.lastIndex, _player.currentIndex);
-    // await Hive.box(Keys.hiveCache)
-    //     .put(Keys.lastPos, _player.position.inSeconds);
     await addLastQueue(queue.value);
   }
 
@@ -432,4 +346,5 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       LogE('_playbackError', st.toString());
     }
   }
+
 }

@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/mediaitem_converter.dart';
 
+
 class PlayInvoke {
-  static final AudioPlayerHandler _audioHandler = GetIt.I<AudioPlayerHandler>();
+  static final WHAudioPlayerHandler _audioHandler = GetIt.I<WHAudioPlayerHandler>();
 
   static Future<void> init({
     required List<SongEntity> songList,
@@ -14,7 +16,7 @@ class PlayInvoke {
     bool shuffle = false,
     String? playListBox,
   }) async {
-
+    _audioHandler.switchToHandler(0);
     // 跳过本地不存在的文件
     final List<SongEntity> finalList = songList.where((element) {
       bool fileFlag = false;
@@ -60,7 +62,7 @@ class PlayInvoke {
   }
 
   static Future<void> _updateNplay(List<MediaItem> queue, int index) async {
-    await _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+    await _audioHandler.setShuffleMode(AudioServiceShuffleMode.all);
     await _audioHandler.updateQueue(queue);
     await _audioHandler.skipToQueueItem(index);
     await _audioHandler.play();

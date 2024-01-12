@@ -58,13 +58,15 @@ class _MinePageState extends State<SongsListPage> {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Get.toNamed(Routes.ttsTest);
+          },
           behavior: HitTestBehavior.opaque,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.add),
-              Text('待定'),
+              Text('测试tts'),
             ],
           ),
         ),

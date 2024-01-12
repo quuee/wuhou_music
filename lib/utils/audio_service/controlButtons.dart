@@ -1,13 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'AudioPlayerHandlerImpl.dart';
 import 'common.dart';
 
 class ControlButtons extends StatelessWidget {
 
   const ControlButtons(this.audioHandler, {Key? key}) : super(key: key);
 
-  final AudioPlayerHandler audioHandler;
+  final WHAudioPlayerHandler audioHandler;
 
   @override
   Widget build(BuildContext context) {

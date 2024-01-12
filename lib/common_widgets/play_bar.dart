@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
 class PlayBar extends StatelessWidget {
@@ -14,8 +14,8 @@ class PlayBar extends StatelessWidget {
     super.key,
   });
 
-  static final AudioPlayerHandler audioPlayerHandler =
-      GetIt.I<AudioPlayerHandler>();
+  static final WHAudioPlayerHandler audioPlayerHandler = GetIt.I<WHAudioPlayerHandler>();
+
 
   @override
   Widget build(BuildContext context) {

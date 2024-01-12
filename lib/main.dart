@@ -5,9 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
-import 'package:wuhoumusic/theme/app_theme.dart';
 import 'package:wuhoumusic/utils/audio_service/AudioHandlerFactory.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/config.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 
@@ -17,24 +16,6 @@ Future<void> main() async {
   // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   // int sdkInt = androidInfo.version.sdkInt;
 
-  // 初始化 Hive
-  // if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-  //   // await Hive.initFlutter('wuhou_music/Database');
-  // } else if (Platform.isIOS) {
-  //   // await Hive.initFlutter('Database');
-  // } else {
-  //   var directory = await getApplicationDocumentsDirectory();
-  //   Hive.init(directory.path);
-  // }
-  // Hive.registerAdapter(SongEntityAdapter());
-  // Hive.registerAdapter(SongsListEntityAdapter());
-  // for (final box in hiveBoxes) {
-  //   await openHiveBox(
-  //     box['name'].toString(),
-  //     limit: box['limit'] as bool? ?? false,
-  //   );
-  // }
-  // Hive.box(Keys.hiveGlobalParam).put(Keys.sdkInt, sdkInt);
 
   IsarHelper.instance.init();
   Config.instance.init();
@@ -66,8 +47,8 @@ class MyApp extends StatelessWidget {
 
 Future<void> initServices() async {
   final audioHandlerFactory = AudioHandlerFactory();
-  final AudioPlayerHandler audioHandler = await audioHandlerFactory.getAudioHandler();
-  GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
+  final WHAudioPlayerHandler audioHandler = await audioHandlerFactory.getAudioHandler();
+  GetIt.I.registerSingleton<WHAudioPlayerHandler>(audioHandler);
 }
 
 // Future<void> openHiveBox(String boxName, {bool limit = false}) async {

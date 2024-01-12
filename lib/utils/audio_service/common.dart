@@ -1,8 +1,43 @@
-
-import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
+/// An [AudioHandler] for playing a list of podcast episodes.
+/// This class exposes the interface and not the implementation.
+abstract class WHAudioPlayerHandler implements AudioHandler {
+  Stream<QueueState> get queueState;
+  ValueStream<double> get volume;
+  Future<void> setVolume(double volume);
+  ValueStream<double> get speed;
+}
+
+class CustomEvent {
+  final int handlerIndex;
+
+  CustomEvent(this.handlerIndex);
+}
+
+class QueueState {
+  static const QueueState empty =
+      QueueState([], 0, [], AudioServiceRepeatMode.none);
+
+  final List<MediaItem> queue;
+  final int? queueIndex;
+  final List<int>? shuffleIndices;
+  final AudioServiceRepeatMode repeatMode;
+
+  const QueueState(
+      this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
+
+  bool get hasPrevious =>
+      repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
+  bool get hasNext =>
+      repeatMode != AudioServiceRepeatMode.none ||
+      (queueIndex ?? 0) + 1 < queue.length;
+
+  List<int> get indices =>
+      shuffleIndices ?? List.generate(queue.length, (i) => i);
+}
 
 class PositionData {
   final Duration position;
@@ -10,132 +45,6 @@ class PositionData {
   final Duration duration;
 
   PositionData(this.position, this.bufferedPosition, this.duration);
-}
-
-class SeekBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final Duration bufferedPosition;
-  final ValueChanged<Duration>? onChanged;
-  final ValueChanged<Duration>? onChangeEnd;
-
-  const SeekBar({
-    Key? key,
-    required this.duration,
-    required this.position,
-    this.bufferedPosition = Duration.zero,
-    this.onChanged,
-    this.onChangeEnd,
-  }) : super(key: key);
-
-  @override
-  State<SeekBar> createState() => _SeekBarState();
-}
-
-class _SeekBarState extends State<SeekBar> {
-  double? _dragValue;
-  bool _dragging = false;
-  late SliderThemeData _sliderThemeData;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _sliderThemeData = SliderTheme.of(context).copyWith(
-      trackHeight: 2.0,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final value = min(
-      _dragValue ?? widget.position.inMilliseconds.toDouble(),
-      widget.duration.inMilliseconds.toDouble(),
-    );
-    if (_dragValue != null && !_dragging) {
-      _dragValue = null;
-    }
-    return Stack(
-      children: [
-        SliderTheme(
-          data: _sliderThemeData.copyWith(
-            thumbShape: HiddenThumbComponentShape(),
-            activeTrackColor: Colors.blue.shade100,
-            inactiveTrackColor: Colors.grey.shade300,
-          ),
-          child: ExcludeSemantics(
-            child: Slider(
-              min: 0.0,
-              max: widget.duration.inMilliseconds.toDouble(),
-              value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                  widget.duration.inMilliseconds.toDouble()),
-              onChanged: (value) {},
-            ),
-          ),
-        ),
-        SliderTheme(
-          data: _sliderThemeData.copyWith(
-            inactiveTrackColor: Colors.transparent,
-          ),
-          child: Slider(
-            min: 0.0,
-            max: widget.duration.inMilliseconds.toDouble(),
-            value: value,
-            onChanged: (value) {
-              if (!_dragging) {
-                _dragging = true;
-              }
-              setState(() {
-                _dragValue = value;
-              });
-              if (widget.onChanged != null) {
-                widget.onChanged!(Duration(milliseconds: value.round()));
-              }
-            },
-            onChangeEnd: (value) {
-              if (widget.onChangeEnd != null) {
-                widget.onChangeEnd!(Duration(milliseconds: value.round()));
-              }
-              _dragging = false;
-            },
-          ),
-        ),
-        Positioned(
-          right: 16.0,
-          bottom: 0.0,
-          child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch("$_remaining")
-                      ?.group(1) ??
-                  '$_remaining',
-              style: Theme.of(context).textTheme.bodySmall),
-        ),
-      ],
-    );
-  }
-
-  Duration get _remaining => widget.duration - widget.position;
-}
-
-class HiddenThumbComponentShape extends SliderComponentShape {
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) => Size.zero;
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset center, {
-    required Animation<double> activationAnimation,
-    required Animation<double> enableAnimation,
-    required bool isDiscrete,
-    required TextPainter labelPainter,
-    required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
-    required TextDirection textDirection,
-    required double value,
-    required double textScaleFactor,
-    required Size sizeWithOverflow,
-  }) {}
 }
 
 class LoggingAudioHandler extends CompositeAudioHandler {
@@ -444,7 +353,6 @@ void showSliderDialog({
   // TODO: Replace these two by ValueStream.
   required double value,
   required Stream<double> stream,
-
   required ValueChanged<double> onChanged,
 }) {
   showDialog<void>(

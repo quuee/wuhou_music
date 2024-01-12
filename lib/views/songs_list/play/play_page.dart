@@ -2,8 +2,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wuhoumusic/common_widgets/seek_bar.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/audio_service/controlButtons.dart';
 import 'package:wuhoumusic/views/songs_list/play/ui/playing.dart';
@@ -18,7 +18,8 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-  static final AudioPlayerHandler _audioHandler = GetIt.I<AudioPlayerHandler>();
+  static final WHAudioPlayerHandler _audioHandler = GetIt.I<WHAudioPlayerHandler>();
+
   late PageController _pageController;
   Stream<Duration> get _bufferedPositionStream => _audioHandler.playbackState
       .map((state) => state.bufferedPosition)

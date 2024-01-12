@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wuhoumusic/utils/audio_service/AudioPlayerHandlerImpl.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 
 class SongPlayListPage extends StatelessWidget {
   const SongPlayListPage({super.key,required this.audioHandler});
 
-  final AudioPlayerHandler audioHandler;
+  final WHAudioPlayerHandler audioHandler;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class SongPlayListPage extends StatelessWidget {
           return ReorderableListView(
             onReorder: (int oldIndex, int newIndex) {
               if (oldIndex < newIndex) newIndex--;
-              audioHandler.moveQueueItem(oldIndex, newIndex);
+              // audioHandler.moveQueueItem(oldIndex, newIndex);
             },
             children: [
               for (var i = 0; i < queue.length; i++)

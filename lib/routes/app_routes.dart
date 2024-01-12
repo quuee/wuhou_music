@@ -14,6 +14,7 @@ import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_add_page.
 import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_detail_controller.dart';
 import 'package:wuhoumusic/views/songs_list/song_list_detail/song_list_detail_page.dart';
 import 'package:wuhoumusic/views/splash/splash_page.dart';
+import 'package:wuhoumusic/views/test/test_screen.dart';
 
 class Routes {
   static const splash = '/';
@@ -26,6 +27,7 @@ class Routes {
 
   static const reader = '/reader';
   static const readerTest = '/reader_test';
+  static const ttsTest = '/tts_test';
 
   static final routes = <GetPage>[
     GetPage(
@@ -66,10 +68,11 @@ class Routes {
           Get.lazyPut(() => ReadController());
         })),
     GetPage(
-        name: readerTest,
+        name: readerTest, // 翻页测试页面
         page: () => ReadScreenText(),
         binding: BindingsBuilder(() {
           Get.lazyPut(() => ReadTestController());
-        }))
+        })),
+    GetPage(name: ttsTest, page: ()=>TestScreen())
   ];
 }
