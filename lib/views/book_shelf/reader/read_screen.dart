@@ -1,3 +1,4 @@
+
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -30,7 +31,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
       GetIt.I<WHAudioPlayerHandler>();
 
   late ReadController readController;
-  late var size;
+  late Size size;
 
   late ValueNotifier<PaperPoint> p; // 翻页控制点
   Point<double> currentA = const Point(0, 0); // a面
@@ -135,6 +136,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                         from: 0,
                       );
                     } else {
+                      LogD('点击坐标', 'dx:${details.localPosition.dx},dy:${details.localPosition.dy}');
                       isAnimation = true;
                       currentA = Point(
                           details.localPosition.dx, details.localPosition.dy);
@@ -264,25 +266,44 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
             onPressed: () async {
               await _audioHandler.customAction(
                   'switchToHandler', <String, dynamic>{'index': 1});
-              final lines =
-                  readController.textPages[readController.pageIndex].lines;
-              List<MediaItem> queue = [];
-              String text = '';
-              for (var i = 0; i < lines.length-1; i++) {
-                text += lines[i].text;
+
+              for (int i = 0; i < readController.chapters.length; i++) {
+                LogD('tts阅读章节', '第$i章');
+                for (int j = readController.pageIndex;
+                    j < readController.textPages.length;
+                    j++) {
+                  LogD('tts阅读书页', '第$j页');
+                  final lines = readController.textPages[j].lines;
+                  String text = '';
+                  for (var p = 0; p < lines.length - 1; p++) {
+                    text += lines[p].text;
+                  }
+
+                  List<String> split = text.split('\n');
+                  List<MediaItem> queue = [];
+                  for (var n = 0; n < split.length; n++) {
+                    var m = MediaItem(
+                        id: n.toString(),
+                        title: readController
+                            .chapters[readController.currentChapterIndex]
+                            .chapterTitle,
+                        extras: <String, String>{'text': split[n]});
+                    queue.add(m);
+                  }
+                  await _audioHandler.updateQueue(queue);
+                  await _audioHandler.play();
+
+                  // 翻页
+                  isAnimation = true;
+                  currentA = Point(size.width-10, size.height-10);
+                  p.value = PaperPoint(Point(size.width-10, size.height-10),size);
+                  isNext = true;
+                  readController.updateAlPath(false);
+                  animationTurnPageController.forward(
+                    from: 0,
+                  );
+                }
               }
-              List<String> split = text.split('。');
-              for (var i = 0; i < split.length; i++) {
-                  var m = MediaItem(
-                      id: i.toString(),
-                      title: readController
-                          .chapters[readController.currentChapterIndex]
-                          .chapterTitle,
-                      extras: <String, String>{'text': split[i]});
-                  queue.add(m);
-              }
-              await _audioHandler.updateQueue(queue);
-              await _audioHandler.play();
             },
             icon: Icon(Icons.headset))
       ],

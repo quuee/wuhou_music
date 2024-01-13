@@ -79,8 +79,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   late Animation<Offset> menuTopAnimationProgress;
   late Animation<Offset> menuBottomAnimationProgress;
 
-  var size = WidgetsBinding
-          .instance.platformDispatcher.views.first.physicalSize /
+  ui.Size size = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize /
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
   /// 是否剪辑A区画面
