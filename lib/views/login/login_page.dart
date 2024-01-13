@@ -65,7 +65,6 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     tabController.dispose();
-    loginController.dispose();
     super.dispose();
   }
 

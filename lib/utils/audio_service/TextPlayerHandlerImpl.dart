@@ -48,16 +48,8 @@ class TextPlayerHandlerImpl extends BaseAudioHandler with QueueHandler {
     session.becomingNoisyEventStream.listen((_) {
       if (_playing) pause();
     });
-    queue.add(List.generate(
-        10,
-            (i) => MediaItem(
-          id: '${i + 1}',
-          album: 'zh_cn',
-          title: 'zh_cn ${i + 1}',
-          artist: 'Sample Artist',
-          extras: <String, String>{'text': '你好'},
-          duration: const Duration(seconds: 1),
-        )));
+    queue.add([]);
+
   }
 
   Future<void> run() async {

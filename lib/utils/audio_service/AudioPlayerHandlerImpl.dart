@@ -111,11 +111,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     //   playbackState.add(playbackState.value.copyWith(speed: speed));
     // });
 
-    // For Android 11, record the most recent item so it can be resumed.
-    // mediaItem
-    //     .whereType<MediaItem>()
-    //     .listen((item) => _recentSubject.add([item]));
-
     // Broadcast media item changes.
     Rx.combineLatest4<int?, List<MediaItem>, bool, List<int>?, MediaItem?>(
         _player.currentIndexStream,
@@ -271,10 +266,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= _playlist.children.length) return;
     // This jumps to the beginning of the queue item at [index].
-    _player.seek(Duration.zero,
-        index: _player.shuffleModeEnabled
-            ? _player.shuffleIndices![index]
-            : index);
+    // TODO shuffleIndices empty 就会索引越界。先不设置shuffleMode
+    _player.seek(Duration.zero, index: _player.shuffleModeEnabled ? _player.shuffleIndices![index] : index);
     play();
   }
 

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_test_controller.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/book_painter.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/current_paper.dart';

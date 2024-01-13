@@ -23,7 +23,7 @@ class SongsListController extends GetxController {
 
   late EasyRefreshController easyRefreshController;
 
-  static const String songListBuilder = 'songListBuilder';
+  // static const String songListBuilder = 'songListBuilder';
 
   String? songListImagePath;
 
@@ -59,7 +59,7 @@ class SongsListController extends GetxController {
         IsarHelper.instance.isarInstance.songsListEntitys.where().findAllSync();
     LogD('SongsListController', '加载本地歌单');
     _loadingStatus = LoadingStatus.success;
-    update([songListBuilder]);
+    update();
   }
 
   // 获取云端歌单
@@ -94,7 +94,7 @@ class SongsListController extends GetxController {
     _loadingStatus = LoadingStatus.success;
     easyRefreshController.finishRefresh();
     easyRefreshController.resetFooter();
-    update([songListBuilder]);
+    update();
   }
 
   /// 上拉加载
@@ -102,7 +102,7 @@ class SongsListController extends GetxController {
     await Future.delayed(Duration(milliseconds: 500));
     // loadLocalSongsList();
     easyRefreshController.finishLoad(IndicatorResult.success);
-    update([songListBuilder]);
+    update();
   }
 
   /// 创建 更新一个歌单

@@ -25,7 +25,6 @@ class _MinePageState extends State<SongsListPage> {
 
   @override
   void dispose() {
-    songsListController.dispose();
     super.dispose();
   }
 
@@ -88,7 +87,7 @@ class _MinePageState extends State<SongsListPage> {
   /// 歌单列表
   Widget _buildSongListWidget() {
     return GetBuilder<SongsListController>(
-        id: SongsListController.songListBuilder,
+        // id: SongsListController.songListBuilder,
         builder: (c) {
           if (c.loadingStatus == LoadingStatus.loading) {
             return Center(
@@ -96,6 +95,9 @@ class _MinePageState extends State<SongsListPage> {
             );
           }
           if (c.loadingStatus == LoadingStatus.success) {
+            if(c.songsList.isEmpty){
+              return SizedBox.shrink();
+            }
             return EasyRefresh(
               header: ClassicHeader(),
               footer: ClassicFooter(),

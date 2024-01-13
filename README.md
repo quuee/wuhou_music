@@ -80,7 +80,7 @@ GetIt.I.registerLazySingleton<RESTAPI>(() => RestAPIImplementation());
 ## 退出阅读页，进入不能翻页
 因为退出后有些对象退出前没有销毁
 
-## ~~~小说页面为什么使用listview~~~
+## ~~~小说页面为什么使用listview(废弃)~~~
 因为listview可以水平翻页 上下一行行翻页，pageview只能水平或垂直都只能一页页翻。  
 怎么跳转到某一章（listview controller offset按高度跳转）
 textpainter 只能在 root islote线程中使用
@@ -101,6 +101,25 @@ AspectRatio：适用于固定宽高比的情况。
 FractionallySizedBox：适用于占父组件百分比的情况。  
 LimitedBox：适用于没有父组件约束的情况。  
 Container：适用于不仅有尺寸的约束，还有装饰（颜色、边框、等）、内外边距等需求的情况。  
+
+## flutter dispose controller
+StatefulWidget的dispose方法中，如果把getxcontroller.dispose()，就会报错。
+
+## flutter中延时执行的2种方式
+
+```dart
+Future.delayed(const Duration(milliseconds: 3000), () {
+    //延时执行的代码
+    print("3秒后执行");
+});
+```
+
+```dart
+Timer(Duration(seconds: 3), () {
+  //延时执行的代码
+   print("3秒后执行");
+});
+```
 
 ## dart try catch
 ```dart

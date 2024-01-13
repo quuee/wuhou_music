@@ -42,6 +42,30 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   ui.Image? _backgroundImage;
   ui.Image? get backgroundImage => _backgroundImage;
 
+  /// 获取背景图片
+  _getBackImage(String background) async {
+    try {
+      if (background.isEmpty || background == 'null') {
+        _backgroundImage = null;
+        return;
+      } else if (background.startsWith("assets")) {
+        final data = await rootBundle.load(background);
+        ui.Codec codec = await ui.instantiateImageCodec(
+            data.buffer.asUint8List(),
+            targetWidth: size.width.round(),
+            targetHeight: size.height.round());
+        ui.FrameInfo fi = await codec.getNextFrame();
+        _backgroundImage = fi.image;
+      } else {
+        final data = await File(background).readAsBytes();
+        ui.Codec codec = await ui.instantiateImageCodec(data,
+            targetWidth: size.width.round(), targetHeight: size.height.round());
+        ui.FrameInfo fi = await codec.getNextFrame();
+        _backgroundImage = fi.image;
+      }
+    } catch (e) {}
+  }
+
   updateBackground(Map<String, int> backgroundAndFontColor) async {
     background = backgroundAndFontColor.keys.first;
     fontColor = backgroundAndFontColor.values.first;
@@ -60,7 +84,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
   /// 是否剪辑A区画面
-  RxBool isAlPath = RxBool(true); //使用setState不会抖；用obx会抖，必须整个页面刷新才不会抖。
+  RxBool isAlPath = RxBool(true); //使用setState不会抖,用obx会抖; 必须整个页面刷新才不会抖。
 
   updateAlPath(bool val) {
     isAlPath.value = val;
@@ -258,7 +282,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
       }
 
       curOffset += readLength;
-      // 如果是符合正则章节
+      // 如果是符合正则章节，这里直接加了
       BookChapterEntity lastChapter = tempChapters[tempChapters.length - 1];
       lastChapter.end = curOffset;
 
@@ -298,30 +322,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
         .toList();
 
     return currentChapterParagraph;
-  }
-
-  /// 获取背景图片
-  _getBackImage(String background) async {
-    try {
-      if (background.isEmpty || background == 'null') {
-        _backgroundImage = null;
-        return;
-      } else if (background.startsWith("assets")) {
-        final data = await rootBundle.load(background);
-        ui.Codec codec = await ui.instantiateImageCodec(
-            data.buffer.asUint8List(),
-            targetWidth: size.width.round(),
-            targetHeight: size.height.round());
-        ui.FrameInfo fi = await codec.getNextFrame();
-        _backgroundImage = fi.image;
-      } else {
-        final data = await File(background).readAsBytes();
-        ui.Codec codec = await ui.instantiateImageCodec(data,
-            targetWidth: size.width.round(), targetHeight: size.height.round());
-        ui.FrameInfo fi = await codec.getNextFrame();
-        _backgroundImage = fi.image;
-      }
-    } catch (e) {}
   }
 
   /// 构建字体信息 布局信息  分页。 改成异步

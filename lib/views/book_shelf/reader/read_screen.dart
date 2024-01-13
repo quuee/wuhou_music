@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/book_painter.dart';
@@ -23,10 +26,13 @@ class ReadScreen extends StatefulWidget {
 }
 
 class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
+  static final WHAudioPlayerHandler _audioHandler =
+      GetIt.I<WHAudioPlayerHandler>();
+
   late ReadController readController;
   late var size;
 
-  late ValueNotifier<PaperPoint> p;// 翻页控制点
+  late ValueNotifier<PaperPoint> p; // 翻页控制点
   Point<double> currentA = const Point(0, 0); // a面
   late Offset downPos;
   bool isNext = false; // 是否翻页到下一页
@@ -109,12 +115,12 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     details.globalPosition.dx < size.width * 2 / 3 &&
                     details.globalPosition.dy > size.height * 3 / 8 &&
                     details.globalPosition.dy < size.height * 5 / 8) {
-                  if(_.menuShowStatus){
+                  if (_.menuShowStatus) {
                     _.menuAnimationController.reverse();
-                    _.menuShowStatus= false;
-                  }else{
+                    _.menuShowStatus = false;
+                  } else {
                     _.menuAnimationController.forward();
-                    _.menuShowStatus= true;
+                    _.menuShowStatus = true;
                   }
                 } else {
                   // 如果上下栏菜单呼出，点击无效
@@ -146,11 +152,15 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 }
               },
               onPanDown: (d) {
-                if(_.menuShowStatus){return;}
+                if (_.menuShowStatus) {
+                  return;
+                }
                 downPos = d.localPosition;
               },
               onPanUpdate: (d) {
-                if(_.menuShowStatus){return;}
+                if (_.menuShowStatus) {
+                  return;
+                }
                 if (isAnimation) {
                   return;
                 }
@@ -186,7 +196,9 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                 }
               },
               onPanEnd: (d) {
-                if(_.menuShowStatus){return;}
+                if (_.menuShowStatus) {
+                  return;
+                }
                 if (isAnimation) {
                   return;
                 }
@@ -223,9 +235,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     right: 0,
                     child: SlideTransition(
                       position: _.menuTopAnimationProgress,
-                      child: AppBar(
-                        actions: [Icon(Icons.headset)],
-                      ),
+                      child: _buildAppBar(),
                     ),
                   ),
                   // 底部
@@ -247,6 +257,38 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     );
   }
 
+  _buildAppBar() {
+    return AppBar(
+      actions: [
+        IconButton(
+            onPressed: () async {
+              await _audioHandler.customAction(
+                  'switchToHandler', <String, dynamic>{'index': 1});
+              final lines =
+                  readController.textPages[readController.pageIndex].lines;
+              List<MediaItem> queue = [];
+              String text = '';
+              for (var i = 0; i < lines.length-1; i++) {
+                text += lines[i].text;
+              }
+              List<String> split = text.split('。');
+              for (var i = 0; i < split.length; i++) {
+                  var m = MediaItem(
+                      id: i.toString(),
+                      title: readController
+                          .chapters[readController.currentChapterIndex]
+                          .chapterTitle,
+                      extras: <String, String>{'text': split[i]});
+                  queue.add(m);
+              }
+              await _audioHandler.updateQueue(queue);
+              await _audioHandler.play();
+            },
+            icon: Icon(Icons.headset))
+      ],
+    );
+  }
+
   _buildBottomMenu() {
     var bottomMenuStyle = TextStyle(fontSize: 18);
     return Container(
@@ -258,12 +300,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Expanded(flex: 1, child: Center(child: Text('上一章'),)),
+              Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: Text('上一章'),
+                  )),
               Expanded(
                 flex: 5,
                 child: Slider(max: 100, value: 1, onChanged: (v) {}),
               ),
-              Expanded(flex: 1, child: Center(child: Text('下一章'),)),
+              Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: Text('下一章'),
+                  )),
             ],
           ),
           // 第二行

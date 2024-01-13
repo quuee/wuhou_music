@@ -4,12 +4,12 @@ import 'package:rxdart/rxdart.dart';
 
 import 'common.dart';
 
-
-
-class MySwitchHandler extends SwitchAudioHandler implements WHAudioPlayerHandler{
+class MySwitchHandler extends SwitchAudioHandler
+    implements WHAudioPlayerHandler {
   final List<AudioHandler> handlers;
   @override
-  BehaviorSubject<dynamic> customState = BehaviorSubject<dynamic>.seeded(CustomEvent(0));
+  BehaviorSubject<dynamic> customState =
+      BehaviorSubject<dynamic>.seeded(CustomEvent(0));
 
   MySwitchHandler(this.handlers) : super(handlers.first) {
     // Configure the app's audio category and attributes for speech.
@@ -35,7 +35,7 @@ class MySwitchHandler extends SwitchAudioHandler implements WHAudioPlayerHandler
 
   @override
   Stream<QueueState> get queueState =>
-      Rx.combineLatest2<List<MediaItem>, PlaybackState,QueueState>(
+      Rx.combineLatest2<List<MediaItem>, PlaybackState, QueueState>(
           queue,
           playbackState,
           (queue, playbackState) => QueueState(
@@ -46,7 +46,6 @@ class MySwitchHandler extends SwitchAudioHandler implements WHAudioPlayerHandler
                     : null,
                 playbackState.repeatMode,
               )).where((state) => state.shuffleIndices == null || state.queue.length == state.shuffleIndices!.length);
-
 
   @override
   Future<void> setSpeed(double speed) async {
@@ -64,9 +63,4 @@ class MySwitchHandler extends SwitchAudioHandler implements WHAudioPlayerHandler
   final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
   @override
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
-
-
-
-
-
 }

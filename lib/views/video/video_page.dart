@@ -22,7 +22,6 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void dispose() {
-    videoPageController.dispose();
     super.dispose();
   }
 

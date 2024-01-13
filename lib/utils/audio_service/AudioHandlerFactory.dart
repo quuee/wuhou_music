@@ -6,13 +6,13 @@ import 'package:wuhoumusic/utils/audio_service/TextPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
-extension ExtensionSwitchAudioHandler on WHAudioPlayerHandler {
-  Future<void> switchToHandler(int? index) async {
-    if (index == null) return;
-    await AudioHandlerFactory.audioHandler
-        ?.customAction('switchToHandler', <String, dynamic>{'index': index});
-  }
-}
+// extension ExtensionSwitchAudioHandler on WHAudioPlayerHandler {
+//   Future<void> switchToHandler(int? index) async {
+//     if (index == null) return;
+//     await AudioHandlerFactory.audioHandler
+//         ?.customAction('switchToHandler', <String, dynamic>{'index': index});
+//   }
+// }
 
 class AudioHandlerFactory{
 
