@@ -260,6 +260,8 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
       actions: [
         IconButton(
             onPressed: () async {
+              await _audioHandler.stop();
+              await _audioHandler.updateQueue([]);
               await _audioHandler.customAction(
                   'switchToHandler', <String, dynamic>{'index': 1});
 

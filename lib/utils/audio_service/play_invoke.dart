@@ -15,6 +15,8 @@ class PlayInvoke {
     bool shuffle = false,
     String? playListBox,
   }) async {
+    await _audioHandler.stop();
+    await _audioHandler.updateQueue([]);
     await _audioHandler.customAction('switchToHandler', <String, dynamic>{'index': 0});
     // 跳过本地不存在的文件
     final List<SongEntity> finalList = songList.where((element) {
