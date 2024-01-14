@@ -55,7 +55,7 @@ class _RootPageState extends State<RootPage>
       icon: Icon(
         AliIcons.mine,
       ),
-      label: '我',
+      label: '个人',
     ),
   ];
 

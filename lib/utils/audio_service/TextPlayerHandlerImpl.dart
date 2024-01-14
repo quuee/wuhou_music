@@ -115,6 +115,7 @@ class TextPlayerHandlerImpl extends BaseAudioHandler with QueueHandler {
         playing: true,
       ));
       if (_completer == null) {
+        // run();
         await run(); // 需要加个await，同步下
       } else {
         _sleeper.interrupt();

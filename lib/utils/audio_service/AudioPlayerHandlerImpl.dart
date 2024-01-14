@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wuhoumusic/model/audio/cache_songs_entity.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
+import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/utils/mediaitem_converter.dart';
@@ -196,6 +197,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   @override
   Future<void> updateQueue(List<MediaItem> queue) async {
+    if(queue.first.extras!.containsKey('text')){
+      return;
+    }
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(queue));
     // 清理cacheSongs

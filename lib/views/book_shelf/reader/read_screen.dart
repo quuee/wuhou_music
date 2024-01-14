@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -8,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
+import 'package:wuhoumusic/utils/audio_service/TextPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
@@ -39,6 +39,8 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   bool isNext = false; // 是否翻页到下一页
   bool isAnimation = false; // 是否正在执行翻页
   late AnimationController animationTurnPageController;
+
+  int handlerIndex =-1;
 
   @override
   void initState() {
@@ -84,6 +86,11 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
               }
             }
           });
+
+    _audioHandler.customState.listen((event) {
+      CustomEvent e = event as CustomEvent;
+      handlerIndex = e.handlerIndex;
+    });
     super.initState();
   }
 
@@ -136,10 +143,15 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                         from: 0,
                       );
                     } else {
-                      LogD('点击坐标', 'dx:${details.localPosition.dx},dy:${details.localPosition.dy}');
+                      LogD('点击坐标',
+                          'dx:${details.localPosition.dx},dy:${details.localPosition.dy}');
                       isAnimation = true;
-                      currentA = Point(details.localPosition.dx,details.localPosition.dy);
-                      p.value = PaperPoint(Point(details.localPosition.dx,details.localPosition.dy),size);
+                      currentA = Point(
+                          details.localPosition.dx, details.localPosition.dy);
+                      p.value = PaperPoint(
+                          Point(details.localPosition.dx,
+                              details.localPosition.dy),
+                          size);
                       isNext = true;
                       readController.updateAlPath(false);
                       animationTurnPageController.forward(
@@ -260,25 +272,26 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
       actions: [
         IconButton(
             onPressed: () async {
-              await _audioHandler.stop();
-              await _audioHandler.updateQueue([]);
+              // 不能重复点击
+              //  handlerIndex = -1;
               await _audioHandler.customAction(
                   'switchToHandler', <String, dynamic>{'index': 1});
 
-              // TODO 跨章节还有问题
-              for (int i = readController.currentChapterIndex; i < readController.chapters.length; i++) {
+              // TODO 跨章节还有问题.
+              for (int i = readController.currentChapterIndex;
+              i < readController.chapters.length;
+              i++) {
                 LogD('tts阅读章节', '第$i章');
                 for (int j = readController.pageIndex;
-                    j < readController.textPages.length;
-                    j++) {
+                j < readController.textPages.length;
+                j++) {
                   LogD('tts阅读书页', '第$j页');
                   final lines = readController.textPages[j].lines;
                   String text = '';
                   for (var p = 0; p < lines.length - 1; p++) {
                     text += lines[p].text;
                   }
-
-                  List<String> split = text.split('\n');
+                  List<String> split = text.split('。');
                   List<MediaItem> queue = [];
                   for (var n = 0; n < split.length; n++) {
                     var m = MediaItem(
@@ -290,16 +303,20 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     queue.add(m);
                   }
                   await _audioHandler.updateQueue(queue);
+                  // 如果切换到音乐播放，这里for会执行完（要等待耗时），但是实际不需要执行完。在handlerIndex改变后退出
+                  if(handlerIndex == 0){
+                    return;
+                  }
                   await _audioHandler.play();
 
-                  // 如果不是在阅读页面停止，需要记录最后的位置
-
                   // 翻页(如果不在阅读页，不需要翻页)
-                  LogD('判断是否在阅读页面:', mounted?'是':'否');
-                  if(mounted){//判断用户是否退出页面
+                  LogD('判断是否在阅读页面:', mounted ? '是' : '否');
+                  if (mounted) {
+                    //判断用户是否退出页面
                     isAnimation = true;
                     currentA = Point(size.width, size.height);
-                    p.value = PaperPoint(Point(size.width-10, size.height-10),size);
+                    p.value = PaperPoint(
+                        Point(size.width - 10, size.height - 10), size);
                     isNext = true;
                     readController.updateAlPath(false);
                     animationTurnPageController.forward(
@@ -307,6 +324,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     );
                   }
 
+                  // 阅读停止，需要记录最后的位置
                 }
               }
             },
