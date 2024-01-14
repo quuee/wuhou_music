@@ -21,18 +21,18 @@ class _PlayPageState extends State<PlayPage> {
   static final WHAudioPlayerHandler _audioHandler = GetIt.I<WHAudioPlayerHandler>();
 
   late PageController _pageController;
-  Stream<Duration> get _bufferedPositionStream => _audioHandler.playbackState
-      .map((state) => state.bufferedPosition)
-      .distinct();
-  Stream<Duration?> get _durationStream =>
-      _audioHandler.mediaItem.map((item) => item?.duration).distinct();
-  Stream<PositionData> get _positionDataStream =>
-      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
-          AudioService.position,
-          _bufferedPositionStream,
-          _durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+  // Stream<Duration> get _bufferedPositionStream => _audioHandler.playbackState
+  //     .map((state) => state.bufferedPosition)
+  //     .distinct();
+  // Stream<Duration?> get _durationStream =>
+  //     _audioHandler.mediaItem.map((item) => item?.duration).distinct();
+  // Stream<PositionData> get _positionDataStream =>
+  //     Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+  //         AudioService.position,
+  //         _bufferedPositionStream,
+  //         _durationStream,
+  //         (position, bufferedPosition, duration) => PositionData(
+  //             position, bufferedPosition, duration ?? Duration.zero));
   @override
   void initState() {
     _pageController = PageController();
@@ -86,15 +86,13 @@ class _PlayPageState extends State<PlayPage> {
               ControlButtons(_audioHandler),
 
               /// A seek bar.
-              StreamBuilder<PositionData>(
-                stream: _positionDataStream,
+              StreamBuilder<MediaState>(
+                stream: _audioHandler.mediaStateStream,
                 builder: (context, snapshot) {
-                  final positionData = snapshot.data ??
-                      PositionData(Duration.zero, Duration.zero, Duration.zero);
+                  final mediaState = snapshot.data;
                   return SeekBar(
-                    duration: positionData.duration,
-                    position: positionData.position,
-                    bufferedPosition: positionData.bufferedPosition,
+                    duration: mediaState?.mediaItem?.duration ?? Duration.zero,
+                    position: mediaState?.position ?? Duration.zero,
                     onChangeEnd: (newPosition) {
                       _audioHandler.seek(newPosition);
                     },

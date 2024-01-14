@@ -52,11 +52,11 @@ class PlayBar extends StatelessWidget {
                       return SizedBox.shrink();
                     }
 
-                    int lastIndex = queueState.queue[queueState.queueIndex!].id
-                        .lastIndexOf('/');
-                    String id = queueState.queue[queueState.queueIndex!].id
-                        .substring(lastIndex + 1);
-                    LogD("PlayBar",'${queueState.queue[queueState.queueIndex!].id}');
+                    // int lastIndex = queueState.queue[queueState.queueIndex!].id
+                    //     .lastIndexOf('/');
+                    // String id = queueState.queue[queueState.queueIndex!].id
+                    //     .substring(lastIndex + 1);
+                    // LogD("PlayBar",'${queueState.queue[queueState.queueIndex!].id}');
 
                     // var artAlbum = queueState.queue[queueState.queueIndex!]
                     //         .extras!['artAlbum'] ??
@@ -80,7 +80,7 @@ class PlayBar extends StatelessWidget {
                     //   },
                     // );
                     return QueryArtworkWidget(
-                      id: int.parse(id),
+                      id: int.parse(queueState.mediaItem!.id),
                       type: ArtworkType.PLAYLIST,
                       keepOldArtwork: true,
                       artworkBorder: BorderRadius.circular(7.0),
@@ -109,7 +109,7 @@ class PlayBar extends StatelessWidget {
                     }
                     return Expanded(
                         child: Text(
-                            queueState.queue[queueState.queueIndex!].title,
+                            queueState.mediaItem!.title,
                             overflow: TextOverflow.ellipsis));
                   }),
 
@@ -120,9 +120,7 @@ class PlayBar extends StatelessWidget {
                   final queueState = snapshot.data ?? QueueState.empty;
                   return IconButton(
                     icon: const Icon(Icons.skip_previous),
-                    onPressed: queueState.hasPrevious
-                        ? audioPlayerHandler.skipToPrevious
-                        : null,
+                    onPressed: audioPlayerHandler.skipToPrevious
                   );
                 },
               ),
@@ -158,9 +156,7 @@ class PlayBar extends StatelessWidget {
                   final queueState = snapshot.data ?? QueueState.empty;
                   return IconButton(
                     icon: const Icon(Icons.skip_next),
-                    onPressed: queueState.hasNext
-                        ? audioPlayerHandler.skipToNext
-                        : null,
+                    onPressed: audioPlayerHandler.skipToNext
                   );
                 },
               ),

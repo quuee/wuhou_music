@@ -31,11 +31,9 @@ class ControlButtons extends StatelessWidget {
         StreamBuilder<QueueState>(
           stream: audioHandler.queueState,
           builder: (context, snapshot) {
-            final queueState = snapshot.data ?? QueueState.empty;
             return IconButton(
               icon: const Icon(Icons.skip_previous),
-              onPressed:
-                  queueState.hasPrevious ? audioHandler.skipToPrevious : null,
+              onPressed: audioHandler.skipToPrevious,
             );
           },
         ),
@@ -71,10 +69,10 @@ class ControlButtons extends StatelessWidget {
         StreamBuilder<QueueState>(
           stream: audioHandler.queueState,
           builder: (context, snapshot) {
-            final queueState = snapshot.data ?? QueueState.empty;
+
             return IconButton(
               icon: const Icon(Icons.skip_next),
-              onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
+              onPressed: audioHandler.skipToNext
             );
           },
         ),

@@ -33,19 +33,22 @@ class MySwitchHandler extends SwitchAudioHandler
     }
   }
 
+  /// A stream reporting the combined state of the current media item and its
+  /// current position.
+  Stream<MediaState> get mediaStateStream =>
+      Rx.combineLatest2<MediaItem?, Duration, MediaState>(
+          inner.mediaItem,
+          AudioService.position,
+              (mediaItem, position) => MediaState(mediaItem, position));
+
+  /// A stream reporting the combined state of the current queue and the current
+  /// media item within that queue.
   @override
   Stream<QueueState> get queueState =>
-      Rx.combineLatest2<List<MediaItem>, PlaybackState, QueueState>(
-          queue,
-          playbackState,
-          (queue, playbackState) => QueueState(
-                queue,
-                playbackState.queueIndex,
-                playbackState.shuffleMode == AudioServiceShuffleMode.all
-                    ? List.generate(queue.length, (i) => i)
-                    : null,
-                playbackState.repeatMode,
-              )).where((state) => state.shuffleIndices == null || state.queue.length == state.shuffleIndices!.length);
+      Rx.combineLatest2<List<MediaItem>, MediaItem?, QueueState>(
+          inner.queue,
+          inner.mediaItem,
+              (queue, mediaItem) => QueueState(queue, mediaItem));
 
   @override
   Future<void> setSpeed(double speed) async {
@@ -63,4 +66,5 @@ class MySwitchHandler extends SwitchAudioHandler
   final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
   @override
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
+
 }

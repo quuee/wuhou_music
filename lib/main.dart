@@ -17,8 +17,8 @@ Future<void> main() async {
   // int sdkInt = androidInfo.version.sdkInt;
 
 
-  IsarHelper.instance.init();
-  Config.instance.init();
+  await IsarHelper.instance.init();
+  await Config.instance.init();
   // 初始化 audio_service
   await initServices();
 

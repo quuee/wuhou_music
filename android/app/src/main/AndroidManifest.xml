@@ -56,7 +56,8 @@
 
         <service
             android:name="com.ryanheise.audioservice.AudioService"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>

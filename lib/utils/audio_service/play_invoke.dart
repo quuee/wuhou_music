@@ -64,6 +64,6 @@ class PlayInvoke {
     await _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
     await _audioHandler.updateQueue(queue);
     await _audioHandler.skipToQueueItem(index);
-    // await _audioHandler.play();
+    await _audioHandler.play();
   }
 }

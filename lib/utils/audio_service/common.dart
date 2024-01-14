@@ -6,6 +6,7 @@ import 'package:rxdart/rxdart.dart';
 /// This class exposes the interface and not the implementation.
 abstract class WHAudioPlayerHandler implements AudioHandler {
   Stream<QueueState> get queueState;
+  Stream<MediaState> get mediaStateStream;
   ValueStream<double> get volume;
   Future<void> setVolume(double volume);
   ValueStream<double> get speed;
@@ -18,34 +19,52 @@ class CustomEvent {
 }
 
 class QueueState {
-  static const QueueState empty =
-      QueueState([], 0, [], AudioServiceRepeatMode.none);
+
+  static const QueueState empty = QueueState([], null);
 
   final List<MediaItem> queue;
-  final int? queueIndex;
-  final List<int>? shuffleIndices;
-  final AudioServiceRepeatMode repeatMode;
+  final MediaItem? mediaItem;
 
-  const QueueState(
-      this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
+  const QueueState(this.queue, this.mediaItem);
 
-  bool get hasPrevious =>
-      repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
-  bool get hasNext =>
-      repeatMode != AudioServiceRepeatMode.none ||
-      (queueIndex ?? 0) + 1 < queue.length;
-
-  List<int> get indices =>
-      shuffleIndices ?? List.generate(queue.length, (i) => i);
 }
 
-class PositionData {
+class MediaState {
+  final MediaItem? mediaItem;
   final Duration position;
-  final Duration bufferedPosition;
-  final Duration duration;
 
-  PositionData(this.position, this.bufferedPosition, this.duration);
+  MediaState(this.mediaItem, this.position);
 }
+
+// class QueueState {
+//   static const QueueState empty =
+//       QueueState([], 0, [], AudioServiceRepeatMode.none);
+//
+//   final List<MediaItem> queue;
+//   final int? queueIndex;
+//   final List<int>? shuffleIndices;
+//   final AudioServiceRepeatMode repeatMode;
+//
+//   const QueueState(
+//       this.queue, this.queueIndex, this.shuffleIndices, this.repeatMode);
+//
+//   bool get hasPrevious =>
+//       repeatMode != AudioServiceRepeatMode.none || (queueIndex ?? 0) > 0;
+//   bool get hasNext =>
+//       repeatMode != AudioServiceRepeatMode.none ||
+//       (queueIndex ?? 0) + 1 < queue.length;
+//
+//   List<int> get indices =>
+//       shuffleIndices ?? List.generate(queue.length, (i) => i);
+// }
+
+// class PositionData {
+//   final Duration position;
+//   final Duration bufferedPosition;
+//   final Duration duration;
+//
+//   PositionData(this.position, this.bufferedPosition, this.duration);
+// }
 
 class LoggingAudioHandler extends CompositeAudioHandler {
   LoggingAudioHandler(AudioHandler inner) : super(inner) {

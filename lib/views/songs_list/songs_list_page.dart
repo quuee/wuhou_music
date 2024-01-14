@@ -58,7 +58,7 @@ class _MinePageState extends State<SongsListPage> {
         ),
         GestureDetector(
           onTap: () {
-            Get.toNamed(Routes.ttsTest);
+            // Get.toNamed(Routes.ttsTest);
           },
           behavior: HitTestBehavior.opaque,
           child: Column(

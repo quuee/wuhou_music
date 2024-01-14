@@ -40,9 +40,9 @@ class SongPlayListPage extends StatelessWidget {
                     audioHandler.removeQueueItemAt(i);
                   },
                   child: Material(
-                    color: i == queueState.queueIndex
-                        ? Colors.grey.shade300
-                        : null,
+                    // color: i == queueState.queueIndex
+                    //     ? Colors.grey.shade300
+                    //     : null,
                     child: ListTile(
                       title: Text(queue[i].title),
                       onTap: () => audioHandler.skipToQueueItem(i),

@@ -80,7 +80,7 @@ buildSectionSongs() {
 }
 
 _play(List<SongEntity> songList,int index){
-  LogD('_play','$index');
+  // LogD('_play','$index');
   PlayInvoke.init(songList: songList, index: index);
 }
 
