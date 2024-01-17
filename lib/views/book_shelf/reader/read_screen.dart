@@ -96,7 +96,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     animationTurnPageController.dispose();
-    readController.dispose();
     super.dispose();
   }
 
