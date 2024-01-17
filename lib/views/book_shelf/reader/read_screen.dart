@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
 import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
-import 'package:wuhoumusic/utils/audio_service/TextPlayerHandlerImpl.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/read_controller.dart';
@@ -75,14 +74,14 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   size);
             }
           })
-          ..addStatusListener((status) {
+          ..addStatusListener((status) async {
             if (status == AnimationStatus.completed) {
               // 动画结束后
               isAnimation = false;
               if (isNext) {
                 LogD('翻页addStatusListener', '记录翻页动作');
                 readController.isAlPath.value = true;
-                readController.nextPage();
+                await readController.nextPage();
               }
             }
           });
@@ -273,25 +272,27 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
         IconButton(
             onPressed: () async {
               // 不能重复点击
-              //  handlerIndex = -1;
+              if(handlerIndex == 1){
+                return;
+              }
               await _audioHandler.customAction(
                   'switchToHandler', <String, dynamic>{'index': 1});
 
-              // TODO 跨章节还有问题.
               for (int i = readController.currentChapterIndex;
               i < readController.chapters.length;
               i++) {
-                LogD('tts阅读章节', '第$i章');
+                LogD('tts阅读章节', '第$i章：${readController.chapters[i].chapterTitle}');
+                // readController.textPages动画翻页会重复一次之前的章节数据
                 for (int j = readController.pageIndex;
                 j < readController.textPages.length;
                 j++) {
-                  LogD('tts阅读书页', '第$j页');
                   final lines = readController.textPages[j].lines;
                   String text = '';
                   for (var p = 0; p < lines.length - 1; p++) {
                     text += lines[p].text;
                   }
-                  List<String> split = text.split('。');
+                  LogD('tts阅读书页', '第$j页:$text');
+                  List<String> split = text.split('\n');
                   List<MediaItem> queue = [];
                   for (var n = 0; n < split.length; n++) {
                     var m = MediaItem(
@@ -308,21 +309,25 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                     return;
                   }
                   await _audioHandler.play();
+                  // await _audioHandler.stop();
 
                   // 翻页(如果不在阅读页，不需要翻页)
-                  LogD('判断是否在阅读页面:', mounted ? '是' : '否');
-                  if (mounted) {
-                    //判断用户是否退出页面
-                    isAnimation = true;
-                    currentA = Point(size.width, size.height);
-                    p.value = PaperPoint(
-                        Point(size.width - 10, size.height - 10), size);
-                    isNext = true;
-                    readController.updateAlPath(false);
-                    animationTurnPageController.forward(
-                      from: 0,
-                    );
-                  }
+                  // LogD('判断是否在阅读页面:', mounted ? '是' : '否');
+                  // if (mounted) {
+                  //   //判断用户是否退出页面
+                  //   isAnimation = true;
+                  //   currentA = Point(size.width, size.height);
+                  //   p.value = PaperPoint(
+                  //       Point(size.width - 50, size.height - 50), size);
+                  //   isNext = true;
+                  //   readController.updateAlPath(false);
+                  //   animationTurnPageController.forward(
+                  //     from: 0,
+                  //   );
+                  // }
+
+                  // 动画翻页会重复章节，而且这里下一页(章)需要加await阻塞下
+                  await readController.nextPage();
 
                   // 阅读停止，需要记录最后的位置
                 }
