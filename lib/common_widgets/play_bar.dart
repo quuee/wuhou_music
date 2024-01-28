@@ -7,7 +7,6 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
-import 'package:wuhoumusic/utils/log_util.dart';
 
 class PlayBar extends StatelessWidget {
   const PlayBar({
@@ -37,6 +36,10 @@ class PlayBar extends StatelessWidget {
           behavior: HitTestBehavior
               .opaque, // opaque：空白部分点击也有效果，但是会阻止后面目标接收事件；Translucent：空白部分点击也有效果，也允许其后面的目标接收事件。
           onTap: () {
+            CustomEvent e = audioPlayerHandler.customState.value as CustomEvent;
+            if(e.handlerIndex == 1){
+              return;
+            }
             Get.toNamed(Routes.play);
           },
           child: Row(

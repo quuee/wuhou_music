@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       initialRoute: Routes.splash,
       getPages: Routes.routes,
+      debugShowCheckedModeBanner: false,
     );
 
     return child;
