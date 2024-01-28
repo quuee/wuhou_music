@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wuhoumusic/common_widgets/custome_drawer.dart';
-import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
@@ -95,7 +94,7 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    animationTurnPageController.dispose();
+    // animationTurnPageController.dispose();
     super.dispose();
   }
 
@@ -104,12 +103,6 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
     return Material(
       child: GetBuilder<ReadController>(
         builder: (_) {
-          if (_.loadingStatus == LoadingStatus.loading) {
-            return Center(
-              child: Text('加载中'),
-            );
-          }
-
           return LayoutBuilder(builder: (context, dimens) {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -216,52 +209,61 @@ class _ReadScreenState extends State<ReadScreen> with TickerProviderStateMixin {
                   from: 0,
                 );
               },
-              child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  // 下一页
-                  _.pageIndex >= _.textPages.length - 1
-                      ? ClipPath(child: _.getNextPageWidget())
-                      : ClipPath(child: _.getPageWidget(_.pageIndex + 1)),
-                  // 当前页 A区，根据路径会被剪裁，露出下一页的内容
-                  ClipPath(
-                    child: _.getPageWidget(_.pageIndex),
-                    clipper: _.isAlPath.value
-                        ? null
-                        : CurrentPaperClipPath(p, isNext),
-                  ),
-                  // 最上面只绘制B区域和阴影(就是翻页的特效)
-                  CustomPaint(
-                    size: size,
-                    painter: BookPainter(p, Colors.grey),
-                  ),
-                  // 菜单层
-                  // 顶部
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: SlideTransition(
-                      position: _.menuTopAnimationProgress,
-                      child: _buildAppBar(),
-                    ),
-                  ),
-                  // 底部
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: SlideTransition(
-                      position: _.menuBottomAnimationProgress,
-                      child: _buildBottomMenu(),
-                    ),
-                  )
-                ],
-              ),
+              child: _switchView()
             );
           });
         },
       ),
+    );
+  }
+
+  _switchView(){
+    if (readController.textPages.isEmpty) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        // 下一页
+        readController.pageIndex >= readController.textPages.length - 1
+            ? ClipPath(child: readController.getNextPageWidget())
+            : ClipPath(child: readController.getPageWidget(readController.pageIndex + 1)),
+        // 当前页 A区，根据路径会被剪裁，露出下一页的内容
+        ClipPath(
+          child: readController.getPageWidget(readController.pageIndex),
+          clipper: readController.isAlPath.value
+              ? null
+              : CurrentPaperClipPath(p, isNext),
+        ),
+        // 最上面只绘制B区域和阴影(就是翻页的特效)
+        CustomPaint(
+          size: size,
+          painter: BookPainter(p, Colors.grey),
+        ),
+        // 菜单层
+        // 顶部
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SlideTransition(
+            position: readController.menuTopAnimationProgress,
+            child: _buildAppBar(),
+          ),
+        ),
+        // 底部
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: SlideTransition(
+            position: readController.menuBottomAnimationProgress,
+            child: _buildBottomMenu(),
+          ),
+        )
+      ],
     );
   }
 

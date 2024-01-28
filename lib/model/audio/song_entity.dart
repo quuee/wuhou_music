@@ -17,7 +17,7 @@ String songEntityToJson(List<dynamic> data) => json.encode(List<dynamic>.from(da
 class SongEntity {
 
   @Name("sid")
-  Id? sid ; // 用在isra中，建立歌单歌曲关系
+  Id? sid ; // app自动生成本地id 用在isra中，建立歌单歌曲关系
   @Name("id")
   late String id; // 媒体库id
   @Name("album")

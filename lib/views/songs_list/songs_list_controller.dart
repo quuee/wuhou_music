@@ -170,7 +170,7 @@ class SongsListController extends GetxController {
     );
   }
 
-  /// 将歌单同步到云
+  /// 将歌单同步到云，将单个本地歌单发送到服务端
   _syncSongsList(SongsListEntity songListEntity) {
     List<SLSongsEntity> sls = IsarHelper.instance.isarInstance.sLSongsEntitys
         .filter()

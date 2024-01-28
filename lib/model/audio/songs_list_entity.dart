@@ -15,7 +15,7 @@ String songListEntityToJson(List<SongsListEntity> data) =>
 @Name('songs_list')
 class SongsListEntity {
   @Name("apslid")
-  Id? apslid = Isar.autoIncrement;
+  Id? apslid = Isar.autoIncrement; //app自动生成本地id
   @Name("slid")
   String? slid; // 服务端id
   @Name("listTitle")

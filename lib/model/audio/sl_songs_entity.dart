@@ -7,9 +7,9 @@ class SLSongsEntity {
   @Name("id")
   Id? id = Isar.autoIncrement;
   @Name("sid")
-  int sid;
+  int sid; // app自动生成歌曲id
   @Name("apslid")
-  int apslid;
+  int apslid; // app自动生成本地歌单id
 
   SLSongsEntity({
     this.id,

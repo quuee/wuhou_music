@@ -9,7 +9,6 @@ import 'package:isar/isar.dart';
 import 'package:wuhoumusic/model/book_novel/book_chapter_entity.dart';
 import 'package:wuhoumusic/model/book_novel/book_novel_entity.dart';
 import 'package:wuhoumusic/model/book_novel/read_config_entity.dart';
-import 'package:wuhoumusic/resource/loading_status.dart';
 import 'package:wuhoumusic/resource/r.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
@@ -17,8 +16,7 @@ import 'package:wuhoumusic/views/book_shelf/code_convert/code_convert.dart';
 import 'package:wuhoumusic/views/book_shelf/reader/text_composition/simple_text_painter.dart';
 
 class ReadController extends GetxController with GetTickerProviderStateMixin {
-  LoadingStatus _loadingStatus = LoadingStatus.loading;
-  get loadingStatus => _loadingStatus;
+
   // 当前书本
   BookNovelEntity? bookNovel;
   // 当前书本所有章节
@@ -105,7 +103,7 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
   }
 
   /// 获取书本信息 并且分章节
-  Future<List<BookChapterEntity>> _getBookNovelInfo() async {
+  Future<List<BookChapterEntity>> _getBookNovelInfo() {
     File file = File(bookNovel!.localPath);
     bool exist = file.existsSync();
     if (!exist) {
@@ -656,22 +654,6 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
 
     await _getBackImage(background);
 
-    // 从数据库中查询章节
-    List<BookChapterEntity> temp = IsarHelper
-        .instance.isarInstance.bookChapterEntitys
-        .filter()
-        .bookIdEqualTo(bookNovel!.id!)
-        .findAllSync();
-    if (temp.isEmpty) {
-      temp = await _getBookNovelInfo();
-      IsarHelper.instance.isarInstance.writeTxn(() async {
-        IsarHelper.instance.isarInstance.bookChapterEntitys.putAll(temp);
-      });
-    }
-    chapters.addAll(temp);
-    firstChapterIndex = chapters.first.chapterIndex;
-    lastChapterIndex = chapters.last.chapterIndex;
-
     menuAnimationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     menuTopAnimationProgress = menuAnimationController
@@ -682,15 +664,35 @@ class ReadController extends GetxController with GetTickerProviderStateMixin {
     super.onInit();
   }
 
+  /// 没加载好界面出不来
   @override
   void onReady() {
     LogI('生命周期顺序', 'onReady');
 
-    _loadLastReadChapter();
-    _loadingStatus = LoadingStatus.success;
-
+    _loadBook();
     super.onReady();
   }
+
+  _loadBook() async {
+    // 从数据库中查询章节
+    List<BookChapterEntity> temp = IsarHelper
+        .instance.isarInstance.bookChapterEntitys
+        .filter()
+        .bookIdEqualTo(bookNovel!.id!)
+        .findAllSync();
+    if (temp.isEmpty) {
+      temp = await _getBookNovelInfo();
+      IsarHelper.instance.isarInstance.writeTxnSync(() {
+        IsarHelper.instance.isarInstance.bookChapterEntitys.putAllSync(temp);
+      });
+    }
+    chapters.addAll(temp);
+    firstChapterIndex = chapters.first.chapterIndex;
+    lastChapterIndex = chapters.last.chapterIndex;
+
+    await _loadLastReadChapter();
+  }
+
 
   @override
   void onClose() {

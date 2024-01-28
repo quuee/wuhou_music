@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage>
 
   bool isPhoneLogin = false;
 
-  _buildTitleAndSkip() {
+  _buildTitle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -85,26 +85,7 @@ class _LoginPageState extends State<LoginPage>
                 color: Colors.white),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            if (_timer != null) {
-              _cancelTimer();
-            }
-            Get.offAllNamed(Routes.root,arguments: 0);
-          },
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(0, 45, 30, 0),
-            child: Text(
-              '跳过',
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white60,
-              border: Border.all(color: Colors.black26, width: 1),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-          ),
-        )
+
       ],
     );
   }
@@ -418,11 +399,22 @@ class _LoginPageState extends State<LoginPage>
           /// todo 微信 qq图标
           Row(
             children: [],
-          )
+          ),
         ],
       ),
     );
   }
+
+  _buildSkip(){
+
+    return TextButton(onPressed: (){
+          if (_timer != null) {
+            _cancelTimer();
+          }
+          Get.offAllNamed(Routes.root,arguments: 0);
+    }, child: Text('跳过',style: TextStyle(color: Colors.black87),));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -440,7 +432,7 @@ class _LoginPageState extends State<LoginPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(flex: 4, child: _buildTitleAndSkip()),
+              Expanded(flex: 4, child: _buildTitle()),
               Expanded(
                 flex: 2,
                 child: _buildChooseMenuBar(),
@@ -450,7 +442,8 @@ class _LoginPageState extends State<LoginPage>
                 child: _buildTabView(),
               ),
               Expanded(flex: 1, child: SizedBox.shrink()),
-              Expanded(flex: 5, child: _buildOtherLogin()),
+              Expanded(flex: 4, child: _buildOtherLogin()),
+              Expanded(flex: 1, child: _buildSkip()),
             ],
           ),
         ));
