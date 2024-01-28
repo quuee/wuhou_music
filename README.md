@@ -41,9 +41,9 @@
 
 ## 项目打包
 1、切换至项目路径  
-2、keytool -genkey -v -keystore C:\Users\xxx\Documents\MyProjects\wuhou_music\key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key
-3、创建的jks文件粘贴至Flutter项目的指定位置（具体看打开的方式，不同打开方式看到的目录不一样）：1、直接放在android/app文件夹下（就是项目根路径） 2、创建个文件夹放key
-4、创建key.properties
+2、keytool -genkey -v -keystore C:\Users\xxx\Documents\MyProjects\wuhou_music\key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key  
+3、创建的jks文件粘贴至Flutter项目的指定位置（具体看打开的方式，不同打开方式看到的目录不一样）：1、直接放在android/app文件夹下（就是项目根路径） 2、创建个文件夹放key  
+4、创建key.properties  
 ```properties
 storePassword=123456   #输入上一步创建KEY时输入的 密钥库 密码
 keyPassword=123456    #输入上一步创建KEY时输入的 密钥 密码
