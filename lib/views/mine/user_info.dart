@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wuhoumusic/utils/request_client.dart';
+
+import '../../flavors/build_config.dart';
 
 class MyInfo extends StatelessWidget {
   const MyInfo({super.key});
@@ -13,7 +14,7 @@ class MyInfo extends StatelessWidget {
       CachedNetworkImage(
         height: 100,
         width: 100,
-        imageUrl: "${RequestClient.imagesPrefix}tom.jpeg",
+        imageUrl: "${BuildConfig.instance.config.minioUrl}/images/tom.jpeg",
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) => Icon(Icons.error),
       ),

@@ -10,12 +10,24 @@ import 'package:wuhoumusic/utils/audio_service/common.dart';
 import 'package:wuhoumusic/utils/config.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 
+import 'flavors/build_config.dart';
+import 'flavors/env_config.dart';
+import 'flavors/environment.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   // int sdkInt = androidInfo.version.sdkInt;
+  EnvConfig config = EnvConfig(
+    baseUrl: 'http://192.168.31.8:10070',
+    minioUrl: 'http://192.168.31.22:9000'
+  );
 
+  BuildConfig.instantiate(
+    envType: Environment.DEVELOPMENT,
+    envConfig: config,
+  );
 
   await IsarHelper.instance.init();
   await Config.instance.init();

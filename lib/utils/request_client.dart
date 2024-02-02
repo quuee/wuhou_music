@@ -8,12 +8,12 @@ import 'package:wuhoumusic/routes/app_routes.dart';
 import 'package:wuhoumusic/utils/isar_helper.dart';
 import 'package:wuhoumusic/utils/log_util.dart';
 
+import '../flavors/build_config.dart';
+
 class RequestClient {
 
-  static const String apiPrefix=
-      'http://192.168.2.143:10070/api-v1'; // dio不能解析127.0.0.1
-  static const String imagesPrefix = 'http://192.168.2.124:9000/images/';
-  static const String songsPrefix = 'http://192.168.2.124:9000/songs/';
+  static final String apiPrefix = BuildConfig.instance.config.baseUrl+'/api-v1'; // dio不能解析127.0.0.1
+
   //请求时间
   static const int connectTimeout = 30;
   //响应时间

@@ -2,8 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wuhoumusic/model/audio/song_entity.dart';
 import 'package:wuhoumusic/utils/audio_service/play_invoke.dart';
-import 'package:wuhoumusic/utils/log_util.dart';
 import 'package:wuhoumusic/views/home/tabs/hot_tab_header.dart';
+
+import '../../../flavors/build_config.dart';
 
 class HotTab extends StatefulWidget {
   const HotTab({super.key});
@@ -52,7 +53,7 @@ buildSongsListItem() {
               child: AspectRatio(
                 aspectRatio: 1,
                 child: CachedNetworkImage(
-                  imageUrl: "http://192.168.2.124:9000/images/cat.png",
+                  imageUrl: '${BuildConfig.instance.config.minioUrl}/images/cat.png',
                   placeholder: (context, url) => CircularProgressIndicator(),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
@@ -72,7 +73,7 @@ buildSongsListItem() {
 }
 
 buildSectionSongs() {
-  List<SongEntity> songList = List.generate(10, (index) => SongEntity(id: index.toString(), artist: '新乐尘符', title: '123我爱你',url: 'http://192.168.2.124:9000/songs/123%E6%88%91%E7%88%B1%E4%BD%A0%20-%20%E6%96%B0%E4%B9%90%E5%B0%98%E7%AC%A6.mp3'));
+  List<SongEntity> songList = List.generate(10, (index) => SongEntity(id: index.toString(), artist: '新乐尘符', title: '123我爱你',url: '${BuildConfig.instance.config.minioUrl}/songs/123%E6%88%91%E7%88%B1%E4%BD%A0%20-%20%E6%96%B0%E4%B9%90%E5%B0%98%E7%AC%A6.mp3'));
   return Column(
     children: List<Widget>.generate(
         songList.length, (index) => buildSongItem(index, songList[index], ()=>_play(songList,index))),
