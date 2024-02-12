@@ -57,7 +57,7 @@ class RequestClient {
 
           String? token = IsarHelper.instance.isarInstance
               .anyEntitys.filter().keyNameEqualTo(Keys.token).findFirstSync()?.anything;
-          if(token!=null && token.isNotEmpty){
+          if(token!=null && token != _mDio.options.headers['authorization']){
             Map<String,dynamic> header = Map();
             header['Authorization'] = token;
             options.headers.addAll(header);
@@ -87,6 +87,7 @@ class RequestClient {
         },
         onError: (DioException e, ErrorInterceptorHandler handler) {
           // 如果你想完成请求并返回一些自定义数据，你可以使用 `handler.resolve(response)`。
+          // _handleError(error);
           return handler.next(e);
         },
       ),

@@ -10,6 +10,7 @@ class SingerTab extends StatefulWidget {
 
 class _State extends State<SingerTab> {
   List<String> letters = [
+    '↑',
     'A',
     'B',
     'C',
@@ -35,7 +36,8 @@ class _State extends State<SingerTab> {
     'W',
     'X',
     'Y',
-    'Z'
+    'Z',
+    '#'
   ];
 
   List<Map<String, List<String>>> singers = [
@@ -98,55 +100,51 @@ class _State extends State<SingerTab> {
     return Stack(
       children: [
         // 左侧歌手
-        Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: ListView.builder(
-                // 第一层 字母
-                controller: _scrollContr,
-                itemCount: singers.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 45,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(singers[index].entries.first.key),
-                        ),
-                      ),
-                      ListView.builder(
-                          //第二层 名字
-                          shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: singers[index].entries.first.value.length,
-                          itemBuilder: (context, index2) {
-                            return Container(
-                              height: 46,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl:
-                                          "http://192.168.2.124:9000/images/cat.png",
-                                      placeholder: (context, url) =>
-                                          CircularProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
-                                    ),
-                                    Text(singers[index]
-                                        .entries
-                                        .first
-                                        .value[index2])
-                                  ],
+        ListView.builder(
+          // 第一层 字母
+            controller: _scrollContr,
+            itemCount: singers.length,
+            itemBuilder: (context, index) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 23,
+                    child: Text(singers[index].entries.first.key),
+                  ),
+                  //第二层 名字
+                  ListView.builder(
+
+                      shrinkWrap: true, // 多层嵌套滚动必须加shrinkWrap: true
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: singers[index].entries.first.value.length,
+                      itemBuilder: (context, index2) {
+                        return Container(
+                          height: 46,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl:
+                                  "http://192.168.2.124:9000/images/cat.png",
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
                                 ),
-                              ),
-                            );
-                          })
-                    ],
-                  );
-                })),
+                                Text(singers[index]
+                                    .entries
+                                    .first
+                                    .value[index2])
+                              ],
+                            ),
+                          ),
+                        );
+                      })
+                ],
+              );
+            }),
         //右侧固定导航字母
         Align(
           alignment: FractionalOffset(1.0, 0.5),
