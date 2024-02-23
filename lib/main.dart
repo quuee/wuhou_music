@@ -20,8 +20,8 @@ Future<void> main() async {
   // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   // int sdkInt = androidInfo.version.sdkInt;
   EnvConfig config = EnvConfig(
-    baseUrl: 'http://192.168.31.8:10070',
-    minioUrl: 'http://192.168.31.22:9000'
+    baseUrl: 'http://192.168.1.100:10070',
+    minioUrl: 'http://192.168.1.7:9000'
   );
 
   BuildConfig.instantiate(

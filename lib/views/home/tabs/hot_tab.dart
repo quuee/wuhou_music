@@ -53,7 +53,8 @@ buildSongsListItem() {
               child: AspectRatio(
                 aspectRatio: 1,
                 child: CachedNetworkImage(
-                  imageUrl: '${BuildConfig.instance.config.minioUrl}/images/cat.png',
+                  imageUrl:
+                      '${BuildConfig.instance.config.minioUrl}/images/cat.png',
                   placeholder: (context, url) => CircularProgressIndicator(),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
@@ -73,19 +74,28 @@ buildSongsListItem() {
 }
 
 buildSectionSongs() {
-  List<SongEntity> songList = List.generate(10, (index) => SongEntity(id: index.toString(), artist: '新乐尘符', title: '123我爱你',url: '${BuildConfig.instance.config.minioUrl}/songs/123%E6%88%91%E7%88%B1%E4%BD%A0%20-%20%E6%96%B0%E4%B9%90%E5%B0%98%E7%AC%A6.mp3'));
+  List<SongEntity> songList = List.generate(
+      10,
+      (index) => SongEntity(
+          id: index.toString(),
+          artist: '新乐尘符',
+          title: '123我爱你',
+          url:
+              '${BuildConfig.instance.config.minioUrl}/songs/123%E6%88%91%E7%88%B1%E4%BD%A0%20-%20%E6%96%B0%E4%B9%90%E5%B0%98%E7%AC%A6.mp3'));
   return Column(
     children: List<Widget>.generate(
-        songList.length, (index) => buildSongItem(index, songList[index], ()=>_play(songList,index))),
+        songList.length,
+        (index) => buildSongItem(
+            index, songList[index], () => _play(songList, index))),
   );
 }
 
-_play(List<SongEntity> songList,int index){
+_play(List<SongEntity> songList, int index) {
   // LogD('_play','$index');
   PlayInvoke.init(songList: songList, index: index);
 }
 
-buildSongItem(int index, SongEntity songEntity,VoidCallback play) {
+buildSongItem(int index, SongEntity songEntity, VoidCallback play) {
   return InkWell(
     onTap: () {
       play();
@@ -98,8 +108,9 @@ buildSongItem(int index, SongEntity songEntity,VoidCallback play) {
           Expanded(
             flex: 1,
             child: SizedBox(
-              child: Center(child: Text(index.toString()),)
-            ),
+                child: Center(
+              child: Text(index.toString()),
+            )),
           ),
           Expanded(
               flex: 4,
@@ -116,9 +127,7 @@ buildSongItem(int index, SongEntity songEntity,VoidCallback play) {
                     songEntity.artist,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12
-                    ),
+                    style: TextStyle(fontSize: 12),
                   ),
                 ],
               )),
